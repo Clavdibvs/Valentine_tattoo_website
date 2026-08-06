@@ -140,15 +140,6 @@ export function BookingSection() {
             </ChromeFrame>
           </div>
         </div>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Legal line — deliberately not a separate footer section            */}
-        {/* ---------------------------------------------------------------- */}
-        <p className={styles.legal}>
-          <span>{bookingContent.legal.copyright}</span>
-          <span aria-hidden="true" className={styles.legalDot} />
-          <span>{bookingContent.legal.privacy}</span>
-        </p>
       </div>
     </section>
   );

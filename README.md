@@ -73,6 +73,20 @@ un marcatore nella didascalia. Valentina tagga un post una volta e finisce nella
 sezione giusta — nessuna modifica al codice, nessuna seconda chiamata API,
 nessuno scraping.
 
+Gli URL delle tre raccolte reali sono in `site-config.ts` (`highlightUrl`) e
+alimentano il CTA di ogni sezione: anche prima che il feed sia collegato, i
+pulsanti aprono la raccolta vera su Instagram.
+
+> **Perché i media delle raccolte non si possono scaricare da soli.** Le pagine
+> `instagram.com/stories/highlights/…` restituiscono solo lo scheletro
+> JavaScript: l'HTML contiene esclusivamente le icone dell'interfaccia
+> (`static.cdninstagram.com/rsrc.php/…`), nessun media. I contenuti vengono
+> caricati dopo l'autenticazione. Estrarli senza login significherebbe fare
+> scraping — vietato dai ToS di Instagram e dal brief.
+>
+> Le due strade legittime per riempire le gallerie con i contenuti reali sono
+> nella sezione qui sotto.
+
 Due modalità, in ordine di priorità:
 
 1. **Lista esplicita** — `INSTAGRAM_<NOME>_MEDIA_IDS`: id dei media separati da
@@ -237,6 +251,29 @@ e, in sviluppo, mostrato anche a schermo. I casi tipici:
 | `unauthorized` | manca `instagram_business_basic` | aggiungere il permesso all'app |
 | `rate-limited` | troppe richieste | attendere; la cache di 1 ora normalmente lo evita |
 | `not-configured` | variabili assenti | compilare `INSTAGRAM_USER_ID` e `INSTAGRAM_ACCESS_TOKEN` |
+
+---
+
+## Riempire le gallerie con i contenuti reali
+
+Due strade, entrambe legittime. La prima è quella definitiva.
+
+### A — Collegare l'API (consigliata, ~10 minuti)
+
+È la procedura descritta sopra. Una volta inseriti `INSTAGRAM_USER_ID` e
+`INSTAGRAM_ACCESS_TOKEN`, tutte e quattro le gallerie si popolano da sole con i
+post reali e restano aggiornate senza altri interventi. L'integrazione è già
+scritta e testata: mancano solo le credenziali.
+
+### B — Caricare i file esportati (se serve mostrare il sito subito)
+
+Instagram permette al titolare dell'account di scaricare i propri contenuti:
+*Impostazioni → Centro gestione account → Le tue informazioni e autorizzazioni →
+Scarica le tue informazioni*. Le raccolte in evidenza sono incluse.
+
+Le immagini vanno poi messe in `public/gallery/<sezione>/` e il sito le mostra
+al posto del feed. Questa strada usa contenuti reali ottenuti dal titolare, non
+estratti dal sito.
 
 ---
 

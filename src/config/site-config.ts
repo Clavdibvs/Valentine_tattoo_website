@@ -100,6 +100,12 @@ export const instagramFeed = {
 export const collections = {
   creazioni: {
     envKey: "CREAZIONI",
+    /**
+     * The real Story Highlight this section mirrors. Used for the section CTA,
+     * so visitors can open the actual highlight even while the gallery is
+     * waiting on API credentials.
+     */
+    highlightUrl: "https://www.instagram.com/stories/highlights/18138808534098679/",
     /** Caption markers, overridable with INSTAGRAM_CREAZIONI_TAGS. */
     defaultTags: ["creazioni", "vtcreazioni", "custom", "tattoo"] as const,
     limit: 12,
@@ -107,12 +113,14 @@ export const collections = {
   },
   flash: {
     envKey: "FLASH",
+    highlightUrl: "https://www.instagram.com/stories/highlights/17907459131894011/",
     defaultTags: ["flash", "vtflash", "flashtattoo", "disponibile"] as const,
     limit: 12,
     demoOffset: 4,
   },
   merch: {
     envKey: "MERCH",
+    highlightUrl: "https://www.instagram.com/stories/highlights/17859497229473696/",
     defaultTags: ["merch", "vtmerch", "shop", "merchandise"] as const,
     limit: 12,
     demoOffset: 8,

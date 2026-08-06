@@ -54,13 +54,15 @@ const BODY_PLATES = [
  * Plates laid down after the hero.
  *
  * They share whatever height the hero leaves, so more of them means each one is
- * stretched less vertically. Eleven keeps each plate within about 13% of its
- * natural aspect ratio while leaving a long crossfade between neighbours.
+ * stretched less vertically. Thirteen puts the desktop plates within 1% of their
+ * natural aspect ratio and keeps a long crossfade between neighbours; mobile
+ * plates are portrait and shorter relative to the viewport, so they stretch
+ * more, which abstract edge ornaments absorb without showing.
  *
  * Repeats cost nothing to download: cycling four images over eleven slots is
  * still four network requests, the rest come from cache.
  */
-const BODY_PLATE_COUNT = 11;
+const BODY_PLATE_COUNT = 13;
 
 export function PageBackdrop() {
   return (

@@ -36,11 +36,16 @@ export function IntegrationErrorState({
   body,
   reason,
   detail,
+  href = instagramProfile.url,
+  label = instagramProfile.handleWithAt,
 }: {
   title: string;
   body: string;
   reason?: InstagramErrorReason | "not-configured";
   detail?: string;
+  /** Where the fallback button points — a Story Highlight for the collections. */
+  href?: string;
+  label?: string;
 }) {
   const showDeveloperDetail = process.env.NODE_ENV !== "production" && detail;
 
@@ -57,7 +62,7 @@ export function IntegrationErrorState({
       ) : null}
 
       <ChromeButton
-        href={instagramProfile.url}
+        href={href}
         external
         size="sm"
         tracked
@@ -65,7 +70,7 @@ export function IntegrationErrorState({
         trailing={<ExternalIcon size={14} />}
         className={styles.stateCta}
       >
-        {instagramProfile.handleWithAt}
+        {label}
       </ChromeButton>
     </div>
   );

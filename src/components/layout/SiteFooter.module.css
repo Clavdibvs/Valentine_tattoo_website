@@ -1,0 +1,39 @@
+/**
+ * The closing line of the page. Deliberately not a designed footer section: the
+ * brief keeps the page to its content sections, and this is a single quiet rule
+ * of copyright and privacy text.
+ *
+ * It used to sit at the foot of Booking, which was the last section. Booking is
+ * no longer last, so it lives here — after About, at the very bottom.
+ */
+.footer {
+  position: relative;
+  z-index: 1;
+  padding-block: 0 var(--space-lg);
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.85rem;
+  width: 100%;
+  padding-top: var(--space-sm);
+  margin: 0;
+  border-top: 1px solid var(--color-line-soft);
+  text-align: center;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  color: var(--color-text-dim);
+  line-height: 1.7;
+}
+
+.legalDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+  flex: 0 0 auto;
+}

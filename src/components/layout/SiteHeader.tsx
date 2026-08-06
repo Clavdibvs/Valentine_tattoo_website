@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 import { useRef, useState } from "react";
 
 import { BrandLockup } from "@/components/ornaments/BrandMark";
@@ -15,6 +15,33 @@ import styles from "./SiteHeader.module.css";
 
 const SECTION_IDS = navItems.map((item) => item.id);
 
+/** Matches the hero reveal, so header and hero read as one opening. */
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Entrance variants.
+ *
+ * Motion propagates variants only through motion components, so the chain from
+ * the header down to each item has to be unbroken — the inner bar and the nav
+ * are motion elements with empty variants purely to pass the state along.
+ */
+const headerVariants: Variants = {
+  hidden: { y: -28, opacity: 0 },
+  shown: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.9, ease: EASE, delayChildren: 0.28, staggerChildren: 0.07 },
+  },
+};
+
+/** Pass-through: animates nothing, just forwards the state to its children. */
+const passThrough: Variants = { hidden: {}, shown: { transition: { staggerChildren: 0.07 } } };
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: -10 },
+  shown: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
+};
+
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -22,11 +49,28 @@ export function SiteHeader() {
   const scrolled = useScrolled();
   const reduce = useReducedMotion();
 
+  // Under reduced motion the header simply renders in its final state: no
+  // variants, so nothing animates and nothing can be left hidden.
+  const motionProps = reduce
+    ? {}
+    : { initial: "hidden" as const, animate: "shown" as const };
+  const v = (variants: Variants) => (reduce ? {} : { variants });
+
   return (
     <>
-      <header className={styles.header} data-scrolled={scrolled ? "" : undefined}>
-        <div className={styles.bar}>
-          <a href="#home" className={styles.brand} aria-label="Valentine Tattoo — torna all’inizio">
+      <motion.header
+        className={styles.header}
+        data-scrolled={scrolled ? "" : undefined}
+        {...motionProps}
+        {...v(headerVariants)}
+      >
+        <motion.div className={styles.bar} {...v(passThrough)}>
+          <motion.a
+            href="#home"
+            className={styles.brand}
+            aria-label="Valentine Tattoo — torna all’inizio"
+            {...v(itemVariants)}
+          >
             <BrandLockup
               markSize={32}
               className={styles.lockup}
@@ -34,29 +78,33 @@ export function SiteHeader() {
               nameClassName={styles.brandName}
               taglineClassName={styles.brandTagline}
             />
-          </a>
+          </motion.a>
 
-          <nav className={styles.nav} aria-label={a11yContent.primaryNavLabel}>
+          <motion.nav
+            className={styles.nav}
+            aria-label={a11yContent.primaryNavLabel}
+            {...v(passThrough)}
+          >
             <ul className={styles.navList}>
               {/* No separator glyphs: with seven items they cost the width the
                   labels need. The active underline carries the emphasis. */}
-              {navItems.map((item) => (
-                <li key={item.id} className={styles.navItem}>
+              {navItems.map((navItem) => (
+                <motion.li key={navItem.id} className={styles.navItem} {...v(itemVariants)}>
                   <a
-                    href={item.href}
+                    href={navItem.href}
                     className={styles.navLink}
-                    aria-current={activeSection === item.id ? "page" : undefined}
-                    data-active={activeSection === item.id ? "" : undefined}
+                    aria-current={activeSection === navItem.id ? "page" : undefined}
+                    data-active={activeSection === navItem.id ? "" : undefined}
                   >
-                    {item.label}
+                    {navItem.label}
                     <span className={styles.navUnderline} aria-hidden="true" />
                   </a>
-                </li>
+                </motion.li>
               ))}
             </ul>
-          </nav>
+          </motion.nav>
 
-          <div className={styles.actions}>
+          <motion.div className={styles.actions} {...v(itemVariants)}>
             <SigilStar size={18} className={styles.actionStar} />
             <ChromeButton href="#booking" size="sm" className={styles.bookingButton} tracked>
               BOOKING
@@ -79,11 +127,11 @@ export function SiteHeader() {
                 <span />
               </span>
             </motion.button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <span className={styles.divider} aria-hidden="true" data-decor="" />
-      </header>
+      </motion.header>
 
       <MobileMenu
         open={menuOpen}

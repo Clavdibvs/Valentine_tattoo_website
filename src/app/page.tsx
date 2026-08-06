@@ -1,4 +1,5 @@
 import { ScrollAnimations } from "@/components/animation/ScrollAnimations";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ChromeDefs } from "@/components/ornaments/ChromeDefs";
 import { PageBackdrop } from "@/components/ornaments/PageBackdrop";
@@ -45,6 +46,9 @@ export default function Home() {
         <BookingSection />
         <AboutSection />
       </main>
+
+      {/* Closing line, below every section. */}
+      <SiteFooter />
 
       <ScrollAnimations />
     </>

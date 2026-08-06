@@ -7,7 +7,7 @@ import { SigilStar } from "@/components/ornaments/SigilStar";
 import { ChromeButton } from "@/components/ui/ChromeButton";
 import { ChevronDownIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { heroContent } from "@/content/site-content";
-import { instagramProfile, whatsapp } from "@/config/site-config";
+import { instagramProfile, navItems, whatsapp } from "@/config/site-config";
 
 import styles from "./HeroSection.module.css";
 
@@ -126,7 +126,8 @@ export function HeroSection() {
       {/* ---------------------------------------------------------------- */}
       {/* Scroll indicator                                                  */}
       {/* ---------------------------------------------------------------- */}
-      <a href="#about" className={styles.scroll} data-reveal="">
+      {/* Points at whatever follows the hero — Instagram since the reorder. */}
+      <a href={`#${navItems[1].id}`} className={styles.scroll} data-reveal="">
         <OrnamentDivider className={styles.scrollDivider} starSize={14} width="320px" />
         <span className="u-micro">{heroContent.scrollLabel}</span>
         <ChevronDownIcon size={20} className={styles.scrollChevron} />

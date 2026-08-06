@@ -84,10 +84,12 @@
   mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - var(--feather)), transparent 100%);
 }
 
-.last {
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--feather), #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 var(--feather), #000 100%);
-}
+/*
+ * The last plate uses the default two-sided mask: it has nothing below it to
+ * fade into, so keeping it opaque to the document edge sliced the artwork off
+ * mid-ornament. Fading it out lets the backdrop settle into black at the foot
+ * of the page instead of stopping dead.
+ */
 
 /*
  * The plates ship already cropped to the band between their own frame rules —
@@ -135,8 +137,10 @@
     );
   }
 
+  /* Same proportion of each plate blending as on desktop: the portrait plates
+     are shorter, so the ramp needs a larger share of the viewport. */
   .strip {
-    --feather: 10vh;
+    --feather: 13vh;
   }
 }
 

@@ -9,7 +9,7 @@ import { ChromeFrame } from "@/components/ui/ChromeFrame";
 import { ExternalIcon, InstagramIcon } from "@/components/ui/Icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { collectionContent, instagramContent } from "@/content/site-content";
-import { instagramProfile, type CollectionId } from "@/config/site-config";
+import { collections, type CollectionId } from "@/config/site-config";
 import { fetchCollection } from "@/lib/instagram/collections";
 
 import styles from "./InstagramSection.module.css";
@@ -66,8 +66,9 @@ export function CollectionSection({
         </Suspense>
 
         <div className={styles.footer} data-reveal="">
+          {/* Opens the real Story Highlight this section mirrors. */}
           <ChromeButton
-            href={instagramProfile.url}
+            href={collections[id].highlightUrl}
             external
             size="md"
             tracked
@@ -125,6 +126,8 @@ async function CollectionContent({ id }: { id: CollectionId }) {
           body={instagramContent.unavailableBody}
           reason="not-configured"
           detail="INSTAGRAM_USER_ID / INSTAGRAM_ACCESS_TOKEN are not set."
+          href={collections[id].highlightUrl}
+          label="APRI LA RACCOLTA"
         />
       </Shell>
     );
@@ -137,6 +140,8 @@ async function CollectionContent({ id }: { id: CollectionId }) {
           title={instagramContent.unavailableTitle}
           body={instagramContent.unavailableBody}
           detail={result.message}
+          href={collections[id].highlightUrl}
+          label="APRI LA RACCOLTA"
         />
       </Shell>
     );
@@ -144,7 +149,12 @@ async function CollectionContent({ id }: { id: CollectionId }) {
 
   return (
     <Shell compact>
-      <IntegrationErrorState title={copy.emptyTitle} body={copy.emptyBody} />
+      <IntegrationErrorState
+        title={copy.emptyTitle}
+        body={copy.emptyBody}
+        href={collections[id].highlightUrl}
+        label="APRI LA RACCOLTA"
+      />
     </Shell>
   );
 }
