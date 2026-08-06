@@ -92,6 +92,20 @@
  */
 
 /*
+ * `<picture>` is an inline wrapper with no height of its own, so `height: 100%`
+ * on the image resolves against nothing and the image falls back to its
+ * intrinsic size. On desktop that happened to land within 1% of the plate and
+ * went unnoticed; on mobile the image came out 468px tall inside an 844px
+ * plate, leaving the bottom empty — the first plate looked cut off rather than
+ * faded. The wrapper has to fill the plate for the image to fill the wrapper.
+ */
+.plate picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
  * The plates ship already cropped to the band between their own frame rules —
  * see `scripts/build-backdrops.mjs` for why and how. Nothing to trim here.
  */

@@ -278,7 +278,26 @@ Booking mobile source order, signature legibility.
     distinctive sigil back on screen halfway down the page. The hero plate is now
     used once, pinned to `100svh` so it covers exactly its own section, and the
     body cycles the remaining art.
-14. **The last section's CTA could never reveal.** `start: "top 92%"` needs a
+14. **`<picture>` never gave the plate images a height.** `height: 100%` on the
+    image resolved against an inline wrapper with no height, so the image fell
+    back to its intrinsic size. On desktop that landed within 1% of the plate and
+    went unnoticed for weeks; on mobile the image came out 468px tall inside an
+    844px plate, leaving the lower half empty — the first backdrop looked sliced
+    off rather than faded.
+15. **Two tweens wrote `y` on the same element.** The section exit used
+    `gsap.to`, which infers its start value from whatever the property holds when
+    it first renders — the entry tween's `from` value, applied at creation. The
+    exit therefore snapped each section downwards the instant its trigger fired.
+    Fixed with an explicit `fromTo` and `immediateRender: false`. Verified by
+    sampling the transform every 12px of scroll across the whole document: zero
+    discontinuities.
+16. **Scrolling back up left the page trailing dim.** Not hysteresis — measured
+    identical settled values in both directions — but scrub lag: at `scrub: 1.1`
+    the opacity took over a second to catch up after the wheel stopped. Cut to
+    0.45 and the fade made shallower (0.55→0.8 entering, 0.35→0.62 leaving), so
+    any residual lag is invisible. Resting brightness across the page rose from
+    0.85–0.94 to 0.96–0.99.
+17. **The last section's CTA could never reveal.** `start: "top 92%"` needs a
     scroll position that does not exist for content in the final 8% of the
     document — which About's CTA became once About moved last. The start is now
     a function that falls back to `"top bottom"` when the threshold is out of

@@ -189,12 +189,42 @@
   display: none;
 }
 
+/*
+ * The three-line introduction is desktop only. On a phone it crowded the
+ * opening screen, so a single line takes its place — but the block keeps the
+ * height the longer copy occupied, so the hero's rhythm does not collapse.
+ */
 .intro {
+  display: none;
   max-width: 46ch;
   margin: 0;
   font-size: var(--fs-body);
   line-height: 1.72;
   color: var(--color-text-muted);
+}
+
+.introShort {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The height the three-line introduction occupied at this width. */
+  min-height: 84px;
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.72;
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .intro {
+    display: block;
+  }
+
+  .introShort {
+    display: none;
+  }
 }
 
 @media (min-width: 1024px) {

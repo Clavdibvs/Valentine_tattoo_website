@@ -117,6 +117,12 @@ export function ScrollAnimations() {
       /* exactly and reverses cleanly — never a one-shot that fights the      */
       /* user's direction. Movement is deliberately small; the perceived      */
       /* smoothness comes from the scrub inertia, not from distance.          */
+      /*                                                                      */
+      /* The scrub is short (0.45s) and the dimming shallow. At 1.1s the       */
+      /* opacity took over a second to catch up after the wheel stopped, so    */
+      /* scrolling back up left the whole page trailing dim — it read as a     */
+      /* bug rather than as easing. Depth was cut for the same reason: any     */
+      /* residual lag on a shallow fade is invisible.                          */
       /* ------------------------------------------------------------------ */
       ctx.add("(min-width: 768px)", () => {
         queryAll<HTMLElement>("main > section").forEach((section, index) => {
@@ -127,33 +133,48 @@ export function ScrollAnimations() {
           if (index > 0) {
             gsap.fromTo(
               inner,
-              { y: 46, autoAlpha: 0.55 },
+              { y: 40, autoAlpha: 0.8 },
               {
                 y: 0,
                 autoAlpha: 1,
                 ease: "none",
                 scrollTrigger: {
                   trigger: section,
-                  start: "top 92%",
-                  end: "top 52%",
-                  scrub: 1.1,
+                  start: "top 95%",
+                  end: "top 62%",
+                  scrub: 0.45,
                 },
               },
             );
           }
 
-          // Exit: drifts up and dims as the section leaves.
-          gsap.to(inner, {
-            y: -34,
-            autoAlpha: 0.35,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "bottom 78%",
-              end: "bottom 18%",
-              scrub: 1.1,
+          /**
+           * Exit: drifts up and dims as the section leaves.
+           *
+           * `fromTo` with `immediateRender: false`, not `to`. Two tweens write
+           * `y` on this element, and a plain `to` infers its start value from
+           * whatever `y` holds when it first renders — which is the entry
+           * tween's `from` value, applied at creation. The exit therefore
+           * snapped the section downwards the moment its trigger activated,
+           * before animating up. Stating both ends explicitly, and refusing to
+           * render before the trigger fires, removes the guesswork.
+           */
+          gsap.fromTo(
+            inner,
+            { y: 0, autoAlpha: 1 },
+            {
+              y: -30,
+              autoAlpha: 0.62,
+              ease: "none",
+              immediateRender: false,
+              scrollTrigger: {
+                trigger: section,
+                start: "bottom 62%",
+                end: "bottom 12%",
+                scrub: 0.45,
+              },
             },
-          });
+          );
         });
       });
 

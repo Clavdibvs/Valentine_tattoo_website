@@ -75,6 +75,11 @@ export function HeroSection() {
             </picture>
           </h1>
 
+          {/*
+            Two paragraphs, one per breakpoint. Each is `display: none` at the
+            other size, which also removes it from the accessibility tree — so
+            the copy is never announced twice.
+          */}
           <p className={styles.intro} data-reveal-child="">
             {introSegments.map((segment, i) => (
               <span key={i} className={segment.emphasis ? "u-strong" : undefined}>
@@ -86,6 +91,10 @@ export function HeroSection() {
                 ))}
               </span>
             ))}
+          </p>
+
+          <p className={styles.introShort} data-reveal-child="">
+            {heroContent.introShort}
           </p>
 
           <div className={styles.ctas} data-reveal-child="">

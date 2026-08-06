@@ -32,6 +32,13 @@ export const heroContent = {
     { text: ".", emphasis: false },
   ] as const,
   introPlain: `Sono ${artist.name}, tatuatrice di ${artist.origin}. Ricevo a ${artist.city} presso ${artist.studio}.`,
+  /**
+   * Mobile carries a single line instead of the three-line introduction: on a
+   * phone the wordmark plus three lines of copy plus two stacked CTAs crowded
+   * the opening screen. The full introduction is still on desktop, and the
+   * artist's name and studio are given in full in About either way.
+   */
+  introShort: `Resident presso ${artist.studio}`,
   primaryCta: "Richiedi una consulenza su WhatsApp",
   secondaryCta: "Scrivimi su Instagram",
   supportingLine:
