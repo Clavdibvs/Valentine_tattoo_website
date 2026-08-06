@@ -222,15 +222,6 @@ export const bookingContent = {
     "Oltre 30 cm",
     "Da valutare insieme",
   ] as const,
-  quote: {
-    lines: [
-      "Non è solo un tatuaggio.",
-      "È la tua storia, disegnata sulla pelle.",
-    ] as const,
-    signature: artist.name,
-    signatureRole: artist.role,
-    portraitAlt: `${artist.name} nel suo studio`,
-  },
   legal: {
     copyright: `© ${new Date().getFullYear()} ${artist.brand} · ${artist.name}`,
     privacy: "I dati inviati tramite il modulo vengono usati solo per rispondere alla richiesta.",

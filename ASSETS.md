@@ -19,7 +19,6 @@ Sono ricolorabili, scalano senza perdita e pesano complessivamente pochi KB.
 | Logo mark | `public/brand/logo-valentine-{96,192,288}.webp` | WebP α | **logo reale fornito**, ritagliato al bounding box (5–24 KB) |
 | Wordmark hero | `public/brand/wordmark-valentine-{640,960,1400}.webp` | WebP α | **lettering reale fornito**, ritagliato (67–158 KB) |
 | Wordmark header | `SiteHeader` + `BrandLockup` | **testo HTML** | resta selezionabile ed editabile |
-| Firma "Valentina Stucchi" | `BrandMark.tsx` → `SignatureMark` | SVG inline | tracciato disegnato a mano; evita una terza famiglia di font |
 | Sigillo principale (hero) | `ornaments/SigilOrnament.tsx` + `sigil-geometry.ts` | SVG generato | lame irregolari, vuoti biomeccanici, membrane |
 | Ornamenti d'angolo | `SigilOrnament.tsx` → `CornerSigil` | SVG generato | 4 orientamenti da una sola geometria |
 | Badge sigillo | `SigilOrnament.tsx` → `SigilBadge` | SVG inline | usato in strip, form, quote card |
@@ -41,6 +40,8 @@ Sono ricolorabili, scalano senza perdita e pesano complessivamente pochi KB.
 | Metriche `♥ 317  💬 12` sulle card | rimosse | metriche social inventate |
 | Strip `3+ / 500+ / 100%` | 3 blocchi qualitativi (CUSTOM / PLACEMENT / TRIGGIANO) | statistiche non verificate |
 | Voci nav `WORKS`, `FLASH` | rimosse | sezioni non esistenti |
+| Firma manoscritta di Valentina | nome in testo reale (corsivo Bodoni) | una firma disegnata sarebbe un artefatto inventato |
+| Card citazione "Non è solo un tatuaggio…" | rimossa | frase non attribuibile né verificata |
 
 ---
 
@@ -117,7 +118,6 @@ produzione.
 | --- | --- | --- | --- |
 | `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **mancante** |
 | `public/images/valentina/portrait-mobile.webp` | crop mobile (facoltativo) | 4:5 | mancante — ricade su `portrait.webp` |
-| `public/images/valentina/portrait-quote.webp` | crop card citazione (facoltativo) | 3:4 | mancante — ricade su `portrait.webp` |
 
 **Comportamento attuale:** `src/lib/portrait.ts` verifica l'esistenza del file al
 render lato server. Se manca, `PortraitFrame` mostra un placeholder dichiarato —

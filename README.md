@@ -277,7 +277,6 @@ Da fornire (nessun sostituto generato è stato spacciato per reale):
 | --- | --- |
 | `public/images/valentina/portrait.webp` | ritratto sezione About |
 | `public/images/valentina/portrait-mobile.webp` | crop verticale (opzionale) |
-| `public/images/valentina/portrait-quote.webp` | crop per la card citazione (opzionale) |
 
 Finché non ci sono, le cornici mostrano un **placeholder neutro dichiarato**
 ("Ritratto in attesa della foto ufficiale") che conserva le proporzioni esatte,

@@ -14,7 +14,6 @@ const PUBLIC_DIR = join(process.cwd(), "public");
 export const PORTRAIT_PATHS = {
   main: "/images/valentina/portrait.webp",
   mobile: "/images/valentina/portrait-mobile.webp",
-  quote: "/images/valentina/portrait-quote.webp",
 } as const;
 
 export type PortraitKey = keyof typeof PORTRAIT_PATHS;

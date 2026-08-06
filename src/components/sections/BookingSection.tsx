@@ -1,22 +1,17 @@
 import { ConsultationForm } from "@/components/booking/ConsultationForm";
-import { SignatureMark } from "@/components/ornaments/BrandMark";
 import { CornerSigil, SigilBadge, SigilOrnament } from "@/components/ornaments/SigilOrnament";
 import { SideGlyphRail } from "@/components/ornaments/SideGlyphRail";
 import { SigilStar } from "@/components/ornaments/SigilStar";
 import { ChromeButton } from "@/components/ui/ChromeButton";
 import { ChromeFrame } from "@/components/ui/ChromeFrame";
-import { ArrowCircleIcon, InstagramIcon, QuoteMarkIcon, WhatsAppIcon } from "@/components/ui/Icons";
-import { PortraitFrame } from "@/components/ui/PortraitFrame";
+import { ArrowCircleIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { bookingContent } from "@/content/site-content";
 import { instagramProfile, whatsapp } from "@/config/site-config";
-import { resolvePortrait } from "@/lib/portrait";
 
 import styles from "./BookingSection.module.css";
 
 export function BookingSection() {
-  const quotePortrait = resolvePortrait("quote");
-
   return (
     <section id="booking" className={`section ${styles.booking}`} aria-labelledby="booking-title">
 
@@ -144,48 +139,6 @@ export function BookingSection() {
               <ConsultationForm />
             </ChromeFrame>
           </div>
-        </div>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Quote card                                                        */}
-        {/* ---------------------------------------------------------------- */}
-        <div className={styles.quoteArea} data-reveal="">
-          <ChromeFrame
-            metal
-            notch={15}
-            className={styles.quoteFrame}
-            innerClassName={styles.quoteInner}
-            nodes
-          >
-            <div className={styles.quotePortrait}>
-              <PortraitFrame
-                src={quotePortrait}
-                alt={bookingContent.quote.portraitAlt}
-                sizes="(max-width: 767px) 34vw, 200px"
-                ratio="3 / 4"
-              />
-            </div>
-
-            <blockquote className={styles.quoteBody}>
-              <QuoteMarkIcon size={34} className={styles.quoteMark} />
-              <p className={styles.quoteText}>
-                {bookingContent.quote.lines.map((line, i) => (
-                  <span key={line} className={styles.quoteLine}>
-                    {line}
-                    {i < bookingContent.quote.lines.length - 1 ? <br /> : null}
-                  </span>
-                ))}
-              </p>
-              <footer className={styles.quoteFooter}>
-                <SignatureMark className={styles.quoteSignature} width={190} />
-                <cite className={`u-micro ${styles.quoteCite}`}>
-                  {bookingContent.quote.signature} · {bookingContent.quote.signatureRole}
-                </cite>
-              </footer>
-            </blockquote>
-
-            <SigilOrnament variant="card" className={styles.quoteSigil} />
-          </ChromeFrame>
         </div>
 
         {/* ---------------------------------------------------------------- */}

@@ -1,4 +1,3 @@
-import { SignatureMark } from "@/components/ornaments/BrandMark";
 import { CornerSigil, SigilBadge } from "@/components/ornaments/SigilOrnament";
 import { SideGlyphRail } from "@/components/ornaments/SideGlyphRail";
 import { SigilStar } from "@/components/ornaments/SigilStar";
@@ -63,9 +62,10 @@ export function AboutSection() {
               />
             </div>
 
+            {/* The name is set as real text. A drawn signature would be an
+                invented artefact, so the caption stays typographic. */}
             <div className={styles.signature}>
-              <SignatureMark className={styles.signatureMark} width={210} />
-              <span className="sr-only">{artist.name}</span>
+              <span className={styles.signatureName}>{artist.name}</span>
               <span className={`u-micro ${styles.signatureRole}`}>
                 {aboutContent.signatureRole}
               </span>

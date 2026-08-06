@@ -195,23 +195,3 @@ export function CloseIcon({ size = 20, className, strokeWidth = 1.3 }: IconProps
     </svg>
   );
 }
-
-export function QuoteMarkIcon({ size = 40, className }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size * 0.72}
-      viewBox="0 0 50 36"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-      className={className}
-      style={{ pointerEvents: "none", flex: "0 0 auto" }}
-    >
-      <path
-        d="M0 36V20.5C0 9.2 6.2 1.6 18.4 0l1.6 5.6C13 7.4 9.4 11 9.4 16.2h8.2V36H0Zm30 0V20.5C30 9.2 36.2 1.6 48.4 0L50 5.6C43 7.4 39.4 11 39.4 16.2h8.2V36H30Z"
-        fill="url(#vt-chrome)"
-      />
-    </svg>
-  );
-}

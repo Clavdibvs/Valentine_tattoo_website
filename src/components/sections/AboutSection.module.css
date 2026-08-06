@@ -178,14 +178,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   padding-bottom: var(--space-2xs);
   color: rgba(232, 232, 232, 0.72);
 }
 
-.signatureMark {
-  width: min(220px, 70%);
-  height: auto;
+.signatureName {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.375rem);
+  font-style: italic;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  color: rgba(240, 240, 240, 0.9);
 }
 
 .signatureRole {

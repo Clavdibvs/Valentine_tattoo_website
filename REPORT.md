@@ -52,13 +52,14 @@ Navigation is exactly `HOME · ABOUT · INSTAGRAM · BOOKING` → `#home #about
 | Chrome primitives | `ChromeFrame`, `ChromeButton`, `SectionHeading`, `PortraitFrame` |
 | Backdrop | `PageBackdrop` — one continuous ornamental strip behind the document, built from the supplied plates |
 | Brand art | Supplied logo and hero lettering, trimmed and exported as WebP |
-| Ornaments | `SigilBadge`, `SigilStar`, `OrnamentDivider`, `OrnamentArc`, `SignatureMark` — parametric SVG |
+| Removed on request | Drawn signature and the closing quote card |
+| Ornaments | `SigilBadge`, `SigilStar`, `OrnamentDivider`, `OrnamentArc` — parametric SVG |
 | Header | Sticky, active-section indicator via IntersectionObserver, scroll-driven opacity |
 | Mobile menu | Motion overlay, `role="dialog"`, focus trap, Escape, scroll lock, focus restore |
 | Hero | Asymmetric desktop / centred mobile, two CTAs, pointer parallax, scroll indicator |
 | About | Portrait card, editorial copy, qualitative strip, Instagram CTA |
 | Instagram | Server-side Graph API layer, desktop carousel + mobile grid, four states |
-| Booking | Contact card, reassurance row, validated form with uploader, quote card |
+| Booking | Contact card, reassurance row, validated form with uploader |
 | Animation | `ScrollAnimations` (GSAP only), Motion in components, strict separation |
 
 ---
@@ -163,6 +164,8 @@ Everything the screenshots invented was removed or replaced:
 | `WORKS`, `FLASH` nav items | removed |
 | `RISPOSTA RAPIDA / Entro poche ore` | `CONTATTO DIRETTO / Scegli il canale che preferisci` |
 | AI-generated woman as the artist | declared neutral placeholder |
+| Drawn signature (my addition) | the name as real italic text — a signature is an artefact that cannot be invented |
+| Quote card "Non è solo un tatuaggio…" | removed — the line was not attributable to the artist |
 | Merged `Email / Telefono` field | separate Email and Telefono fields |
 | Missing privacy consent | added, required |
 
@@ -281,7 +284,6 @@ Booking mobile source order, signature legibility.
 
 - `public/images/valentina/portrait.webp` — About portrait
 - `public/images/valentina/portrait-mobile.webp` — optional mobile crop
-- `public/images/valentina/portrait-quote.webp` — optional quote-card crop
 
 Until supplied, the frames render a declared neutral placeholder ("Ritratto in
 attesa della foto ufficiale") that preserves exact proportions, so dropping the real
