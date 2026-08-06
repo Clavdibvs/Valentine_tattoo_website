@@ -85,7 +85,27 @@ export function ScrollAnimations() {
 
         gsap.to(targets, {
           ...common,
-          scrollTrigger: { trigger: block, start: "top 92%", once: true },
+          scrollTrigger: {
+            trigger: block,
+            /**
+             * "top 92%" needs the page scrolled until the block's top sits 92%
+             * down the viewport. For content in the last 8% of the document —
+             * the final section's CTA, for instance — that scroll position does
+             * not exist, so the trigger never fires and the element stays
+             * invisible forever. When the threshold is out of reach, fall back
+             * to revealing as soon as the block enters the viewport at all.
+             *
+             * A function keeps this correct across refreshes, since late-loading
+             * images change the document height.
+             */
+            start: () => {
+              const blockTop = block.getBoundingClientRect().top + window.scrollY;
+              const required = blockTop - window.innerHeight * 0.92;
+              return required <= ScrollTrigger.maxScroll(window) ? "top 92%" : "top bottom";
+            },
+            invalidateOnRefresh: true,
+            once: true,
+          },
         });
       });
 
@@ -159,28 +179,38 @@ export function ScrollAnimations() {
       }
 
       /* ------------------------------------------------------------------ */
-      /* Chrome highlight sweep — short, occasional, never a loop            */
+      /* Chrome highlight sweep — slow, continuous, paused off-screen        */
       /* ------------------------------------------------------------------ */
       queryAll<HTMLElement>("[data-chrome-sweep]").forEach((element, index) => {
+        // A slow, endlessly repeating pass. It used to fire once and stop dead,
+        // which read as the metal "switching off". The long `repeatDelay` keeps
+        // it a highlight travelling over the surface rather than a blink.
         const sweep = gsap.fromTo(
           element,
-          { "--chrome-sweep": "14%" },
+          { "--chrome-sweep": "8%" },
           {
-            "--chrome-sweep": "86%",
-            duration: 2.1,
+            "--chrome-sweep": "92%",
+            duration: 3.4,
             ease: "sine.inOut",
+            repeat: -1,
+            // Travels back instead of restarting: without yoyo the tween snaps
+            // from 92% to 8% each cycle, which reads as a flash.
+            yoyo: true,
+            repeatDelay: 1.1,
             paused: true,
-            onComplete: () => gsap.set(element, { "--chrome-sweep": "50%" }),
           },
         );
 
+        // Only animates while the heading is on screen: an off-screen tween
+        // still burns frames.
         ScrollTrigger.create({
           trigger: element,
-          start: "top 82%",
-          once: true,
-          onEnter: () => {
-            gsap.delayedCall(0.35 + index * 0.1, () => sweep.restart());
-          },
+          start: "top bottom",
+          end: "bottom top",
+          onEnter: () => gsap.delayedCall(0.25 + index * 0.12, () => sweep.play()),
+          onEnterBack: () => sweep.play(),
+          onLeave: () => sweep.pause(),
+          onLeaveBack: () => sweep.pause(),
         });
       });
 

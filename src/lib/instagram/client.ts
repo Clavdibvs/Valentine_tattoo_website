@@ -159,6 +159,7 @@ function normalize(items: z.infer<typeof responseSchema>["data"]): InstagramMedi
       permalink: item.permalink,
       mediaType,
       captionExcerpt: toCaptionExcerpt(item.caption),
+      rawCaption: item.caption,
       timestamp: item.timestamp ?? null,
       childCount: item.children?.data.length,
     });

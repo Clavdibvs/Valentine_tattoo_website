@@ -9,6 +9,11 @@ export type InstagramMedia = {
   mediaType: InstagramMediaType;
   /** Sanitized, shortened caption excerpt. Never the full raw caption. */
   captionExcerpt: string | null;
+  /**
+   * Full caption, used only server-side to sort posts into collections.
+   * Never rendered and never placed in an alt attribute.
+   */
+  rawCaption?: string;
   timestamp: string | null;
   /** Number of children, for carousels. */
   childCount?: number;

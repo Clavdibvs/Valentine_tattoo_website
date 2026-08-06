@@ -22,7 +22,7 @@ export function BookingSection() {
         <CornerSigil corner="bottom-right" className={styles.cornerBottomRight} opacity={0.45} />
       </div>
 
-      <SideGlyphRail side="left" index="04" />
+      <SideGlyphRail side="left" index="06" />
       <SideGlyphRail side="right" words={["CONSULENZA", "CUSTOM WORK"]} />
 
       <div className={`container ${styles.inner}`}>

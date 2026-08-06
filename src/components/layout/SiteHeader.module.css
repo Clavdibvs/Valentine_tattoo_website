@@ -93,14 +93,13 @@
 .navList {
   display: flex;
   align-items: center;
-  gap: clamp(0.75rem, 2vw, 2rem);
+  gap: clamp(0.9rem, 1.5vw, 1.75rem);
   margin: 0;
 }
 
 .navItem {
   display: flex;
   align-items: center;
-  gap: clamp(0.75rem, 2vw, 2rem);
 }
 
 .navLink {
@@ -110,7 +109,8 @@
   min-height: 44px;
   padding-inline: 2px;
   font-size: var(--fs-label);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
   text-transform: uppercase;
   color: var(--color-text-muted);
   transition: color var(--dur-mid) var(--ease-out);
@@ -141,7 +141,9 @@
   opacity: 0.45;
 }
 
-@media (min-width: 1024px) {
+/* Seven items do not fit beside the logo and the CTA below this width; the
+   overlay menu handles everything narrower. */
+@media (min-width: 1200px) {
   .nav {
     display: flex;
   }
@@ -168,7 +170,7 @@
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .actionStar,
   .bookingButton {
     display: inline-flex;
@@ -224,14 +226,14 @@
   width: 75%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .burger {
     display: none;
   }
 }
 
-/* On mobile the star sits between the logo and the burger, per the reference. */
-@media (max-width: 1023px) {
+/* Below the desktop nav the star sits between the logo and the burger. */
+@media (max-width: 1199px) {
   .actionStar {
     display: inline-flex;
     margin-right: var(--space-2xs);

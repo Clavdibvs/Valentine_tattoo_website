@@ -52,7 +52,7 @@ export function IntegrationErrorState({
 
       {showDeveloperDetail ? (
         <p className={styles.devDetail}>
-          <strong>Dev only</strong> — {reason}: {detail}
+          <strong>Dev only</strong>{reason ? ` — ${reason}` : ""}: {detail}
         </p>
       ) : null}
 

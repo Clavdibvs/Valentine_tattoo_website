@@ -40,11 +40,29 @@ Guidance actually applied from the skills:
 
 ## What was built
 
-Four content sections, in order, plus a persistent header. No Works, Flash, FAQ,
+Seven content sections, in order, plus a persistent header. No Works, Flash, FAQ,
 Studio, testimonials, services, blog, shop, prices or standalone footer.
 
-Navigation is exactly `HOME · ABOUT · INSTAGRAM · BOOKING` → `#home #about
-#instagram #booking`. Verified programmatically at every breakpoint.
+Order: `HOME · INSTAGRAM · CREAZIONI · FLASH · MERCH · BOOKING · ABOUT`.
+About closes the page by request. Verified programmatically at every breakpoint.
+
+### Creazioni, Flash, Merch — and why they are not story highlights
+
+These were requested as the content of three Instagram Story Highlights.
+**Instagram's official API exposes no highlights edge**: the IG User node offers
+`media`, `stories` (the last 24 hours only), `tags` and `mentions`. The
+third-party services that do return highlights are scrapers, which the brief
+rules out and which breach Instagram's terms.
+
+The sections are therefore built from the real feed, selected by a marker in the
+caption — an explicit media-id allowlist takes priority when set. Tagging a post
+files it automatically; no code change, no second API call, no scraping. All
+four Instagram sections read the same cached response, so the whole page still
+costs one upstream request per revalidation window.
+
+The three sections deliberately reuse the Instagram section's composition,
+stylesheet, carousel, card and state components, so the page keeps one gallery
+language instead of four.
 
 | Area | Delivered |
 | --- | --- |
@@ -59,6 +77,7 @@ Navigation is exactly `HOME · ABOUT · INSTAGRAM · BOOKING` → `#home #about
 | Hero | Asymmetric desktop / centred mobile, two CTAs, pointer parallax, scroll indicator |
 | About | Portrait card, editorial copy, qualitative strip, Instagram CTA |
 | Instagram | Server-side Graph API layer, desktop carousel + mobile grid, four states |
+| Collections | `CollectionSection` — Creazioni, Flash, Merch, from the feed by caption marker |
 | Booking | Contact card, reassurance row, validated form with uploader |
 | Animation | `ScrollAnimations` (GSAP only), Motion in components, strict separation |
 
@@ -244,6 +263,14 @@ Booking mobile source order, signature legibility.
     of waiting for a scroll.
 11. **`rows={5}` overrode the textarea's `min-height`**, which is why the Booking
     form panel stayed tall after the CSS was tightened.
+12. **The chrome sweep stopped dead after one pass** and, once looped, snapped
+    from 92% back to 8% each cycle. Now `yoyo: true` so the highlight travels
+    back instead of jumping, and it pauses while off-screen.
+13. **The last section's CTA could never reveal.** `start: "top 92%"` needs a
+    scroll position that does not exist for content in the final 8% of the
+    document — which About's CTA became once About moved last. The start is now
+    a function that falls back to `"top bottom"` when the threshold is out of
+    reach, recomputed on every refresh.
 
 ---
 

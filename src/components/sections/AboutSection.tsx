@@ -24,7 +24,7 @@ export function AboutSection() {
         <CornerSigil corner="bottom-right" className={styles.cornerBottomRight} opacity={0.45} />
       </div>
 
-      <SideGlyphRail side="left" index="02" />
+      <SideGlyphRail side="left" index="07" />
       <SideGlyphRail side="right" words={["CUSTOM", "PLACEMENT", "TRIGGIANO"]} />
 
       <div className={`container ${styles.grid}`}>

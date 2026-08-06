@@ -38,7 +38,9 @@ export function SiteHeader() {
 
           <nav className={styles.nav} aria-label={a11yContent.primaryNavLabel}>
             <ul className={styles.navList}>
-              {navItems.map((item, index) => (
+              {/* No separator glyphs: with seven items they cost the width the
+                  labels need. The active underline carries the emphasis. */}
+              {navItems.map((item) => (
                 <li key={item.id} className={styles.navItem}>
                   <a
                     href={item.href}
@@ -49,9 +51,6 @@ export function SiteHeader() {
                     {item.label}
                     <span className={styles.navUnderline} aria-hidden="true" />
                   </a>
-                  {index < navItems.length - 1 ? (
-                    <SigilStar size={9} className={styles.navSeparator} />
-                  ) : null}
                 </li>
               ))}
             </ul>

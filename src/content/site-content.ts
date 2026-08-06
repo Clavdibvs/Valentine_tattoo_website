@@ -129,6 +129,43 @@ export const instagramContent = {
   } as const,
 } as const;
 
+/**
+ * The three curated collections. Editorial English eyebrows follow the same
+ * convention as "CONNECT WITH THE TRIBE"; everything else is Italian.
+ */
+export const collectionContent = {
+  creazioni: {
+    eyebrow: "SELECTED WORK",
+    title: "CREAZIONI",
+    supporting:
+      "Progetti realizzati: linee, simboli e composizioni nate dal confronto con chi le porta addosso.",
+    cta: "VEDI TUTTO SU INSTAGRAM",
+    emptyTitle: "Nessuna creazione da mostrare",
+    emptyBody: `I lavori più recenti sono pubblicati su ${instagramProfile.handleWithAt}.`,
+    carouselLabel: "Creazioni pubblicate su Instagram",
+  },
+  flash: {
+    eyebrow: "READY TO INK",
+    title: "FLASH",
+    supporting:
+      "Disegni già pronti, pensati per essere tatuati così come sono. Scrivimi per sapere quali sono ancora disponibili.",
+    cta: "CHIEDI DISPONIBILITÀ",
+    emptyTitle: "Nessun flash disponibile ora",
+    emptyBody: `I nuovi flash vengono pubblicati su ${instagramProfile.handleWithAt}.`,
+    carouselLabel: "Disegni flash pubblicati su Instagram",
+  },
+  merch: {
+    eyebrow: "WEAR THE MARK",
+    title: "MERCH",
+    supporting:
+      "Capi e stampe che portano fuori dalla pelle lo stesso linguaggio dei tatuaggi.",
+    cta: "SCOPRI IL MERCH",
+    emptyTitle: "Nessun articolo da mostrare",
+    emptyBody: `Le novità vengono annunciate su ${instagramProfile.handleWithAt}.`,
+    carouselLabel: "Merch pubblicato su Instagram",
+  },
+} as const;
+
 export const bookingContent = {
   eyebrow: "BOOKING / CONSULENZA",
   titleLines: ["LA TUA IDEA,", "LA MIA VISIONE."] as const,

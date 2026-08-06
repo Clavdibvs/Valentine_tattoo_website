@@ -55,6 +55,37 @@ Instagram e il modulo rifiuta gli invii spiegando il motivo. Non inventa mai dat
 
 ---
 
+## Sezioni
+
+L'ordine è **Home → Instagram → Creazioni → Flash → Merch → Booking → About**.
+About chiude la pagina: prima il lavoro, poi l'invito a scrivere, infine la
+storia dell'artista.
+
+### Creazioni, Flash e Merch
+
+Erano richieste come "storie in evidenza" di Instagram. **L'API ufficiale non
+espone gli highlight**: il nodo IG User ha `media`, `stories` (solo le 24 ore
+attive), `tags` e `mentions`, e nessun edge per gli highlight. I servizi terzi
+che li offrono sono scraper, esclusi dal brief e contrari ai ToS di Instagram.
+
+Le tre sezioni sono quindi costruite **dal feed reale**, selezionando i post da
+un marcatore nella didascalia. Valentina tagga un post una volta e finisce nella
+sezione giusta — nessuna modifica al codice, nessuna seconda chiamata API,
+nessuno scraping.
+
+Due modalità, in ordine di priorità:
+
+1. **Lista esplicita** — `INSTAGRAM_<NOME>_MEDIA_IDS`: id dei media separati da
+   virgola. Controllo manuale totale, nell'ordine indicato.
+2. **Marcatori nella didascalia** — `INSTAGRAM_<NOME>_TAGS`: hashtag o parole
+   chiave. I default coprono già i casi ovvi (`#flash` → FLASH, `#merch` →
+   MERCH); si sovrascrivono solo se lei usa tag diversi.
+
+Tutte e quattro le sezioni Instagram leggono **la stessa risposta in cache**:
+una sola richiesta upstream per finestra di revalidazione.
+
+---
+
 ## Struttura
 
 ```

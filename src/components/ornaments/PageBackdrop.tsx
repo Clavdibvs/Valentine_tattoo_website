@@ -38,20 +38,32 @@ import styles from "./PageBackdrop.module.css";
 /** Desktop plates, in the order they were drawn to follow one another. */
 const DESKTOP_PLATES = ["hero", "about", "instagram", "booking", "booking-tail"] as const;
 
-/** Mobile plates. Fewer were supplied, so the set cycles once. */
-const MOBILE_PLATES = ["hero", "about", "instagram", "booking", "about"] as const;
+/** Mobile plates. Fewer were supplied, so the set cycles. */
+const MOBILE_PLATES = ["hero", "about", "instagram", "booking"] as const;
+
+/**
+ * How many plates the strip lays down.
+ *
+ * The plates share the document height equally, so more of them means each one
+ * stretches less. Seven sections make a document roughly nine screens tall, and
+ * nine plates keeps every one close to its natural aspect ratio.
+ *
+ * Repeats cost nothing to download: cycling five source images over nine slots
+ * is still five network requests, the rest come from cache.
+ */
+const PLATE_COUNT = 9;
 
 export function PageBackdrop() {
   return (
     <div className={styles.backdrop} aria-hidden="true" data-decor="">
       <div className={styles.strip} data-backdrop-strip="">
-        {DESKTOP_PLATES.map((plate, index) => (
+        {Array.from({ length: PLATE_COUNT }, (_, index) => (
           <Plate
-            key={`${plate}-${index}`}
-            desktop={plate}
-            mobile={MOBILE_PLATES[index]}
+            key={index}
+            desktop={DESKTOP_PLATES[index % DESKTOP_PLATES.length]}
+            mobile={MOBILE_PLATES[index % MOBILE_PLATES.length]}
             first={index === 0}
-            last={index === DESKTOP_PLATES.length - 1}
+            last={index === PLATE_COUNT - 1}
             priority={index === 0}
           />
         ))}

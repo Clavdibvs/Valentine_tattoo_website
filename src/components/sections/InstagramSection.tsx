@@ -26,7 +26,7 @@ export function InstagramSection() {
         <CornerSigil corner="bottom-right" className={styles.cornerBottomRight} opacity={0.42} />
       </div>
 
-      <SideGlyphRail side="left" index="03" />
+      <SideGlyphRail side="left" index="02" />
       <SideGlyphRail side="right" words={["CYBER TRIBAL", "SIGIL INSPIRED", "CUSTOM WORK"]} />
 
       <div className={`container ${styles.inner}`}>

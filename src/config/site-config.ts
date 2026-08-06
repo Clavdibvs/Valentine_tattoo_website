@@ -59,11 +59,18 @@ export const whatsapp = {
 /* Navigation                                                                 */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Section order. About sits last by request: the work comes first, the booking
+ * invitation next, and the artist's story closes the page.
+ */
 export const navItems = [
   { id: "home", label: "HOME", href: "#home" },
-  { id: "about", label: "ABOUT", href: "#about" },
   { id: "instagram", label: "INSTAGRAM", href: "#instagram" },
+  { id: "creazioni", label: "CREAZIONI", href: "#creazioni" },
+  { id: "flash", label: "FLASH", href: "#flash" },
+  { id: "merch", label: "MERCH", href: "#merch" },
   { id: "booking", label: "BOOKING", href: "#booking" },
+  { id: "about", label: "ABOUT", href: "#about" },
 ] as const;
 
 export type NavItem = (typeof navItems)[number];
@@ -81,6 +88,38 @@ export const instagramFeed = {
   /** Cache lifetime in seconds for the server-side feed fetch. */
   revalidateSeconds: 3600,
 } as const;
+
+/* -------------------------------------------------------------------------- */
+/* Curated collections                                                        */
+/*                                                                            */
+/* Instagram's official API exposes no story-highlights edge, so these three   */
+/* sections are built from the real feed, selected by a marker in the caption. */
+/* See `lib/instagram/collections.ts`.                                         */
+/* -------------------------------------------------------------------------- */
+
+export const collections = {
+  creazioni: {
+    envKey: "CREAZIONI",
+    /** Caption markers, overridable with INSTAGRAM_CREAZIONI_TAGS. */
+    defaultTags: ["creazioni", "vtcreazioni", "custom", "tattoo"] as const,
+    limit: 12,
+    demoOffset: 0,
+  },
+  flash: {
+    envKey: "FLASH",
+    defaultTags: ["flash", "vtflash", "flashtattoo", "disponibile"] as const,
+    limit: 12,
+    demoOffset: 4,
+  },
+  merch: {
+    envKey: "MERCH",
+    defaultTags: ["merch", "vtmerch", "shop", "merchandise"] as const,
+    limit: 12,
+    demoOffset: 8,
+  },
+} as const;
+
+export type CollectionId = keyof typeof collections;
 
 /* -------------------------------------------------------------------------- */
 /* Consultation form                                                          */

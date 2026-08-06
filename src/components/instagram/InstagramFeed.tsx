@@ -21,7 +21,14 @@ import styles from "./InstagramFeed.module.css";
  * Scrolling stays native — the controls only call `scrollBy`, nothing is
  * hijacked and no smooth-scroll library is involved.
  */
-export function InstagramFeed({ media }: { media: InstagramMedia[] }) {
+export function InstagramFeed({
+  media,
+  label = instagramContent.carouselLabel,
+}: {
+  media: InstagramMedia[];
+  /** Accessible name for this carousel — each gallery needs its own. */
+  label?: string;
+}) {
   const scrollerRef = useRef<HTMLUListElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -128,7 +135,7 @@ export function InstagramFeed({ media }: { media: InstagramMedia[] }) {
         <ul
           ref={scrollerRef}
           className={styles.scroller}
-          aria-label={instagramContent.carouselLabel}
+          aria-label={label}
           tabIndex={0}
           onKeyDown={onKeyDown}
           onPointerDown={onPointerDown}
