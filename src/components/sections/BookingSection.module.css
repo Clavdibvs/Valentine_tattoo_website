@@ -1,0 +1,421 @@
+.booking {
+  position: relative;
+  z-index: 1;
+  overflow: clip;
+  padding-bottom: var(--space-xl);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Decoration                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.decorLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cornerTopLeft,
+.cornerTopRight,
+.cornerBottomLeft,
+.cornerBottomRight {
+  position: absolute;
+  height: auto;
+}
+
+.cornerTopLeft {
+  top: 2%;
+  left: -13%;
+  width: min(36vw, 330px);
+}
+
+.cornerTopRight {
+  top: 1%;
+  right: -13%;
+  width: min(34vw, 310px);
+}
+
+.cornerBottomLeft {
+  bottom: -2%;
+  left: -12%;
+  width: min(40vw, 360px);
+}
+
+.cornerBottomRight {
+  bottom: -3%;
+  right: -13%;
+  width: min(38vw, 350px);
+}
+
+@media (max-width: 767px) {
+  .cornerTopLeft {
+    top: 0;
+    left: -34%;
+    width: 68vw;
+  }
+  .cornerTopRight {
+    top: 1%;
+    right: -32%;
+    width: 66vw;
+  }
+  .cornerBottomLeft {
+    bottom: 4%;
+    left: -36%;
+    width: 66vw;
+  }
+  .cornerBottomRight {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Layout                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.heading {
+  width: 100%;
+}
+
+/* Lives inside the contact card, as in the desktop reference: it gives the
+   left column the body it needs to balance the form panel beside it. */
+.intro {
+  position: relative;
+  max-width: 46ch;
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.8;
+  color: var(--color-text-muted);
+}
+
+/**
+ * Mobile order follows the mobile reference: CTAs, reassurance row, form.
+ * Desktop follows the desktop reference: the two panels side by side with the
+ * reassurance strip spanning underneath.
+ */
+.panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "contact"
+    "reassure"
+    "form";
+  gap: var(--space-md);
+  width: 100%;
+  align-items: start;
+}
+
+/* Natural heights. Stretching the contact card to match the form left a large
+   void above its CTAs; giving the card the intro copy balances the columns by
+   content instead. */
+
+/* Desktop: consultation card left, form panel right (~45 / 55). */
+@media (min-width: 1024px) {
+  .panels {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+    grid-template-areas:
+      "contact form"
+      "reassure reassure";
+    gap: clamp(1.5rem, 2.6vw, 2.5rem);
+  }
+}
+
+.contactArea {
+  grid-area: contact;
+}
+
+.formArea {
+  grid-area: form;
+}
+
+.reassuranceArea {
+  grid-area: reassure;
+}
+
+.panel {
+  height: 100%;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Contact card                                                               */
+/* -------------------------------------------------------------------------- */
+
+.contactInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+  padding: clamp(1.25rem, 2.6vw, 2rem);
+  overflow: hidden;
+  background: linear-gradient(165deg, rgba(14, 14, 15, 0.97), rgba(5, 5, 6, 0.98));
+}
+
+.contactSigil {
+  position: absolute;
+  top: -8%;
+  right: -22%;
+  width: 58%;
+  height: auto;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.contactTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  margin: 0;
+  letter-spacing: 0.3em;
+  position: relative;
+}
+
+.channels {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: auto;
+}
+
+.channel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.channelNote {
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.26em;
+}
+
+.channelDisabled {
+  margin: 0;
+  padding: var(--space-xs);
+  font-size: var(--fs-body-sm);
+  text-align: center;
+  color: var(--color-text-dim);
+  border: 1px dashed var(--color-line-soft);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Form panel                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.formInner {
+  padding: clamp(1.1rem, 2vw, 1.75rem);
+  background: linear-gradient(180deg, rgba(10, 10, 11, 0.97), rgba(5, 5, 6, 0.98));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reassurance strip                                                          */
+/* -------------------------------------------------------------------------- */
+
+.reassurance {
+  width: 100%;
+}
+
+.reassuranceInner {
+  background: rgba(9, 9, 9, 0.95);
+}
+
+.reassuranceList {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+
+@media (min-width: 480px) {
+  .reassuranceList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.reassuranceItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-xs);
+  border-bottom: 1px solid var(--color-line-soft);
+}
+
+.reassuranceItem:last-child {
+  border-bottom: none;
+}
+
+@media (min-width: 480px) {
+  .reassuranceItem {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-3xs);
+    border-bottom: none;
+    border-right: 1px solid var(--color-line-soft);
+  }
+
+  .reassuranceItem:last-child {
+    border-right: none;
+  }
+}
+
+.reassuranceText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reassuranceTitle {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.reassuranceDescription {
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Quote card                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.quoteArea {
+  width: 100%;
+}
+
+.quoteFrame {
+  width: 100%;
+}
+
+.quoteInner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(96px, 0.32fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-sm);
+  padding: clamp(0.75rem, 1.8vw, 1.35rem);
+  overflow: hidden;
+  background: linear-gradient(120deg, rgba(13, 13, 14, 0.97), rgba(5, 5, 6, 0.98));
+}
+
+@media (min-width: 768px) {
+  .quoteInner {
+    grid-template-columns: 180px minmax(0, 1fr) 150px;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
+.quotePortrait {
+  width: 100%;
+  max-width: 190px;
+}
+
+.quoteBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  margin: 0;
+  min-width: 0;
+}
+
+.quoteMark {
+  opacity: 0.55;
+}
+
+.quoteText {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-style: italic;
+  font-size: clamp(1.0625rem, 0.95rem + 0.8vw, 1.5rem);
+  line-height: 1.42;
+  color: var(--color-text);
+}
+
+.quoteLine {
+  display: inline;
+}
+
+.quoteFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-2xs);
+  color: rgba(232, 232, 232, 0.7);
+}
+
+.quoteSignature {
+  width: min(190px, 74%);
+  height: auto;
+}
+
+.quoteCite {
+  font-style: normal;
+  letter-spacing: 0.24em;
+}
+
+.quoteSigil {
+  display: none;
+  width: 100%;
+  height: auto;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .quoteSigil {
+    display: block;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Legal line                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.85rem;
+  margin: var(--space-md) 0 0;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-line-soft);
+  width: 100%;
+  text-align: center;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: none;
+  color: var(--color-text-dim);
+  line-height: 1.7;
+}
+
+.legalDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------------------
+   The supplied backdrop plates carry the corner ornaments at every breakpoint
+   now, so the hand-built SVG versions are retired. They stay in the codebase as
+   a fallback if a plate ever needs to be pulled.
+   --------------------------------------------------------------------------- */
+.decorLayer {
+  display: none;
+}

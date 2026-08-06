@@ -1,0 +1,65 @@
+.rail {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: var(--z-rail);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 26px;
+  color: rgba(235, 235, 235, 0.3);
+  pointer-events: none;
+}
+
+/*
+ * Currently never shown: below 1024px the rail would crowd the content, and from
+ * 1024px the backdrop plate draws its own rails. The component is kept because
+ * the mobile plates are still to come — if they omit the rails, raise this to
+ * `display: flex` for the mid range.
+ */
+
+.left {
+  left: clamp(14px, 2.2vw, 34px);
+}
+
+.right {
+  right: clamp(14px, 2.2vw, 34px);
+}
+
+.tick {
+  width: 1px;
+  height: clamp(20px, 4vh, 44px);
+  background: linear-gradient(180deg, transparent, var(--color-line), transparent);
+}
+
+.glyphs {
+  width: 18px;
+  height: auto;
+  opacity: 0.75;
+}
+
+.index {
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  color: rgba(235, 235, 235, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+
+.words {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.5625rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(235, 235, 235, 0.4);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  max-height: 40vh;
+}
+
+.words > span {
+  white-space: nowrap;
+}

@@ -1,0 +1,146 @@
+.instagram {
+  position: relative;
+  z-index: 1;
+  overflow: clip;
+  /* The gallery panel runs wider than the text container in the reference. */
+  --container-max: 1400px;
+}
+
+.decorLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cornerTop,
+.cornerBottomLeft,
+.cornerBottomRight {
+  position: absolute;
+  height: auto;
+}
+
+.cornerTop {
+  top: 4%;
+  left: -13%;
+  width: min(32vw, 290px);
+}
+
+.cornerBottomLeft {
+  bottom: -3%;
+  left: -12%;
+  width: min(42vw, 380px);
+}
+
+.cornerBottomRight {
+  bottom: -5%;
+  right: -12%;
+  width: min(40vw, 360px);
+}
+
+@media (max-width: 767px) {
+  .cornerTop {
+    top: 1%;
+    left: -30%;
+    width: 60vw;
+  }
+  .cornerBottomLeft {
+    bottom: 2%;
+    left: -34%;
+    width: 66vw;
+  }
+  .cornerBottomRight {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Layout                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.heading {
+  width: 100%;
+}
+
+.supporting {
+  max-width: 56ch;
+  margin: 0;
+  text-align: center;
+  font-size: var(--fs-body-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+.headDivider {
+  max-width: 300px;
+  margin-block: var(--space-3xs) var(--space-2xs);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Gallery panel                                                              */
+/* -------------------------------------------------------------------------- */
+
+.feedArea {
+  width: 100%;
+  /* Room for the carousel controls, which sit outside the frame on desktop. */
+  padding-inline: 0;
+}
+
+@media (min-width: 1024px) {
+  .feedArea {
+    padding-inline: clamp(28px, 3.4vw, 58px);
+  }
+}
+
+.feedFrame {
+  width: 100%;
+}
+
+.feedInner {
+  padding: clamp(0.75rem, 1.6vw, 1.15rem);
+  background: rgba(7, 7, 8, 0.96);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Footer CTA                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+.footerEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8em;
+  margin: 0;
+  letter-spacing: 0.3em;
+}
+
+.cta {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* ---------------------------------------------------------------------------
+   The supplied backdrop plates carry the corner ornaments at every breakpoint
+   now, so the hand-built SVG versions are retired. They stay in the codebase as
+   a fallback if a plate ever needs to be pulled.
+   --------------------------------------------------------------------------- */
+.decorLayer {
+  display: none;
+}

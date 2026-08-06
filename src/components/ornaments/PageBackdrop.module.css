@@ -1,0 +1,119 @@
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Spans the whole document, set by the page wrapper. */
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.strip {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* Contains the blend so the plates composite against each other and the page
+     background, and nothing leaks onto the content above. */
+  isolation: isolate;
+}
+
+.plate {
+  position: relative;
+  display: block;
+  /* Equal share of the document height. The plates stretch rather than crop,
+     which suits artwork whose ornaments hug the left and right edges. */
+  flex: 1 1 0;
+  min-height: 0;
+
+  /* Black contributes nothing under `screen`, so overlapping plates composite
+     additively with no seam. */
+  mix-blend-mode: screen;
+
+  /* Removes the thin horizontal frame line each plate carries at its top and
+     bottom, which would otherwise survive the blend as a visible rule. */
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 9%,
+    #000 91%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+}
+
+/* Pull each plate up into its neighbour so the masked edges overlap instead of
+   meeting at a hairline. */
+.plate + .plate {
+  margin-top: -7vh;
+}
+
+/* The page still opens and closes with an intact frame. */
+.first {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 91%, transparent 100%);
+}
+
+.last {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 100%);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* --------------------------------------------------------------------------
+   Content scrim
+
+   A vertical band down the centre of the viewport, where the copy sits at every
+   scroll position. Leaves the outer thirds — the ornaments — untouched.
+   -------------------------------------------------------------------------- */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(5, 5, 5, 0) 0%,
+    rgba(5, 5, 5, 0.42) 14%,
+    rgba(5, 5, 5, 0.62) 34%,
+    rgba(5, 5, 5, 0.62) 66%,
+    rgba(5, 5, 5, 0.42) 86%,
+    rgba(5, 5, 5, 0) 100%
+  );
+}
+
+/* On mobile the copy runs nearly edge to edge, so the band widens. */
+@media (max-width: 1023px) {
+  .scrim {
+    background: linear-gradient(
+      90deg,
+      rgba(5, 5, 5, 0) 0%,
+      rgba(5, 5, 5, 0.62) 10%,
+      rgba(5, 5, 5, 0.78) 50%,
+      rgba(5, 5, 5, 0.62) 90%,
+      rgba(5, 5, 5, 0) 100%
+    );
+  }
+
+  .plate + .plate {
+    margin-top: -5vh;
+  }
+}
+
+/* Safari before 15.4 lacks `mask-image`; without it the frame lines would show.
+   Falling back to a plain crossfade keeps the joins soft. */
+@supports not (mask-image: linear-gradient(#000, #000)) {
+  .plate {
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.96;
+  }
+}

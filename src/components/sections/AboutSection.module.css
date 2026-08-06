@@ -1,0 +1,328 @@
+.about {
+  position: relative;
+  z-index: 1;
+  overflow: clip;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Decoration                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.decorLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cornerTop,
+.cornerBottomLeft,
+.cornerBottomRight {
+  position: absolute;
+  height: auto;
+}
+
+.cornerTop {
+  top: 2%;
+  left: -12%;
+  width: min(34vw, 300px);
+}
+
+.cornerBottomLeft {
+  bottom: -4%;
+  left: -14%;
+  width: min(46vw, 420px);
+}
+
+.cornerBottomRight {
+  bottom: -2%;
+  right: -12%;
+  width: min(40vw, 360px);
+}
+
+@media (max-width: 767px) {
+  .cornerTop {
+    display: none;
+  }
+  .cornerBottomLeft {
+    bottom: 1%;
+    left: -32%;
+    width: 70vw;
+  }
+  .cornerBottomRight {
+    bottom: 3%;
+    right: -34%;
+    width: 68vw;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Grid                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.grid {
+  position: relative;
+  z-index: var(--z-content);
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "head"
+    "media"
+    "copy"
+    "cta"
+    "strip";
+}
+
+/* Editorial two-column split, kept only while the copy column stays readable. */
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+    column-gap: var(--space-lg);
+    grid-template-areas:
+      "head head"
+      "media copy"
+      "media cta"
+      "strip strip";
+  }
+}
+
+/* Desktop: ~44 / 56 portrait-to-copy balance, heading beside the portrait. */
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 0.786fr) minmax(0, 1fr);
+    column-gap: clamp(2.5rem, 5vw, 5.5rem);
+    row-gap: var(--space-sm);
+    align-items: start;
+    grid-template-areas:
+      "media head"
+      "media copy"
+      "media strip"
+      "media cta";
+  }
+}
+
+.headArea {
+  grid-area: head;
+}
+
+.mediaArea {
+  grid-area: media;
+}
+
+.copyArea {
+  grid-area: copy;
+}
+
+.stripArea {
+  grid-area: strip;
+}
+
+.ctaArea {
+  grid-area: cta;
+}
+
+/* The heading is centred until the desktop split puts it beside the portrait. */
+.heading {
+  align-items: center;
+  text-align: center;
+}
+
+.heading > * {
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .heading > * {
+    justify-content: flex-start;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Portrait card                                                              */
+/* -------------------------------------------------------------------------- */
+
+.portraitFrame {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+@media (min-width: 700px) {
+  .portraitFrame {
+    max-width: 520px;
+    margin-inline: 0;
+  }
+}
+
+.portraitInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: clamp(0.75rem, 1.6vw, 1.25rem);
+  background: linear-gradient(180deg, rgba(12, 12, 12, 0.97), rgba(5, 5, 5, 0.98));
+}
+
+/* Mask used by the GSAP reveal — the image wipes in from the bottom. */
+.portraitMask {
+  position: relative;
+  overflow: hidden;
+}
+
+.signature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-bottom: var(--space-2xs);
+  color: rgba(232, 232, 232, 0.72);
+}
+
+.signatureMark {
+  width: min(220px, 70%);
+  height: auto;
+}
+
+.signatureRole {
+  letter-spacing: 0.34em;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Copy                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.copyArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.columnEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  margin: 0;
+}
+
+/* On desktop the section heading already carries the ABOUT eyebrow. */
+@media (min-width: 1024px) {
+  .columnEyebrow {
+    display: none;
+  }
+}
+
+.paragraph {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--fs-body-sm);
+  line-height: 1.72;
+  color: var(--color-text-muted);
+}
+
+.paragraph:first-of-type {
+  font-size: var(--fs-body-lg);
+  color: var(--color-text);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Qualitative strip                                                          */
+/* -------------------------------------------------------------------------- */
+
+.strip {
+  width: 100%;
+}
+
+.stripInner {
+  background: rgba(9, 9, 9, 0.95);
+}
+
+.stripList {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+
+@media (min-width: 480px) {
+  .stripList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.stripItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-xs);
+  border-bottom: 1px solid var(--color-line-soft);
+}
+
+.stripItem:last-child {
+  border-bottom: none;
+}
+
+@media (min-width: 480px) {
+  .stripItem {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-3xs);
+    border-bottom: none;
+    border-right: 1px solid var(--color-line-soft);
+  }
+
+  .stripItem:last-child {
+    border-right: none;
+  }
+}
+
+.stripIcon {
+  opacity: 0.9;
+}
+
+.stripText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stripTitle {
+  font-size: var(--fs-label);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.stripDescription {
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------- */
+/* CTA                                                                        */
+/* -------------------------------------------------------------------------- */
+
+.cta {
+  width: 100%;
+}
+
+@media (min-width: 700px) {
+  .cta {
+    width: auto;
+    min-width: 340px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The supplied backdrop plates carry the corner ornaments at every breakpoint
+   now, so the hand-built SVG versions are retired. They stay in the codebase as
+   a fallback if a plate ever needs to be pulled.
+   --------------------------------------------------------------------------- */
+.decorLayer {
+  display: none;
+}

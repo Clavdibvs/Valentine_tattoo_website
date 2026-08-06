@@ -1,0 +1,145 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3xs);
+  padding: 0.7rem var(--space-sm);
+  text-align: center;
+  border: 1px dashed var(--color-line);
+  background: rgba(8, 8, 8, 0.4);
+  transition:
+    border-color var(--dur-mid) var(--ease-out),
+    background var(--dur-mid) var(--ease-out);
+}
+
+.dropzone[data-dragging] {
+  border-color: var(--color-line-strong);
+  background: rgba(22, 22, 22, 0.6);
+}
+
+.dropzone[data-invalid] {
+  border-color: rgba(226, 122, 122, 0.55);
+}
+
+.dropzone:focus-within {
+  border-color: var(--color-line-strong);
+}
+
+/* The input stays in the accessibility tree and is keyboard reachable; the
+   label is the visible target. */
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* A single row keeps the control short: the form panel was running more than
+   twice the height of the contact card beside it. */
+.label {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+
+.dropTitle,
+.dropAction {
+  white-space: nowrap;
+}
+
+.uploadIcon {
+  color: var(--color-text-muted);
+}
+
+.dropTitle {
+  font-size: var(--fs-body-sm);
+  color: var(--color-text);
+}
+
+.dropAction {
+  font-size: var(--fs-body-sm);
+  color: var(--color-text-muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Selected files                                                             */
+/* -------------------------------------------------------------------------- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  overflow: hidden;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  border: 1px solid var(--color-line-soft);
+  background: rgba(14, 14, 14, 0.6);
+}
+
+.fileMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.fileName {
+  font-size: var(--fs-body-sm);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileSize {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  color: var(--color-text-dim);
+}
+
+.remove {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  color: var(--color-text-muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.remove:hover {
+  color: #fff;
+}
+
+.error {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: #e88b8b;
+}

@@ -1,0 +1,251 @@
+.button {
+  --btn-notch: 11px;
+  --btn-stroke: var(--color-line);
+  /* The stroke layer covers the whole box, so the fill must be opaque enough to
+     hide it everywhere except the 1px rim. */
+  --btn-fill: rgba(8, 8, 9, 0.94);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Meets the 44px minimum touch target on every size. */
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  text-align: left;
+  isolation: isolate;
+  transition: color var(--dur-mid) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hairline notched border drawn as a clipped background layer so the corner
+   cuts stay crisp. */
+.button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--btn-stroke);
+  clip-path: polygon(
+    var(--btn-notch) 0,
+    calc(100% - var(--btn-notch)) 0,
+    100% var(--btn-notch),
+    100% calc(100% - var(--btn-notch)),
+    calc(100% - var(--btn-notch)) 100%,
+    var(--btn-notch) 100%,
+    0 calc(100% - var(--btn-notch)),
+    0 var(--btn-notch)
+  );
+  transition: background var(--dur-mid) var(--ease-out);
+}
+
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--btn-fill);
+  clip-path: polygon(
+    calc(var(--btn-notch) - 1px) 0,
+    calc(100% - var(--btn-notch) + 1px) 0,
+    100% calc(var(--btn-notch) - 1px),
+    100% calc(100% - var(--btn-notch) + 1px),
+    calc(100% - var(--btn-notch) + 1px) 100%,
+    calc(var(--btn-notch) - 1px) 100%,
+    0 calc(100% - var(--btn-notch) + 1px),
+    0 calc(var(--btn-notch) - 1px)
+  );
+  transition:
+    background var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out);
+}
+
+/* Thin highlight sweep — a single short pass on hover, never looping. */
+.sweep {
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  clip-path: inherit;
+}
+
+.sweep::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 42%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.14) 45%,
+    rgba(255, 255, 255, 0.28) 52%,
+    transparent
+  );
+  transform: skewX(-18deg);
+  opacity: 0;
+  transition:
+    left 620ms var(--ease-out),
+    opacity 220ms var(--ease-out);
+}
+
+.button:hover .sweep::before,
+.button:focus-visible .sweep::before {
+  left: 118%;
+  opacity: 1;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem 1.35rem;
+}
+
+.icon,
+.trailing {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: rgba(240, 240, 240, 0.92);
+}
+
+.trailing {
+  margin-left: auto;
+}
+
+.labels {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--fs-body-sm);
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+}
+
+.sublabel {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sizes                                                                      */
+/* -------------------------------------------------------------------------- */
+
+.sm {
+  --btn-notch: 9px;
+  min-height: 44px;
+}
+
+.sm .content {
+  padding: 0.5rem 1rem;
+  gap: 0.6rem;
+}
+
+.sm .label {
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.lg {
+  --btn-notch: 13px;
+  min-height: 64px;
+}
+
+.lg .content {
+  padding: 0.9rem 1.5rem;
+}
+
+.lg .label {
+  font-size: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Variants                                                                   */
+/* -------------------------------------------------------------------------- */
+
+.outline:hover,
+.outline:focus-visible {
+  --btn-stroke: var(--color-line-strong);
+}
+
+.outline:hover::after,
+.outline:focus-visible::after {
+  background: rgba(20, 20, 21, 0.94);
+  box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.07);
+}
+
+.solid {
+  --btn-fill: rgba(16, 16, 17, 0.96);
+  --btn-stroke: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(140, 148, 158, 0.24) 40%,
+    rgba(255, 255, 255, 0.5) 70%,
+    rgba(110, 118, 128, 0.3)
+  );
+}
+
+.solid:hover::after,
+.solid:focus-visible::after {
+  background: rgba(26, 26, 27, 0.96);
+  box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.1);
+}
+
+.ghost {
+  --btn-stroke: transparent;
+  --btn-fill: transparent;
+}
+
+.ghost:hover {
+  --btn-stroke: var(--color-line-soft);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Modifiers                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.block {
+  display: flex;
+  width: 100%;
+}
+
+.tracked .label {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: var(--fs-label);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.button:disabled .sweep::before {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep::before {
+    display: none;
+  }
+}

@@ -1,0 +1,303 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  /* Tight: the panel was running far longer than the contact card beside it. */
+  gap: var(--space-xs);
+  width: 100%;
+}
+
+.formTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8em;
+  margin: 0 0 var(--space-3xs);
+  font-size: var(--fs-label);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+/* `clip` suppresses painting but not layout, so the input's box escaped the
+   viewport. Parking it off-canvas keeps it fillable by bots and out of layout. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xs);
+}
+
+@media (min-width: 560px) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Fields                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.label,
+.legend {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.optional {
+  text-transform: none;
+  letter-spacing: 0.06em;
+  color: var(--color-text-dim);
+}
+
+.control {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.6rem 0.85rem;
+  color: var(--color-text);
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  background: rgba(8, 8, 8, 0.55);
+  border: 1px solid var(--color-line);
+  border-radius: 0;
+  transition:
+    border-color var(--dur-mid) var(--ease-out),
+    background var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out);
+  appearance: none;
+}
+
+.control::placeholder {
+  color: var(--color-text-dim);
+  opacity: 1;
+}
+
+.control:hover {
+  border-color: rgba(235, 235, 235, 0.26);
+}
+
+.control:focus-visible {
+  outline: none;
+  border-color: var(--color-line-strong);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.24), inset 0 0 18px rgba(255, 255, 255, 0.04);
+  background: rgba(16, 16, 16, 0.7);
+}
+
+.control[data-invalid] {
+  border-color: rgba(226, 122, 122, 0.6);
+}
+
+.textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.description {
+  margin: 0;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--color-text-dim);
+}
+
+.fieldError {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: #e88b8b;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Select                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.selectWrap {
+  position: relative;
+}
+
+.select {
+  padding-right: 2.75rem;
+  cursor: pointer;
+}
+
+.select option {
+  background: #0c0c0c;
+  color: var(--color-text);
+}
+
+.selectChevron {
+  position: absolute;
+  top: 50%;
+  right: 0.9rem;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Upload group                                                               */
+/* -------------------------------------------------------------------------- */
+
+.uploadGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Consent                                                                    */
+/* -------------------------------------------------------------------------- */
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+/* The visual box is 22px but the hit area is a full 44x44; the negative
+   margins keep the smaller mark optically aligned with the label. */
+.checkbox {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin: -10px -11px -11px -11px;
+  appearance: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 22px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect x='0.5' y='0.5' width='21' height='21' fill='%23080808' fill-opacity='0.6' stroke='%23ebebeb' stroke-opacity='0.18'/%3E%3C/svg%3E");
+  cursor: pointer;
+  transition: background-image var(--dur-fast) var(--ease-out);
+}
+
+.checkbox:hover {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect x='0.5' y='0.5' width='21' height='21' fill='%23080808' fill-opacity='0.6' stroke='%23f5f5f5' stroke-opacity='0.42'/%3E%3C/svg%3E");
+}
+
+.checkbox:checked,
+.checkbox:checked:hover {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect x='0.5' y='0.5' width='21' height='21' fill='%23080808' fill-opacity='0.6' stroke='%23f5f5f5' stroke-opacity='0.42'/%3E%3Cpath d='M5.5 11.2l3.6 3.8 7.2-8' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.consentLabel {
+  /* Comfortable tap area for the label text itself. */
+  padding: 2px 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Status messages                                                            */
+/* -------------------------------------------------------------------------- */
+
+.alert,
+.warning {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-xs);
+  font-size: var(--fs-body-sm);
+  line-height: 1.6;
+  border: 1px solid rgba(226, 122, 122, 0.4);
+  background: rgba(226, 122, 122, 0.06);
+  color: #f0c9c9;
+}
+
+.warning {
+  border-color: rgba(217, 180, 122, 0.4);
+  background: rgba(217, 180, 122, 0.05);
+  color: #ecd3ab;
+}
+
+.alertTitle {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.alertChannels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: 2px;
+}
+
+.alertChannels a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.alertInline {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: #e88b8b;
+}
+
+.submit {
+  margin-top: var(--space-2xs);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Success                                                                    */
+/* -------------------------------------------------------------------------- */
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xl) var(--space-sm);
+  text-align: center;
+}
+
+.success:focus-visible {
+  outline: none;
+}
+
+.successTitle {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: var(--fs-h3);
+  color: var(--color-text);
+}
+
+.successBody {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-body-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}

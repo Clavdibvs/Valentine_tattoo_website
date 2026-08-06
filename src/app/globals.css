@@ -1,0 +1,554 @@
+/* ==========================================================================
+   Valentine Tattoo — global chrome design system
+   Dark cyber-tribal / cyber-sigilism. Matte by default, chrome as highlight.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --color-bg: #050505;
+  --color-bg-elevated: #090909;
+  --color-surface: #0c0c0c;
+  --color-surface-raised: #101010;
+
+  /* Type */
+  --color-text: #e8e8e8;
+  --color-text-muted: #969696;
+  --color-text-dim: #6f6f6f;
+
+  /* Lines & glow */
+  --color-line: rgba(235, 235, 235, 0.18);
+  --color-line-soft: rgba(235, 235, 235, 0.09);
+  --color-line-strong: rgba(245, 245, 245, 0.42);
+  --color-glow: rgba(255, 255, 255, 0.2);
+
+  /* Chrome gradient stops — used by frames, buttons and display type */
+  --chrome-1: #ffffff;
+  --chrome-2: #d6d9dd;
+  --chrome-3: #8e949b;
+  --chrome-4: #f2f4f6;
+  --chrome-5: #5c6167;
+  --chrome-6: #cfd3d8;
+
+  /* Focus */
+  --color-focus: #ffffff;
+
+  /* Fluid type scale */
+  --fs-micro: clamp(0.625rem, 0.6rem + 0.12vw, 0.6875rem);
+  --fs-label: clamp(0.6875rem, 0.66rem + 0.14vw, 0.78125rem);
+  --fs-eyebrow: clamp(0.75rem, 0.72rem + 0.16vw, 0.875rem);
+  --fs-body-sm: clamp(0.9375rem, 0.91rem + 0.15vw, 1rem);
+  --fs-body: clamp(1rem, 0.96rem + 0.22vw, 1.125rem);
+  --fs-body-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --fs-h3: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  --fs-h2: clamp(1.85rem, 1rem + 3.1vw, 3.4rem);
+  --fs-h2-sm: clamp(1.6rem, 1.05rem + 2.3vw, 2.6rem);
+  --fs-display: clamp(3.1rem, 1.2rem + 8.4vw, 6.75rem);
+
+  /* Spacing scale */
+  --space-3xs: clamp(0.25rem, 0.24rem + 0.05vw, 0.3125rem);
+  --space-2xs: clamp(0.5rem, 0.47rem + 0.15vw, 0.625rem);
+  --space-xs: clamp(0.75rem, 0.7rem + 0.25vw, 1rem);
+  --space-sm: clamp(1rem, 0.92rem + 0.4vw, 1.375rem);
+  --space-md: clamp(1.5rem, 1.35rem + 0.75vw, 2.25rem);
+  --space-lg: clamp(2rem, 1.7rem + 1.5vw, 3.25rem);
+  --space-xl: clamp(3rem, 2.4rem + 3vw, 5rem);
+  --space-2xl: clamp(4rem, 3rem + 5vw, 7.5rem);
+
+  /* Layout */
+  --container-max: 1240px;
+  --gutter: clamp(1.25rem, 0.6rem + 3.2vw, 4rem);
+  --header-h: 68px;
+  --frame-inset: clamp(8px, 0.9vw, 16px);
+  --notch: 12px;
+
+  /* Motion */
+  --dur-fast: 180ms;
+  --dur-mid: 260ms;
+  --dur-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Procedural grain — inline SVG turbulence, zero network cost, resolution
+     independent. Replaces the `textures/grain.webp` raster in the reference
+     asset tree. */
+  --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+
+  /* Z layers */
+  --z-decor: 0;
+  --z-content: 1;
+  --z-rail: 5;
+  --z-frame: 40;
+  --z-header: 60;
+  --z-menu: 80;
+
+  color-scheme: dark;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 84px;
+    --notch: 14px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reset / base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Anchor targets clear the fixed header. */
+  scroll-padding-top: var(--header-h);
+}
+
+body {
+  /* Positioning context for the full-document backdrop strip. */
+  position: relative;
+  min-height: 100svh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans), "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Guarantee the "no horizontal page scroll" requirement even with bleeding
+     decorative layers. */
+  overflow-x: clip;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 400;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Focus
+   -------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2xs);
+  left: var(--space-2xs);
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-text);
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: translateY(-160%);
+  transition: transform var(--dur-mid) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Typography utilities
+   -------------------------------------------------------------------------- */
+
+.u-display {
+  font-family: var(--font-display), "Didot", "Times New Roman", serif;
+  font-weight: 500;
+  line-height: 0.94;
+  letter-spacing: 0.005em;
+}
+
+/* Chrome text treatment: metallic gradient fill with a hairline bloom. */
+.u-chrome-text {
+  background-image: linear-gradient(
+    177deg,
+    #6d747c 0%,
+    #ffffff 12%,
+    #cfd5db 22%,
+    #545a62 36%,
+    #2f343a 46%,
+    #f4f7fa 56%,
+    #b6bdc4 66%,
+    #6a7178 78%,
+    #f8fafc 90%,
+    #7f868e 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(214, 220, 228, 0.16))
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65));
+}
+
+/* Chrome highlight sweep — driven by GSAP, idle by default.
+   The gradient is taller than the box so there is travel for the highlight to
+   move through; at rest it sits mid-gradient and still reads as metal. */
+.u-chrome-text {
+  background-size: 100% 200%;
+  background-position: 0 var(--chrome-sweep, 50%);
+}
+
+.u-eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.u-label {
+  font-size: var(--fs-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.u-micro {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  line-height: 1.5;
+}
+
+.u-muted {
+  color: var(--color-text-muted);
+}
+
+.u-strong {
+  color: #fff;
+  font-weight: 500;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Layout helpers
+   -------------------------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  position: relative;
+  isolation: isolate;
+  padding-block: var(--space-xl);
+}
+
+.section > .container {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* --------------------------------------------------------------------------
+   Decorative layers — never interactive
+   -------------------------------------------------------------------------- */
+
+.decor,
+[data-decor] {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Background atmosphere: grain, vignette, faint construction geometry. */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--color-bg);
+}
+
+/* The backdrop plates bring their own marble texture; the CSS clouding would
+   double it, so it steps back to a faint base tone. */
+.atmosphere::before {
+  opacity: 0.3;
+}
+
+.atmosphere::before {
+  /* Marble-ish soft clouding built from layered radial gradients — no raster
+     download, no repeating busy pattern. */
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(60% 45% at 12% 8%, rgba(120, 128, 138, 0.1), transparent 70%),
+    radial-gradient(48% 38% at 88% 22%, rgba(96, 104, 114, 0.09), transparent 72%),
+    radial-gradient(70% 50% at 50% 105%, rgba(88, 96, 106, 0.08), transparent 70%),
+    radial-gradient(40% 30% at 78% 78%, rgba(130, 138, 148, 0.06), transparent 75%);
+  filter: blur(2px);
+}
+
+.atmosphere::after {
+  /* Controlled vignette. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    118% 88% at 50% 42%,
+    transparent 38%,
+    rgba(0, 0, 0, 0.55) 82%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: var(--grain-url);
+  background-size: 180px 180px;
+}
+
+/* --------------------------------------------------------------------------
+   Chrome frame primitive
+   Hairline notched border with a transparent dark interior. Built from two
+   clipped layers so the 1px stroke stays crisp on every corner cut.
+   -------------------------------------------------------------------------- */
+
+.chrome-frame {
+  --frame-notch: var(--notch);
+  --frame-stroke: var(--color-line);
+  /* The stroke layer sits behind the whole box, so the interior fill must be
+     opaque enough to cover it — otherwise the hairline colour bleeds across the
+     entire panel. Near-black keeps the "transparent dark interior" look. */
+  --frame-fill: rgba(5, 5, 5, 0.94);
+  --frame-pad: 1px;
+
+  position: relative;
+  padding: var(--frame-pad);
+  background: var(--frame-stroke);
+  clip-path: polygon(
+    var(--frame-notch) 0,
+    calc(100% - var(--frame-notch)) 0,
+    100% var(--frame-notch),
+    100% calc(100% - var(--frame-notch)),
+    calc(100% - var(--frame-notch)) 100%,
+    var(--frame-notch) 100%,
+    0 calc(100% - var(--frame-notch)),
+    0 var(--frame-notch)
+  );
+}
+
+.chrome-frame--metal {
+  --frame-stroke: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(150, 158, 168, 0.24) 22%,
+    rgba(255, 255, 255, 0.5) 46%,
+    rgba(120, 128, 138, 0.2) 68%,
+    rgba(245, 248, 250, 0.55) 100%
+  );
+}
+
+.chrome-frame__inner {
+  position: relative;
+  height: 100%;
+  background: var(--frame-fill);
+  clip-path: polygon(
+    calc(var(--frame-notch) - var(--frame-pad)) 0,
+    calc(100% - var(--frame-notch) + var(--frame-pad)) 0,
+    100% calc(var(--frame-notch) - var(--frame-pad)),
+    100% calc(100% - var(--frame-notch) + var(--frame-pad)),
+    calc(100% - var(--frame-notch) + var(--frame-pad)) 100%,
+    calc(var(--frame-notch) - var(--frame-pad)) 100%,
+    0 calc(100% - var(--frame-notch) + var(--frame-pad)),
+    0 calc(var(--frame-notch) - var(--frame-pad))
+  );
+}
+
+/* Subtle internal gradient available to any frame interior. */
+.chrome-frame--lit .chrome-frame__inner {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, transparent 26%, transparent 74%, rgba(255, 255, 255, 0.02) 100%),
+    var(--frame-fill);
+}
+
+/* Luminous edge points sitting on the frame corners. */
+.chrome-node {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Page edge frame (thin hairline inset border with cut corners)
+   -------------------------------------------------------------------------- */
+
+.page-frame {
+  position: fixed;
+  inset: var(--frame-inset);
+  z-index: var(--z-frame);
+  pointer-events: none;
+  border: 1px solid rgba(235, 235, 235, 0.11);
+  clip-path: polygon(
+    22px 0,
+    calc(100% - 22px) 0,
+    100% 22px,
+    100% calc(100% - 22px),
+    calc(100% - 22px) 100%,
+    22px 100%,
+    0 calc(100% - 22px),
+    0 22px
+  );
+}
+
+/* The backdrop strip draws its own outer frame, so the CSS one would double the
+   hairline. Kept for reference should the strip ever be pulled. */
+.page-frame {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Elements staged for GSAP reveal must never stay hidden. */
+  [data-reveal],
+  [data-reveal-child] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reveal staging.
+
+   Elements are hidden ONLY when `.js-motion` is on <html>. That class is added
+   by a tiny pre-paint inline script that runs exclusively when JavaScript is
+   available and reduced motion is off, and a watchdog removes it again if the
+   animation layer never reports ready. Without JS — or if GSAP fails to load —
+   the page renders fully visible.
+   -------------------------------------------------------------------------- */
+
+.js-motion [data-reveal]:not(:has([data-reveal-child])),
+.js-motion [data-reveal-child] {
+  opacity: 0;
+  transform: translateY(24px);
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   Forced-colors / high contrast
+   -------------------------------------------------------------------------- */
+
+@media (forced-colors: active) {
+  .chrome-frame {
+    background: CanvasText;
+  }
+  .u-chrome-text {
+    -webkit-text-fill-color: CanvasText;
+    color: CanvasText;
+    filter: none;
+  }
+}
