@@ -82,10 +82,19 @@ scripts/refresh-instagram-token.mjs
 design-references/              gli 8 screenshot di riferimento
 ```
 
+**Sfondo ornamentale.** `PageBackdrop` è una striscia unica che copre l'intero
+documento, non una piastra per sezione: le immagini fornite sono state disegnate
+per proseguire l'una nell'altra, e separarle per sezione produceva bande
+orizzontali visibili. Le piastre si sovrappongono in `mix-blend-mode: screen` —
+l'arte è cromo chiaro su nero puro, e sotto `screen` il nero non contribuisce —
+con una maschera alpha che elimina la cornice orizzontale di ogni piastra. Il
+risultato non ha giunture. Per sostituire un'immagine basta rimpiazzare i WebP in
+`public/backdrops/`.
+
 **Divisione delle librerie di animazione** (nessun elemento è animato da entrambe):
 
-- **GSAP + ScrollTrigger** — reveal di sezione, parallasse, deriva ornamentale,
-  line draw, sweep chrome. Solo animazioni legate allo scroll.
+- **GSAP + ScrollTrigger** — reveal di sezione, entrata/uscita delle sezioni,
+  parallasse dello sfondo, line draw, sweep chrome. Solo animazioni da scroll.
 - **Motion** — menu mobile, stati hover/tap dei pulsanti, presence del form,
   transizioni di layout dell'uploader.
 - **Transizioni CSS** — colore, opacità, bordo, glow.
@@ -125,8 +134,15 @@ Instagram: non viene mai generato un link verso un numero inventato.
 La galleria usa l'**Instagram API with Instagram Login** (`graph.instagram.com`),
 lato server. Nessuno scraping, nessun endpoint privato, nessun token nel browser.
 
+> ⚠️ **Finché queste variabili non sono compilate la galleria NON mostra post.**
+> In sviluppo compaiono placeholder vettoriali con un banner giallo; in
+> produzione compare "Feed non disponibile" con il link al profilo. È il
+> comportamento voluto: il sito non inventa mai contenuti.
+
 **Prerequisito:** l'account `@valentine.ttt` deve essere **Professional**
-(Business o Creator). Gli account personali non sono accessibili da nessuna API.
+(Business o Creator), non personale. Si cambia dall'app Instagram:
+*Impostazioni → Tipo di account e strumenti → Passa a un account professionale*.
+Gli account personali non sono accessibili da nessuna API ufficiale.
 
 1. Su [developers.facebook.com](https://developers.facebook.com/apps) creare un'app
    e aggiungere il prodotto **Instagram** → *API setup with Instagram login*.
@@ -134,7 +150,11 @@ lato server. Nessuno scraping, nessun endpoint privato, nessun token nel browser
    Instagram dell'account.
 3. Richiedere il permesso **`instagram_business_basic`** (sufficiente per leggere i
    media; non servono permessi di pubblicazione o messaggistica).
-4. Completare il flusso di login per ottenere un **token short-lived**, poi:
+4. In *Instagram → API setup with Instagram login* usare il pulsante
+   **"Generate token"** accanto all'account: si ottiene un token e, nella
+   stessa schermata, l'**Instagram user ID** numerico.
+   In alternativa, completando il flusso OAuth si ottiene un token
+   *short-lived* (1 ora) da convertire:
 
    ```bash
    INSTAGRAM_ACCESS_TOKEN=<short-lived> INSTAGRAM_APP_SECRET=<app secret> \
@@ -170,6 +190,17 @@ vengono **mai** mostrati post finti in produzione.
 
 **Dati demo.** Solo in sviluppo e solo se le credenziali mancano, la griglia usa
 placeholder vettoriali neutri (`public/dev/`), etichettati come tali da un banner.
+
+**Diagnostica rapida.** Se dopo la configurazione il feed resta vuoto, il motivo
+esatto viene stampato nei log del server come `[instagram] <motivo>: <messaggio>`
+e, in sviluppo, mostrato anche a schermo. I casi tipici:
+
+| Messaggio | Causa | Rimedio |
+| --- | --- | --- |
+| `token-expired` | token scaduto o non valido | `npm run instagram:refresh`, o rifare il login se già scaduto |
+| `unauthorized` | manca `instagram_business_basic` | aggiungere il permesso all'app |
+| `rate-limited` | troppe richieste | attendere; la cache di 1 ora normalmente lo evita |
+| `not-configured` | variabili assenti | compilare `INSTAGRAM_USER_ID` e `INSTAGRAM_ACCESS_TOKEN` |
 
 ---
 

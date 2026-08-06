@@ -16,8 +16,9 @@ Sono ricolorabili, scalano senza perdita e pesano complessivamente pochi KB.
 
 | Asset | Dove | Formato | Note |
 | --- | --- | --- | --- |
-| Logo mark "VT" | `src/components/ornaments/BrandMark.tsx` → `LogoMark` | SVG inline | monogramma chrome, 64×72 viewBox |
-| Wordmark | `SiteHeader` + `BrandLockup` | **testo HTML** | resta selezionabile ed editabile |
+| Logo mark | `public/brand/logo-valentine-{96,192,288}.webp` | WebP α | **logo reale fornito**, ritagliato al bounding box (5–24 KB) |
+| Wordmark hero | `public/brand/wordmark-valentine-{640,960,1400}.webp` | WebP α | **lettering reale fornito**, ritagliato (67–158 KB) |
+| Wordmark header | `SiteHeader` + `BrandLockup` | **testo HTML** | resta selezionabile ed editabile |
 | Firma "Valentina Stucchi" | `BrandMark.tsx` → `SignatureMark` | SVG inline | tracciato disegnato a mano; evita una terza famiglia di font |
 | Sigillo principale (hero) | `ornaments/SigilOrnament.tsx` + `sigil-geometry.ts` | SVG generato | lame irregolari, vuoti biomeccanici, membrane |
 | Ornamenti d'angolo | `SigilOrnament.tsx` → `CornerSigil` | SVG generato | 4 orientamenti da una sola geometria |
@@ -40,6 +41,30 @@ Sono ricolorabili, scalano senza perdita e pesano complessivamente pochi KB.
 | Metriche `♥ 317  💬 12` sulle card | rimosse | metriche social inventate |
 | Strip `3+ / 500+ / 100%` | 3 blocchi qualitativi (CUSTOM / PLACEMENT / TRIGGIANO) | statistiche non verificate |
 | Voci nav `WORKS`, `FLASH` | rimosse | sezioni non esistenti |
+
+---
+
+## 1b. Sfondi ornamentali — ✅ presenti (forniti dal cliente)
+
+Cinque piastre desktop e quattro mobile, disegnate per proseguire l'una
+nell'altra. Composte da `PageBackdrop` come **striscia unica** dietro tutto il
+documento in `mix-blend-mode: screen`, non una per sezione.
+
+| Asset | Sorgente | Export |
+| --- | --- | --- |
+| `hero-desktop-{1440,2048,2688}.webp` | `new references/Desktop/1.png` | 57–160 KB |
+| `about-desktop-*` | `Desktop/2.png` | 53–158 KB |
+| `instagram-desktop-*` | `Desktop/3.png` | 40–132 KB |
+| `booking-desktop-*` | `Desktop/4.png` | 32–112 KB |
+| `booking-tail-desktop-*` | `Desktop/5.png` | 33–116 KB |
+| `hero-mobile-{480,760,1080}.webp` | `new references/Mobile/1.png` | 12–58 KB |
+| `about-mobile-*` · `instagram-mobile-*` · `booking-mobile-*` | `Mobile/2–4.png` | idem |
+
+I PNG sorgente (~60 MB in totale) restano fuori dal repository: sono ignorati in
+`.gitignore` e solo i WebP ottimizzati vengono versionati (~1,9 MB).
+
+Per sostituire un'immagine basta rimpiazzare i tre WebP corrispondenti in
+`public/backdrops/` mantenendo i nomi.
 
 ---
 
@@ -67,10 +92,10 @@ Sono ricolorabili, scalano senza perdita e pesano complessivamente pochi KB.
 Self-hosted via `next/font/local`: nessuna connessione a Google Fonts a runtime
 (rilevante per la privacy UE) e build riproducibili offline.
 
-**Nota sul lettering dell'hero.** Le lettere "spinate" degli screenshot sono un
-rendering AI non riproducibile con un font con licenza. L'H1 usa Bodoni Moda con il
-trattamento chrome (gradiente `background-clip: text` + bloom + sweep). Resta un
-`<h1>` semantico e selezionabile — vedi *Differenze deliberate* nel report finale.
+**Nota sul lettering dell'hero.** Il lettering "spinato" è ora l'immagine reale
+fornita dal cliente (`wordmark-valentine-*.webp`). L'elemento resta un `<h1>`
+semantico: l'immagine è `aria-hidden` e il nome accessibile è testo normale in
+`sr-only`. Bodoni Moda continua a servire tutti gli altri titoli.
 
 ---
 
