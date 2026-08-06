@@ -5,6 +5,12 @@ export type InstagramMedia = {
   id: string;
   /** Best available still image for this item (thumbnail for video/reels). */
   displayUrl: string;
+  /**
+   * Responsive candidates, for locally exported media where the site owns the
+   * derivatives. Remote Instagram CDN urls come in a single size and leave this
+   * unset — `next/image` handles those instead.
+   */
+  srcSet?: string;
   permalink: string;
   mediaType: InstagramMediaType;
   /** Sanitized, shortened caption excerpt. Never the full raw caption. */

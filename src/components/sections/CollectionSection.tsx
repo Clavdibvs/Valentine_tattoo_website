@@ -10,6 +10,7 @@ import { ExternalIcon, InstagramIcon } from "@/components/ui/Icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { collectionContent, instagramContent } from "@/content/site-content";
 import { collections, type CollectionId } from "@/config/site-config";
+import { hasLocalGallery, localCollection } from "@/lib/gallery";
 import { fetchCollection } from "@/lib/instagram/collections";
 
 import styles from "./InstagramSection.module.css";
@@ -105,6 +106,16 @@ async function CollectionContent({ id }: { id: CollectionId }) {
   const copy = collectionContent[id];
   const result = await fetchCollection(id);
 
+  // Highlights are never available from the API, so the exported media is the
+  // normal source here rather than a fallback.
+  if ((result.status !== "ok" || result.source === "demo") && hasLocalGallery(id)) {
+    return (
+      <div className={styles.feedArea}>
+        <InstagramFeed media={localCollection(id)} label={copy.carouselLabel} shape="story" />
+      </div>
+    );
+  }
+
   if (result.status === "ok") {
     // InstagramFeed brings its own chrome frame so the carousel controls can
     // sit outside it without being clipped.
@@ -112,7 +123,7 @@ async function CollectionContent({ id }: { id: CollectionId }) {
       <>
         {result.source === "demo" ? <DemoDataNotice /> : null}
         <div className={styles.feedArea}>
-          <InstagramFeed media={result.media} label={copy.carouselLabel} />
+          <InstagramFeed media={result.media} label={copy.carouselLabel} shape="story" />
         </div>
       </>
     );

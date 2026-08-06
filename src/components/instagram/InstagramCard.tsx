@@ -40,16 +40,36 @@ export function InstagramCard({
       data-media-card=""
     >
       <span className={styles.media}>
-        <Image
-          src={media.displayUrl}
-          alt={alt}
-          fill
-          sizes={sizes}
-          priority={priority}
-          loading={priority ? undefined : "lazy"}
-          unoptimized={isDemoUrl(media.displayUrl)}
-          className={styles.image}
-        />
+        {media.srcSet ? (
+          /*
+           * Locally exported media: the build script already emitted the three
+           * widths, so a plain <picture> serves them directly. Routing them
+           * through the optimizer would re-encode assets that are already WebP
+           * at exactly the sizes they are displayed at.
+           */
+          <picture>
+            <source type="image/webp" srcSet={media.srcSet} sizes={sizes} />
+            <img
+              src={media.displayUrl}
+              alt={alt}
+              className={styles.image}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
+              decoding="async"
+            />
+          </picture>
+        ) : (
+          <Image
+            src={media.displayUrl}
+            alt={alt}
+            fill
+            sizes={sizes}
+            priority={priority}
+            loading={priority ? undefined : "lazy"}
+            unoptimized={isDemoUrl(media.displayUrl)}
+            className={styles.image}
+          />
+        )}
         <span className={styles.overlay} aria-hidden="true" />
       </span>
 

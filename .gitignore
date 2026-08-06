@@ -41,7 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Source reference art (large PNGs). Kept locally; the optimized WebP exports
-# in public/ are what the site actually ships. See ASSETS.md.
+# Source art and media exports. Kept locally; only the optimized derivatives in
+# public/backdrops, public/brand and public/gallery are versioned. See ASSETS.md.
 /design-references/
 /new references/
+/public/instagram-media/
+.gallery-tmp/

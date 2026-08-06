@@ -12,6 +12,7 @@ import { ExternalIcon, InstagramIcon } from "@/components/ui/Icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { instagramContent } from "@/content/site-content";
 import { instagramProfile } from "@/config/site-config";
+import { hasLocalGallery, localFeed } from "@/lib/gallery";
 import { fetchInstagramFeed } from "@/lib/instagram/client";
 
 import styles from "./InstagramSection.module.css";
@@ -109,6 +110,21 @@ function FeedShell({
 
 async function FeedContent() {
   const feed = await fetchInstagramFeed();
+
+  /*
+   * The live API wins when it is configured and answering. Otherwise the
+   * exported media takes over: real posts, just a snapshot rather than a feed.
+   * The demo placeholders are only ever used when neither exists.
+   */
+  if (feed.status !== "ok" || feed.source === "demo") {
+    if (hasLocalGallery("feed")) {
+      return (
+        <div className={styles.feedArea}>
+          <InstagramFeed media={localFeed()} />
+        </div>
+      );
+    }
+  }
 
   if (feed.status === "ok") {
     // InstagramFeed brings its own chrome frame so the carousel controls can sit

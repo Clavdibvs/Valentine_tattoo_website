@@ -1,0 +1,332 @@
+{
+  "feed": [
+    {
+      "id": "feed-01",
+      "src": "/gallery/feed/01",
+      "width": 3274,
+      "height": 4096,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-02",
+      "src": "/gallery/feed/02",
+      "width": 3240,
+      "height": 4050,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-03",
+      "src": "/gallery/feed/03",
+      "width": 3274,
+      "height": 4096,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-04",
+      "src": "/gallery/feed/04",
+      "width": 3277,
+      "height": 4096,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-05",
+      "src": "/gallery/feed/05",
+      "width": 3200,
+      "height": 3200,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-06",
+      "src": "/gallery/feed/06",
+      "width": 3274,
+      "height": 4096,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-07",
+      "src": "/gallery/feed/07",
+      "width": 3281,
+      "height": 4096,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-08",
+      "src": "/gallery/feed/08",
+      "width": 3266,
+      "height": 4082,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-09",
+      "src": "/gallery/feed/09",
+      "width": 1440,
+      "height": 1800,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "feed-10",
+      "src": "/gallery/feed/10",
+      "width": 1440,
+      "height": 1801,
+      "mediaType": "IMAGE"
+    }
+  ],
+  "creazioni": [
+    {
+      "id": "creazioni-01",
+      "src": "/gallery/creazioni/01",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-02",
+      "src": "/gallery/creazioni/02",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "creazioni-03",
+      "src": "/gallery/creazioni/03",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-04",
+      "src": "/gallery/creazioni/04",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-05",
+      "src": "/gallery/creazioni/05",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-06",
+      "src": "/gallery/creazioni/06",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-07",
+      "src": "/gallery/creazioni/07",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-08",
+      "src": "/gallery/creazioni/08",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-09",
+      "src": "/gallery/creazioni/09",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "creazioni-10",
+      "src": "/gallery/creazioni/10",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "creazioni-11",
+      "src": "/gallery/creazioni/11",
+      "width": 1206,
+      "height": 2144,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "creazioni-12",
+      "src": "/gallery/creazioni/12",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    }
+  ],
+  "flash": [
+    {
+      "id": "flash-01",
+      "src": "/gallery/flash/01",
+      "width": 1206,
+      "height": 2144,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-02",
+      "src": "/gallery/flash/02",
+      "width": 1206,
+      "height": 2144,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-03",
+      "src": "/gallery/flash/03",
+      "width": 1206,
+      "height": 2144,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-04",
+      "src": "/gallery/flash/04",
+      "width": 1206,
+      "height": 2144,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-05",
+      "src": "/gallery/flash/05",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-06",
+      "src": "/gallery/flash/06",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-07",
+      "src": "/gallery/flash/07",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-08",
+      "src": "/gallery/flash/08",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-09",
+      "src": "/gallery/flash/09",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-10",
+      "src": "/gallery/flash/10",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-11",
+      "src": "/gallery/flash/11",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "flash-12",
+      "src": "/gallery/flash/12",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    }
+  ],
+  "merch": [
+    {
+      "id": "merch-01",
+      "src": "/gallery/merch/01",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-02",
+      "src": "/gallery/merch/02",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-03",
+      "src": "/gallery/merch/03",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "merch-04",
+      "src": "/gallery/merch/04",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-05",
+      "src": "/gallery/merch/05",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-06",
+      "src": "/gallery/merch/06",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-07",
+      "src": "/gallery/merch/07",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-08",
+      "src": "/gallery/merch/08",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "merch-09",
+      "src": "/gallery/merch/09",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-10",
+      "src": "/gallery/merch/10",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    },
+    {
+      "id": "merch-11",
+      "src": "/gallery/merch/11",
+      "width": 675,
+      "height": 1200,
+      "mediaType": "REELS"
+    },
+    {
+      "id": "merch-12",
+      "src": "/gallery/merch/12",
+      "width": 1170,
+      "height": 2080,
+      "mediaType": "IMAGE"
+    }
+  ]
+}

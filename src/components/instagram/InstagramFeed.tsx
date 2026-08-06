@@ -24,10 +24,16 @@ import styles from "./InstagramFeed.module.css";
 export function InstagramFeed({
   media,
   label = instagramContent.carouselLabel,
+  shape = "post",
 }: {
   media: InstagramMedia[];
   /** Accessible name for this carousel — each gallery needs its own. */
   label?: string;
+  /**
+   * Card proportions. Feed posts are 4:5; the highlights are stories at 9:16,
+   * and cropping those into a post-shaped card threw away most of the frame.
+   */
+  shape?: "post" | "story";
 }) {
   const scrollerRef = useRef<HTMLUListElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -120,7 +126,7 @@ export function InstagramFeed({
   return (
     /* The controls live OUTSIDE the chrome frame: the frame's clip-path would
        otherwise cut them in half where they overhang its edge. */
-    <div className={styles.wrap}>
+    <div className={[styles.wrap, shape === "story" ? styles.story : ""].filter(Boolean).join(" ")}>
       <button
         type="button"
         className={`${styles.control} ${styles.prev}`}
@@ -154,7 +160,7 @@ export function InstagramFeed({
               <InstagramCard
                 media={item}
                 showCaption
-                sizes="(max-width: 1023px) 33vw, 170px"
+                sizes={shape === "story" ? "(max-width: 1023px) 46vw, 200px" : "(max-width: 1023px) 33vw, 170px"}
                 priority={index < 3}
               />
             </li>

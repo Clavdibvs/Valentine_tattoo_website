@@ -8,7 +8,7 @@
 }
 
 .frameInner {
-  padding: clamp(0.75rem, 1.6vw, 1.15rem);
+  padding: clamp(0.9rem, 1.6vw, 1.15rem);
   background: rgba(7, 7, 8, 0.96);
 }
 
@@ -16,10 +16,14 @@
 /* Mobile: three-column Instagram grid                                        */
 /* -------------------------------------------------------------------------- */
 
+/*
+ * Mobile: a grid. The gap is deliberately generous — at 8px the tiles read as
+ * one contiguous block of imagery rather than as separate pieces of work.
+ */
 .scroller {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 14px;
   margin: 0;
   list-style: none;
 }
@@ -27,6 +31,25 @@
 .item {
   position: relative;
   aspect-ratio: 8 / 9;
+}
+
+/*
+ * Highlights are stories: 9:16. Cropping them into the feed's card threw away
+ * most of the frame, so they get their own proportions — and two columns on
+ * mobile, because a 9:16 tile in a three-column grid is barely a sliver.
+ */
+.story .item {
+  aspect-ratio: 9 / 16;
+}
+
+.story .scroller {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Two larger tiles carry a wider gutter than three small ones. */
+  gap: 18px;
+}
+
+.story .item[data-beyond-grid] {
+  display: block;
 }
 
 /* Only the nine most recent posts appear in the mobile grid. */
@@ -38,6 +61,7 @@
 @media (max-width: 359px) {
   .scroller {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
   .item:nth-child(n + 9) {
     display: none;
@@ -80,6 +104,11 @@
     width: clamp(118px, 11.4vw, 162px);
     aspect-ratio: 2 / 3;
     scroll-snap-align: start;
+  }
+
+  .story .item {
+    width: clamp(126px, 12.2vw, 176px);
+    aspect-ratio: 9 / 16;
   }
 
   .item[data-beyond-grid] {
