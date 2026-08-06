@@ -105,6 +105,13 @@
   width: 100%;
 }
 
+/* A short message does not need the gallery's full width. */
+.feedAreaCompact {
+  max-width: 760px;
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
 .feedInner {
   padding: clamp(0.75rem, 1.6vw, 1.15rem);
   background: rgba(7, 7, 8, 0.96);

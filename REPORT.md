@@ -50,7 +50,9 @@ Navigation is exactly `HOME · ABOUT · INSTAGRAM · BOOKING` → `#home #about
 | --- | --- |
 | Design system | `globals.css` — tokens, chrome frame primitive, procedural atmosphere/grain, focus, reduced-motion |
 | Chrome primitives | `ChromeFrame`, `ChromeButton`, `SectionHeading`, `PortraitFrame` |
-| Ornaments | `SigilOrnament`, `CornerSigil`, `SigilBadge`, `SigilStar`, `SideGlyphRail`, `OrnamentDivider`, `OrnamentArc`, `LogoMark`, `SignatureMark` — all parametric SVG |
+| Backdrop | `PageBackdrop` — one continuous ornamental strip behind the document, built from the supplied plates |
+| Brand art | Supplied logo and hero lettering, trimmed and exported as WebP |
+| Ornaments | `SigilBadge`, `SigilStar`, `OrnamentDivider`, `OrnamentArc`, `SignatureMark` — parametric SVG |
 | Header | Sticky, active-section indicator via IntersectionObserver, scroll-driven opacity |
 | Mobile menu | Motion overlay, `role="dialog"`, focus trap, Escape, scroll lock, focus restore |
 | Hero | Asymmetric desktop / centred mobile, two CTAs, pointer parallax, scroll indicator |
@@ -92,6 +94,39 @@ nowhere in the served HTML, and no demo posts were substituted.
 No scraping, no private endpoints, no browser-side token, no hard-coded token, and
 **no engagement metrics anywhere** — the permission scope does not return them and
 inventing them was not acceptable.
+
+---
+
+## Ornamental backdrop
+
+The client supplied nine plates — five desktop, four mobile — drawn so that
+ornaments running off the bottom of one resume at the top of the next.
+
+The first implementation gave each section its own plate. That was wrong: every
+section faded its plate out and back in at its own boundaries, so the page read
+as a stack of separate pictures with visible horizontal banding.
+
+`PageBackdrop` now lays the plates out **once**, as a single column spanning the
+whole document, with the sections sitting on top. Nothing fades at a section
+boundary because the artwork does not know where the boundaries are.
+
+Two things dissolve the joins between plates:
+
+1. **`mix-blend-mode: screen`** — the artwork is bright chrome on pure black, and
+   under `screen` black contributes nothing, so overlapping plates composite
+   additively with no edge. Measured plate luminance at the seams was 0.6–7.5
+   out of 255, which under `screen` lifts to a difference of well under 1%.
+2. **A soft alpha mask** on each plate's top and bottom removes the thin
+   horizontal frame line every plate carries, which would otherwise survive the
+   blend as a visible rule. The first and last plates keep their outer frame, so
+   the page still opens and closes with an intact border.
+
+The plates are flex children sharing the document height equally, so the strip
+adapts to any page length without JavaScript, and a scrubbed parallax drifts it
+slower than the page for depth.
+
+Source PNGs total ~60 MB and stay out of the repository; the WebP exports the
+site actually ships come to 1.9 MB.
 
 ---
 
@@ -194,41 +229,49 @@ Booking mobile source order, signature legibility.
    its box measured 158×33 past the viewport edge. Parked off-canvas.
 7. **Consent checkbox was 22×22.** Now a 44×44 hit area with a 22px visual mark
    drawn as a background image.
+8. **Per-section backdrops banded the page.** Each section faded its plate in and
+   out at its own boundaries, so the artwork read as separate stacked pictures.
+   Replaced with one continuous document-wide strip.
+9. **`aspect-ratio` + `max-height` collapsed the plates into a narrow column** —
+   the ratio constraint shrinks width as well as height. Replaced with an
+   explicit `vw`-based height so only the height is clamped.
+10. **The hero scroll indicator was permanently invisible.** It sits 14px below
+    the reveal system's scroll threshold, so its trigger never fired. Anything
+    already on screen at load now plays as part of the opening sequence instead
+    of waiting for a scroll.
+11. **`rows={5}` overrode the textarea's `min-height`**, which is why the Booking
+    form panel stayed tall after the CSS was tightened.
 
 ---
 
 ## Deliberate differences from the screenshots
 
-1. **Hero lettering.** The spiked chrome letterforms are an AI render with no
-   licensed equivalent. The H1 uses Bodoni Moda with the chrome treatment
-   (`background-clip: text` gradient + bloom + GSAP sweep) and stays a real,
-   selectable, semantic `<h1>`. Drawing a full custom alphabet was out of scope;
-   if the brand later commissions one, only the `.titleInk` rule changes.
-2. **Text sizes are larger.** The references render body copy around 12–13px. Body
+1. **Text sizes are larger.** The references render body copy around 12–13px. Body
    is 16–18px and micro-labels no smaller than 10px, per the readability
    requirement. Everything downstream (section heights, line counts) follows from
    this — the About and Booking sections run slightly past one viewport at 815px
    where the references fit, because their text is unreadably small.
-3. **About on mobile stacks below 700px.** The mobile reference keeps a two-column
+2. **About on mobile stacks below 700px.** The mobile reference keeps a two-column
    split; at 390px that yields ~168px text columns. Per the explicit instruction
    ("two-column editorial layout only while text remains readable"), the split is
    kept from 700px and stacks below it.
-4. **Booking reassurance items stack below 480px** for the same reason; three
+3. **Booking reassurance items stack below 480px** for the same reason; three
    across from 480px, matching the reference above that.
-5. **Textures are procedural.** Grain is an inline SVG turbulence data URI and the
+4. **Textures are procedural.** Grain is an inline SVG turbulence data URI and the
    marble clouding is layered radial gradients — no `grain.webp` / `marble-dark.webp`
    downloads. `public/textures/` exists but is intentionally empty.
-6. **Fonts self-hosted** rather than requested from Google at runtime: no
+5. **Fonts self-hosted** rather than requested from Google at runtime: no
    third-party connection on page load, and builds work offline.
-7. **Mobile header** carries logo + sigil + hamburger (no BOOKING button), per the
+6. **Mobile header** carries logo + sigil + hamburger (no BOOKING button), per the
    written spec; one reference screenshot showed a BOOKING button, another did not.
-8. **Booking heading hierarchy** follows the written content spec — `BOOKING /
+7. **Booking heading hierarchy** follows the written content spec — `BOOKING /
    CONSULENZA` as the eyebrow and `LA TUA IDEA, LA MIA VISIONE.` as the H2 — which
    matches the mobile reference exactly and reassigns the desktop screenshot's
    large "BOOKING / CONSULENZA" display line.
-9. **Ornament fidelity.** The hero sigil and corner ornaments are hand-built
-   parametric SVG in the same visual language, not tracings. They carry the
-   cyber-tribal chrome character but are not pixel-identical to the AI renders.
+8. **Ornament fidelity.** The parametric SVG ornaments that remain in use
+   (badges, stars, dividers, signature) are hand-built in the same visual
+   language rather than traced. The large ornamental artwork is now the client's
+   own supplied plates, so it matches exactly.
 
 ---
 
@@ -253,6 +296,11 @@ from the screenshots was not used.**
   (+ `CONTACT_PROVIDER_API_KEY`)
 - optional `UPLOAD_STORAGE_*`
 
+**Instagram feed** — implemented and verified, but not yet connected: the
+account credentials have not been supplied, so the section shows its honest
+"feed non disponibile" state. README documents the full connection procedure and
+a diagnostic table mapping each failure reason to its fix.
+
 **Known limitations**
 
 - The form rate limit is in-memory and therefore per-instance. On multi-instance
@@ -275,9 +323,13 @@ from the screenshots was not used.**
 - **Images**: `next/image` with AVIF/WebP, correct `sizes`, fixed aspect ratios
   (no CLS), lazy below the fold, first three feed tiles prioritised.
 - **Remote hosts** restricted to Meta CDNs; no wildcard.
-- **Animation budget honoured**: reveals 0.78s with 65ms stagger, ornament drift
-  paused off-screen, chrome sweep a single pass (never looping), button
-  interactions 180–280ms, feed zoom 1.03, parallax capped at ~11px displacement.
+- **Animation budget honoured**: reveals 1.05s on `expo.out` with 85ms stagger,
+  section entry/exit scrubbed against the scroll (so they reverse cleanly rather
+  than fighting the user's direction), backdrop parallax at 4% scrubbed with
+  inertia, chrome sweep a single pass (never looping), button interactions
+  180–280ms, feed zoom 1.03, pointer parallax capped at ~11px displacement.
+  Perceived smoothness comes from the scrub inertia and the long decelerating
+  easing, not from large travel distances.
 - **Native scrolling preserved** — no smooth-scroll library, no pinning, no
   scroll-jacking; the carousel controls only call `scrollBy`.
 - **Progressive enhancement**: reveal start states live in CSS behind a class added

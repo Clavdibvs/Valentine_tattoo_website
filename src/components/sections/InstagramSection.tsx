@@ -83,9 +83,16 @@ export function InstagramSection() {
  * Suspense boundary, and letting GSAP style it before React hydrates it causes
  * a hydration mismatch. The skeleton-to-content swap is the transition here.
  */
-function FeedShell({ children }: { children: React.ReactNode }) {
+function FeedShell({
+  children,
+  compact = false,
+}: {
+  children: React.ReactNode;
+  /** Narrows the panel: a short message should not span the gallery's width. */
+  compact?: boolean;
+}) {
   return (
-    <div className={styles.feedArea}>
+    <div className={[styles.feedArea, compact ? styles.feedAreaCompact : ""].filter(Boolean).join(" ")}>
       <ChromeFrame
         metal
         notch={16}
@@ -118,7 +125,7 @@ async function FeedContent() {
 
   if (feed.status === "empty") {
     return (
-      <FeedShell>
+      <FeedShell compact>
         <IntegrationErrorState
           title={instagramContent.emptyTitle}
           body={instagramContent.emptyBody}
@@ -129,7 +136,7 @@ async function FeedContent() {
 
   if (feed.status === "not-configured") {
     return (
-      <FeedShell>
+      <FeedShell compact>
         <IntegrationErrorState
           title={instagramContent.unavailableTitle}
           body={instagramContent.unavailableBody}
@@ -141,7 +148,7 @@ async function FeedContent() {
   }
 
   return (
-    <FeedShell>
+    <FeedShell compact>
       <IntegrationErrorState
         title={instagramContent.unavailableTitle}
         body={instagramContent.unavailableBody}
