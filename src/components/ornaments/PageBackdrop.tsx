@@ -35,36 +35,46 @@ import styles from "./PageBackdrop.module.css";
  * Decorative only: `aria-hidden`, `pointer-events: none`, always behind content.
  */
 
-/** Desktop plates, in the order they were drawn to follow one another. */
-const DESKTOP_PLATES = ["hero", "about", "instagram", "booking", "booking-tail"] as const;
+/**
+ * The hero plate is used once and never again: it carries the large sigil that
+ * belongs to the opening screen, and seeing it a second time halfway down the
+ * page reads as a mistake. Everything below the hero cycles the remaining art.
+ */
+const HERO_PLATE = { desktop: "hero", mobile: "hero" } as const;
 
-/** Mobile plates. Fewer were supplied, so the set cycles. */
-const MOBILE_PLATES = ["hero", "about", "instagram", "booking"] as const;
+/** Plates for everything after the hero, in the order they were drawn. */
+const BODY_PLATES = [
+  { desktop: "about", mobile: "about" },
+  { desktop: "instagram", mobile: "instagram" },
+  { desktop: "booking", mobile: "booking" },
+  { desktop: "booking-tail", mobile: "about" },
+] as const;
 
 /**
- * How many plates the strip lays down.
+ * Plates laid down after the hero.
  *
- * The plates share the document height equally, so more of them means each one
- * stretches less. Seven sections make a document roughly nine screens tall, and
- * nine plates keeps every one close to its natural aspect ratio.
+ * They share whatever height the hero leaves, so more of them means each one is
+ * stretched less vertically. Eleven keeps each plate within about 13% of its
+ * natural aspect ratio while leaving a long crossfade between neighbours.
  *
- * Repeats cost nothing to download: cycling five source images over nine slots
- * is still five network requests, the rest come from cache.
+ * Repeats cost nothing to download: cycling four images over eleven slots is
+ * still four network requests, the rest come from cache.
  */
-const PLATE_COUNT = 9;
+const BODY_PLATE_COUNT = 11;
 
 export function PageBackdrop() {
   return (
     <div className={styles.backdrop} aria-hidden="true" data-decor="">
       <div className={styles.strip} data-backdrop-strip="">
-        {Array.from({ length: PLATE_COUNT }, (_, index) => (
+        <Plate {...HERO_PLATE} first last={false} priority />
+
+        {Array.from({ length: BODY_PLATE_COUNT }, (_, index) => (
           <Plate
             key={index}
-            desktop={DESKTOP_PLATES[index % DESKTOP_PLATES.length]}
-            mobile={MOBILE_PLATES[index % MOBILE_PLATES.length]}
-            first={index === 0}
-            last={index === PLATE_COUNT - 1}
-            priority={index === 0}
+            {...BODY_PLATES[index % BODY_PLATES.length]}
+            first={false}
+            last={index === BODY_PLATE_COUNT - 1}
+            priority={false}
           />
         ))}
       </div>

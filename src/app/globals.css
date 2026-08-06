@@ -490,10 +490,13 @@ ol {
   );
 }
 
-/* The backdrop strip draws its own outer frame, so the CSS one would double the
-   hairline. Kept for reference should the strip ever be pulled. */
-.page-frame {
-  display: none;
+/* The backdrop plates no longer carry their own frames — they were cropped out
+   so they would not repeat down the strip — so the page border is drawn here,
+   once, and stays crisp at any zoom. */
+@media (max-width: 640px) {
+  .page-frame {
+    display: none;
+  }
 }
 
 /* --------------------------------------------------------------------------

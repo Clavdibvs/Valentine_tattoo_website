@@ -118,9 +118,14 @@ documento, non una piastra per sezione: le immagini fornite sono state disegnate
 per proseguire l'una nell'altra, e separarle per sezione produceva bande
 orizzontali visibili. Le piastre si sovrappongono in `mix-blend-mode: screen` —
 l'arte è cromo chiaro su nero puro, e sotto `screen` il nero non contribuisce —
-con una maschera alpha che elimina la cornice orizzontale di ogni piastra. Il
-risultato non ha giunture. Per sostituire un'immagine basta rimpiazzare i WebP in
-`public/backdrops/`.
+con un crossfade lungo (circa un quinto di ogni piastra) le cui rampe sono
+complementari: la piastra che esce sfuma esattamente dove entra la successiva.
+Le sovrapposizioni sono volute — sono ciò che dà continuità al fondale.
+
+Le immagini vengono ritagliate dalle cornici che ognuna si porta dietro, perché
+impilate si ripeterebbero come bordi lungo la pagina: vedi
+`scripts/build-backdrops.mjs` e ASSETS.md. Per sostituire un'immagine si
+rimpiazza il sorgente e si rilancia lo script.
 
 **Divisione delle librerie di animazione** (nessun elemento è animato da entrambe):
 

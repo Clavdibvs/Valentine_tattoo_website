@@ -61,11 +61,28 @@ documento in `mix-blend-mode: screen`, non una per sezione.
 | `hero-mobile-{480,760,1080}.webp` | `new references/Mobile/1.png` | 12–58 KB |
 | `about-mobile-*` · `instagram-mobile-*` · `booking-mobile-*` | `Mobile/2–4.png` | idem |
 
-I PNG sorgente (~60 MB in totale) restano fuori dal repository: sono ignorati in
-`.gitignore` e solo i WebP ottimizzati vengono versionati (~1,9 MB).
+**Le piastre sono ritagliate.** Ogni sorgente è una schermata autonoma: porta la
+propria cornice, una riga sottile in alto (~0,5%) e un'altra in basso (81–99%
+secondo l'immagine), più un piccolo divisore centrato. Corretto per una singola
+schermata — ma impilate in una striscia continua quelle righe si ripetono lungo
+la pagina come bordi di scatola, ed è ciò che faceva sembrare lo sfondo un
+mucchio di immagini invece di un fondale unico.
 
-Per sostituire un'immagine basta rimpiazzare i tre WebP corrispondenti in
-`public/backdrops/` mantenendo i nomi.
+`scripts/build-backdrops.mjs` **misura** dove cadono le righe in ogni immagine
+(variano parecchio) e ritaglia la banda compresa fra loro. Gli ornamenti stanno
+ai bordi laterali e corrono per tutta l'altezza, quindi il ritaglio non toglie
+nulla di significativo. La cornice esterna della pagina è disegnata una sola
+volta in CSS (`.page-frame`).
+
+Per rigenerarle dopo aver sostituito un sorgente:
+
+```bash
+npm i --no-save sharp
+node scripts/build-backdrops.mjs
+```
+
+I PNG sorgente (~60 MB in totale) restano fuori dal repository: sono ignorati in
+`.gitignore` e solo i WebP ottimizzati vengono versionati (~1,5 MB).
 
 ---
 

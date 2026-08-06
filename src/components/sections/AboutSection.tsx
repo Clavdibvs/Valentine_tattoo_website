@@ -37,7 +37,7 @@ export function AboutSection() {
             eyebrow={aboutContent.eyebrow}
             lines={aboutContent.titleLines}
             accessibleTitle={aboutContent.titleAccessible}
-            align="start"
+            align="startDesktop"
             className={styles.heading}
           />
         </div>

@@ -12,6 +12,19 @@
 }
 
 .strip {
+  /*
+   * The crossfade distance. The mask feather and the plate overlap are both
+   * driven by this single value, which is what makes the transition
+   * complementary: plate N fades out over exactly the span where plate N+1
+   * fades in. When the overlap was smaller than the feather the two ramps did
+   * not meet and the seam showed as a dip in brightness.
+   *
+   * Generous on purpose — the overlapping plates are the point, so roughly a
+   * fifth of every plate is blending into its neighbour. Shorter ramps read as
+   * one image ending and the next beginning.
+   */
+  --feather: 15vh;
+
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -36,31 +49,50 @@
      bottom, which would otherwise survive the blend as a visible rule. */
   -webkit-mask-image: linear-gradient(
     180deg,
-    transparent 0%,
-    #000 9%,
-    #000 91%,
+    transparent 0,
+    #000 var(--feather),
+    #000 calc(100% - var(--feather)),
     transparent 100%
   );
-  mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--feather),
+    #000 calc(100% - var(--feather)),
+    transparent 100%
+  );
 }
 
 /* Pull each plate up into its neighbour so the masked edges overlap instead of
    meeting at a hairline. */
 .plate + .plate {
-  margin-top: -7vh;
+  margin-top: calc(-1 * var(--feather));
 }
 
-/* The page still opens and closes with an intact frame. */
+/*
+ * The first plate is pinned to the hero's own height rather than sharing the
+ * document equally. The hero is `min-height: 100svh`, so this puts the seam
+ * exactly on the hero/next-section boundary — where it was before the sections
+ * were reordered, and where it is least noticeable. Letting it share equally
+ * ended the hero art ~100px early and bled the next plate into the opening
+ * screen.
+ */
 .first {
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 91%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0%, #000 91%, transparent 100%);
+  flex: 0 0 100svh;
+  /* Nothing to fade into above the first plate. */
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - var(--feather)), transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - var(--feather)), transparent 100%);
 }
 
 .last {
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--feather), #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 var(--feather), #000 100%);
 }
 
+/*
+ * The plates ship already cropped to the band between their own frame rules —
+ * see `scripts/build-backdrops.mjs` for why and how. Nothing to trim here.
+ */
 .image {
   display: block;
   width: 100%;
@@ -103,8 +135,8 @@
     );
   }
 
-  .plate + .plate {
-    margin-top: -5vh;
+  .strip {
+    --feather: 10vh;
   }
 }
 

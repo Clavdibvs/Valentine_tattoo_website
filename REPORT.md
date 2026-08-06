@@ -136,10 +136,18 @@ Two things dissolve the joins between plates:
    under `screen` black contributes nothing, so overlapping plates composite
    additively with no edge. Measured plate luminance at the seams was 0.6–7.5
    out of 255, which under `screen` lifts to a difference of well under 1%.
-2. **A soft alpha mask** on each plate's top and bottom removes the thin
-   horizontal frame line every plate carries, which would otherwise survive the
-   blend as a visible rule. The first and last plates keep their outer frame, so
-   the page still opens and closes with an intact border.
+2. **A long complementary crossfade.** The mask feather and the plate overlap are
+   driven by one value, so the outgoing plate fades out over exactly the span
+   where the incoming one fades in. About a fifth of every plate is blending.
+   When the overlap was shorter than the feather the ramps did not meet and the
+   seam showed as a dip.
+3. **The plates are cropped free of their own frames.** Each source is a
+   self-contained screen carrying a hairline rule near the top and another at
+   81–99% depending on the image. Stacked, those repeat down the page as box
+   edges — measured at +131% brightness against the background, which is what
+   read as "separate images". `scripts/build-backdrops.mjs` measures each
+   image's rules and crops the band between them; the page border is drawn once
+   in CSS instead.
 
 The plates are flex children sharing the document height equally, so the strip
 adapts to any page length without JavaScript, and a scrubbed parallax drifts it
@@ -266,7 +274,11 @@ Booking mobile source order, signature legibility.
 12. **The chrome sweep stopped dead after one pass** and, once looped, snapped
     from 92% back to 8% each cycle. Now `yoyo: true` so the highlight travels
     back instead of jumping, and it pauses while off-screen.
-13. **The last section's CTA could never reveal.** `start: "top 92%"` needs a
+13. **Repeated hero artwork.** Cycling five plates over nine slots put the hero's
+    distinctive sigil back on screen halfway down the page. The hero plate is now
+    used once, pinned to `100svh` so it covers exactly its own section, and the
+    body cycles the remaining art.
+14. **The last section's CTA could never reveal.** `start: "top 92%"` needs a
     scroll position that does not exist for content in the final 8% of the
     document — which About's CTA became once About moved last. The start is now
     a function that falls back to `"top bottom"` when the threshold is out of

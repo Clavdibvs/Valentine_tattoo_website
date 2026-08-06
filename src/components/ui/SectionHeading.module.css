@@ -15,6 +15,20 @@
   text-align: left;
 }
 
+/* Centred on mobile, start-aligned once there is room for the editorial
+   two-column layout. */
+.startDesktop {
+  align-items: center;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .startDesktop {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
 .arc {
   width: min(620px, 92%);
   height: auto;
@@ -43,6 +57,16 @@
 
 .start .titleRow {
   justify-content: flex-start;
+}
+
+.startDesktop .titleRow {
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .startDesktop .titleRow {
+    justify-content: flex-start;
+  }
 }
 
 .flank {

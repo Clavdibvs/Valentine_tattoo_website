@@ -122,25 +122,8 @@
   grid-area: cta;
 }
 
-/* The heading is centred until the desktop split puts it beside the portrait. */
-.heading {
-  align-items: center;
-  text-align: center;
-}
-
-.heading > * {
-  justify-content: center;
-}
-
-@media (min-width: 1024px) {
-  .heading {
-    align-items: flex-start;
-    text-align: left;
-  }
-  .heading > * {
-    justify-content: flex-start;
-  }
-}
+/* Alignment comes from SectionHeading's `startDesktop` variant: overriding it
+   here lost the specificity contest against `.start .titleRow`. */
 
 /* -------------------------------------------------------------------------- */
 /* Portrait card                                                              */

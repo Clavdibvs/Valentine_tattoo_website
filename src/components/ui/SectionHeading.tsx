@@ -21,7 +21,13 @@ export function SectionHeading({
   /** Visual line breaks; joined for the accessible name. */
   lines: readonly string[];
   accessibleTitle?: string;
-  align?: "center" | "start";
+  /**
+   * `startDesktop` is centred on mobile and start-aligned from 1024px. It is a
+   * real variant rather than a per-section override, because overriding the
+   * alignment from a consumer stylesheet loses the specificity contest against
+   * `.start .titleRow` and silently leaves the heading off-centre.
+   */
+  align?: "center" | "start" | "startDesktop";
   arc?: boolean;
   divider?: boolean;
   flankStars?: boolean;
