@@ -1,3 +1,5 @@
+import { MoltenBackdrop } from "./MoltenBackdrop";
+
 import styles from "./PageBackdrop.module.css";
 
 /**
@@ -64,26 +66,52 @@ const BODY_PLATES = [
  */
 const BODY_PLATE_COUNT = 13;
 
-export function PageBackdrop() {
+export function PageBackdrop({ waitForIntro = false }: { waitForIntro?: boolean }) {
   return (
     <div className={styles.backdrop} aria-hidden="true" data-decor="">
-      <div className={styles.strip} data-backdrop-strip="">
-        <Plate {...HERO_PLATE} first last={false} priority />
+      <PlateStrip />
 
-        {Array.from({ length: BODY_PLATE_COUNT }, (_, index) => (
-          <Plate
-            key={index}
-            {...BODY_PLATES[index % BODY_PLATES.length]}
-            first={false}
-            last={index === BODY_PLATE_COUNT - 1}
-            priority={false}
-          />
-        ))}
-      </div>
+      {/*
+        Molten light through the metal. It renders a second PlateStrip as its
+        luminance matte — the same component, so the matte cannot drift out of
+        step with the artwork it is matting.
+      */}
+      <MoltenBackdrop waitForIntro={waitForIntro}>
+        <PlateStrip matte />
+      </MoltenBackdrop>
 
       {/* Centre band where the copy lives, knocked back so text never competes
           with bright chrome. The edges keep the ornaments at full strength. */}
       <span className={styles.scrim} />
+    </div>
+  );
+}
+
+/**
+ * The column of plates.
+ *
+ * Rendered twice: once as the backdrop itself, once inside the molten layer as
+ * its matte. Both carry `data-backdrop-strip`, so a single parallax tween moves
+ * them together and no second set of positioning numbers exists to fall out of
+ * sync.
+ */
+function PlateStrip({ matte = false }: { matte?: boolean }) {
+  return (
+    <div
+      className={[styles.strip, matte ? styles.matteStrip : ""].filter(Boolean).join(" ")}
+      data-backdrop-strip=""
+    >
+      <Plate {...HERO_PLATE} first last={false} priority={!matte} />
+
+      {Array.from({ length: BODY_PLATE_COUNT }, (_, index) => (
+        <Plate
+          key={index}
+          {...BODY_PLATES[index % BODY_PLATES.length]}
+          first={false}
+          last={index === BODY_PLATE_COUNT - 1}
+          priority={false}
+        />
+      ))}
     </div>
   );
 }

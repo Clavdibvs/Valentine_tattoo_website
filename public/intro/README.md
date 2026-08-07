@@ -98,7 +98,7 @@ In `src/lib/intro-timing.ts`:
 
 | | |
 |---|---|
-| `cueAfterSeconds: 1` | secondi dopo l'avvio in cui header e contenuti cominciano a comparire |
+| `cueBeforeEnd: 2.3` | secondi **prima della fine** in cui header e contenuti cominciano a comparire |
 | `fade: 1.8` | dissolvenza, calibrata per **finire** quando finisce il clip |
 
 Cue e dissolvenza sono su normali timer. Prima erano guidati da un ciclo per
@@ -107,8 +107,19 @@ clip e tempo reale coincidono, quel ciclo sveglierebbe il thread principale
 sessanta volte al secondo durante l'unica animazione che non deve essere
 disturbata.
 
-Misurato: cue a 1,00s su entrambi, intro conclusa a 3,33s (mobile) e 4,06s
-(desktop).
+Il cue è misurato **all'indietro dalla fine**, non in avanti dall'inizio. Con un
+solo numero contato dall'avvio le due versioni non davano la stessa esperienza,
+perché non durano uguale: entrambe scoprivano l'hero dopo un secondo, e su
+mobile cadeva giusto all'inizio della dissolvenza, ma la versione desktop dura
+0,8s in più e lì il testo restava sopra ad altri tre secondi di video ancora in
+corso. Contato dalla fine, lo stesso numero indica lo stesso momento in entrambe.
+
+Misurato:
+
+| | cue | header | hero | dissolvenza | fine |
+|---|---|---|---|---|---|
+| desktop | 1,75s | 1,91s | 2,21s | 2,26s | 4,08s |
+| mobile | 0,99s | 1,13s | 1,45s | 1,50s | 3,31s |
 
 ## Comportamento
 

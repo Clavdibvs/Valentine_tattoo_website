@@ -1,0 +1,78 @@
+/**
+ * The molten compositing group.
+ *
+ * Spans the document so the matte inside it can scroll with the artwork, sits
+ * between the painted strip and the scrim, and colour-dodges onto what is
+ * beneath it. `isolation: isolate` keeps the canvas and its matte compositing
+ * against each other and nothing else; `PageBackdrop`'s own stacking context
+ * then stops the dodge reaching the page behind it.
+ */
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  isolation: isolate;
+  mix-blend-mode: color-dodge;
+
+  /* Never during the opening clip; two seconds to arrive afterwards. */
+  opacity: 0;
+  transition: opacity 2s ease;
+
+  /* Decorative, and never in the way of a tap, a drag or a hover. */
+  pointer-events: none;
+  user-select: none;
+}
+
+.layer[data-lit] {
+  /* Set, with every other dial, in MoltenBackdrop.tsx. */
+  opacity: var(--molten-opacity, 0.95);
+}
+
+/**
+ * The WebGL surface: the size of the screen, not the size of the page.
+ *
+ * `lvh` rather than `dvh` on purpose. The dynamic unit would resize the canvas
+ * every time a phone's address bar slid away, and each resize reallocates the
+ * render target mid-scroll. The large-viewport unit is stable and always at
+ * least as tall as what is visible, so the field never runs out underneath the
+ * fold and never reallocates.
+ */
+.viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100lvh;
+  z-index: 0;
+  /* Repositioned every frame while scrolling — keep it on its own layer. */
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer {
+    display: none;
+  }
+}
+
+/**
+ * The matte's backing.
+ *
+ * Wraps the duplicated strip so the multiply applies to the pair, and — the
+ * point of it — gives the plates the same thing to composite onto that the
+ * painted strip has: the page tone. Anything else shows up as a band at every
+ * join, because that is the only place the plates are not fully opaque.
+ *
+ * Opaque on purpose. A matte with any transparency in it does not composite as
+ * "multiply by less", it composites as *no multiply at all*, and the field
+ * would come through unmatted wherever that happened.
+ */
+.matte {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  isolation: isolate;
+  mix-blend-mode: multiply;
+  background: var(--color-bg);
+}

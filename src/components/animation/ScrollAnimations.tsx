@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import { BACKDROP_PARALLAX, BACKDROP_STRIP_SELECTOR } from "@/lib/backdrop-parallax";
 import { onIntroCue } from "@/lib/intro-timing";
 import { useRef } from "react";
 
@@ -218,8 +219,10 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
       /* gives the scroll its depth. Scrubbed with a little inertia so it     */
       /* glides rather than tracks rigidly.                                   */
       /* ------------------------------------------------------------------ */
-      const strip = document.querySelector<HTMLElement>("[data-backdrop-strip]");
-      if (strip) {
+      // Every strip, not just the first: the molten layer renders a second copy
+      // as its luminance matte, and the two must travel as one.
+      const strips = queryAll(BACKDROP_STRIP_SELECTOR);
+      if (strips.length) {
         /*
          * The strip is 112% of the document tall (see PageBackdrop.module.css),
          * so it has 12% of spare height to travel through and still cover the
@@ -228,14 +231,14 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
          * than the content. At the previous 4% the effect was there but almost
          * invisible.
          */
-        gsap.to(strip, {
-          yPercent: -(12 / 112) * 100,
+        gsap.to(strips, {
+          yPercent: BACKDROP_PARALLAX.yPercent,
           ease: "none",
           scrollTrigger: {
             trigger: document.body,
             start: "top top",
             end: "bottom bottom",
-            scrub: 1.2,
+            scrub: BACKDROP_PARALLAX.scrub,
           },
         });
       }

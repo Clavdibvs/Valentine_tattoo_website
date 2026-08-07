@@ -44,12 +44,24 @@ export type IntroConfig = {
  */
 export const INTRO_TIMING = {
   /**
-   * When the hero starts appearing, in seconds from the moment playback begins.
+   * When the hero starts appearing, in seconds before the clip *ends*.
    *
-   * Early on purpose: the content rises slowly over the tail of the clip rather
-   * than waiting for it to be over.
+   * Early on purpose: the content rises over the tail of the clip rather than
+   * waiting for it to be over. But measured backwards from the end, not
+   * forwards from the start — that was the bug.
+   *
+   * Anchored to the start, a single number meant two different experiences,
+   * because the two cuts are not the same length. Both revealed the hero one
+   * second in; on mobile that landed just as the crossfade began, but the
+   * desktop cut runs 0.8s longer, so there the copy sat over three more seconds
+   * of still-playing film. Measured from the end, the same number means the
+   * same moment in both.
+   *
+   * THIS IS THE DIAL. Larger reveals the page earlier over the clip; smaller
+   * holds the clip longer before anything appears. 2.3 is the value that keeps
+   * the mobile cut exactly where it already was.
    */
-  cueAfterSeconds: 1,
+  cueBeforeEnd: 2.3,
   /** Crossfade length, in seconds. Timed to *end* as the clip does. */
   fade: 1.8,
   /**
@@ -64,48 +76,71 @@ export const INTRO_TIMING = {
 /* The cue                                                                    */
 /* -------------------------------------------------------------------------- */
 
-export const INTRO_CUE_EVENT = "vt:intro-cue";
-
 /**
- * Whether the cue has already gone out.
+ * The intro announces two moments, and they are not the same one:
+ *
+ *   cue   — `cueBeforeEnd` seconds from the end. The header and the hero copy
+ *           start rising over the tail of the clip rather than waiting for it
+ *           to be over.
+ *   done  — the overlay is gone. Whatever must not be seen *during* the clip
+ *           waits for this.
+ *
+ * ## Why each is a flag as well as an event
  *
  * An event alone is not enough to coordinate on: whoever subscribes after it
- * fires never hears it, and it fires very early on several paths — reduced
- * motion, a missing file, autoplay refused. That race left the header stuck at
- * zero opacity until its eight-second fallback. So the fact is also recorded,
- * and listeners check the record before subscribing.
+ * fires never hears it, and both fire very early on several paths — reduced
+ * motion, a missing file, autoplay refused, a reload part-way down the page.
+ * That race once left the header stuck at zero opacity until its eight-second
+ * fallback. So the fact is recorded too, and listeners check the record before
+ * subscribing.
  */
+export const INTRO_CUE_EVENT = "vt:intro-cue";
+export const INTRO_DONE_EVENT = "vt:intro-done";
+
 declare global {
   interface Window {
     __vtIntroCued?: boolean;
+    __vtIntroDone?: boolean;
   }
 }
 
-export function markIntroCued(): void {
-  window.__vtIntroCued = true;
-  window.dispatchEvent(new CustomEvent(INTRO_CUE_EVENT));
+type Milestone = { event: string; flag: "__vtIntroCued" | "__vtIntroDone" };
+
+const CUE: Milestone = { event: INTRO_CUE_EVENT, flag: "__vtIntroCued" };
+const DONE: Milestone = { event: INTRO_DONE_EVENT, flag: "__vtIntroDone" };
+
+function mark({ event, flag }: Milestone): void {
+  if (window[flag]) return;
+  window[flag] = true;
+  window.dispatchEvent(new CustomEvent(event));
 }
 
-/**
- * Runs `callback` once, as soon as the intro cue has gone out — immediately if
- * it already has. Returns an unsubscribe function.
- */
-export function onIntroCue(callback: () => void): () => void {
+function on({ event, flag }: Milestone, callback: () => void): () => void {
   if (typeof window === "undefined") return () => {};
 
-  if (window.__vtIntroCued) {
+  if (window[flag]) {
     callback();
     return () => {};
   }
 
-  let done = false;
+  let spent = false;
   const handler = () => {
-    if (done) return;
-    done = true;
-    window.removeEventListener(INTRO_CUE_EVENT, handler);
+    if (spent) return;
+    spent = true;
+    window.removeEventListener(event, handler);
     callback();
   };
 
-  window.addEventListener(INTRO_CUE_EVENT, handler);
-  return () => window.removeEventListener(INTRO_CUE_EVENT, handler);
+  window.addEventListener(event, handler);
+  return () => window.removeEventListener(event, handler);
 }
+
+export const markIntroCued = () => mark(CUE);
+export const markIntroDone = () => mark(DONE);
+
+/**
+ * Runs `callback` once, as soon as the intro has reached that milestone —
+ * immediately if it already has. Returns an unsubscribe function.
+ */
+export const onIntroCue = (callback: () => void) => on(CUE, callback);
+export const onIntroDone = (callback: () => void) => on(DONE, callback);

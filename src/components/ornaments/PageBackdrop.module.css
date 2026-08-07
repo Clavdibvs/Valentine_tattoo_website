@@ -9,6 +9,9 @@
   overflow: hidden;
   pointer-events: none;
   user-select: none;
+  /* Confines the molten layer's colour-dodge to the backdrop. Without it the
+     dodge would reach the page tone and vignette behind this element. */
+  isolation: isolate;
 }
 
 .strip {
@@ -171,4 +174,80 @@
     mask-image: none;
     opacity: 0.96;
   }
+}
+
+/* --------------------------------------------------------------------------
+   The matte copy
+
+   The same strip again, blended `multiply` over the molten field so the field
+   survives only where the artwork is bright. That multiplication *is* the
+   luminance matte, and its response is inherently soft: black kills the field
+   outright, dim greys pass a trace, bright chrome passes it whole. There is no
+   threshold anywhere in it.
+
+   Absolutely positioned rather than in flow — it shares the group with the
+   canvas instead of following it — but every other dimension still comes from
+   `.strip`, so it is laid out by exactly the same rules as the strip it mattes.
+   -------------------------------------------------------------------------- */
+
+.matteStrip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  /*
+   * No background and no blend mode here.
+   *
+   * Both used to live on this element, and the black backing was the cause of
+   * a horizontal band at every plate join. The plates feather into one another,
+   * so their combined alpha dips below 1 across each join — and there the
+   * painted strip lets the page tone behind it show through, while a matte
+   * backed with black showed nothing. The error is (1 − alpha) x background, and
+   * alpha only dips at the joins, so the error appeared as a beam at the join
+   * period and nowhere else.
+   *
+   * The backing now sits on the wrapper in `MoltenBackdrop.module.css`, outside
+   * this element's `isolation: isolate`. That matters: a background *inside*
+   * the isolated group is a `screen` partner to the plates and adds to them,
+   * whereas outside it is a backdrop they composite onto — which is exactly
+   * what the page is to the painted strip.
+   */
+}
+
+/*
+ * In the matte the plates cross-fade; in the painted strip they add.
+ *
+ * This is the fix for a horizontal band at every join. The painted strip
+ * overlaps its plates under `screen`, which is additive — that is what makes
+ * the joins disappear there, because two half-faded plates sum back to roughly
+ * one. As a *matte* the same sum is wrong: it is a little brighter than either
+ * plate alone, and colour-dodge turns "a little brighter" into a visible beam.
+ *
+ * So the matte crosses its plates over instead. Each one keeps only its top
+ * feather and stays opaque below, so the plate underneath is still solid where
+ * the one above is fading in: the two combine as `A(1-b) + Bb`, which is a true
+ * cross-fade — no sum to overshoot, no gap to dip through, and the alpha is 1
+ * the whole way across.
+ *
+ * Away from a join a single plate is opaque and alone, so this changes nothing
+ * at all: the effect keeps exactly the look it has everywhere else, and no
+ * plate moves by a pixel. Only the overlap behaves differently, which is the
+ * only place it was wrong.
+ */
+.matteStrip .plate {
+  mix-blend-mode: normal;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--feather), #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 var(--feather), #000 100%);
+}
+
+/* Nothing above the hero plate to fade in from. */
+.matteStrip .first {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.matteStrip .image {
+  filter: grayscale(1) contrast(var(--molten-matte-contrast, 1.02))
+    brightness(var(--molten-matte-gain, 1.5));
 }

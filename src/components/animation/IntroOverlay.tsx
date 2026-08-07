@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { INTRO_TIMING, markIntroCued, type IntroConfig } from "@/lib/intro-timing";
+import { INTRO_TIMING, markIntroCued, markIntroDone, type IntroConfig } from "@/lib/intro-timing";
 import { lockScroll } from "@/lib/scroll-lock";
 
 import styles from "./IntroOverlay.module.css";
@@ -85,6 +85,10 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
         // The crossfade is timed to end as the clip does, so this is the moment
         // the intro is genuinely over — and the moment the page comes back.
         unlock();
+        // Announced for whatever must not be seen while the clip is on screen.
+        // Every path that ends the intro passes through here, including the
+        // skip button, so none of them can leave a listener waiting.
+        markIntroDone();
       }, INTRO_TIMING.fade * 1000);
     }, 0);
   }, [fireCue, unlock]);
@@ -151,7 +155,12 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
     let fadeTimer = 0;
     const onPlaying = () => {
       video.removeEventListener("playing", onPlaying);
-      cueTimer = window.setTimeout(fireCue, INTRO_TIMING.cueAfterSeconds * 1000);
+      // Both timers are measured back from the end of the clip, so the two cuts
+      // hand over to the page at the same point in their own run.
+      cueTimer = window.setTimeout(
+        fireCue,
+        Math.max(0, total - INTRO_TIMING.cueBeforeEnd) * 1000,
+      );
       // Start the crossfade so it *ends* as the clip does, rather than
       // beginning at the last frame and cutting.
       fadeTimer = window.setTimeout(finish, Math.max(0, total - INTRO_TIMING.fade) * 1000);

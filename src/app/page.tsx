@@ -27,7 +27,7 @@ export default function Home() {
       <div className="grain" aria-hidden="true" data-decor="" />
 
       {/* One continuous ornamental strip behind the entire document. */}
-      <PageBackdrop />
+      <PageBackdrop waitForIntro={Boolean(intro)} />
 
       {/* Opening clip, when one has been supplied. Purely additive. */}
       {intro ? (
