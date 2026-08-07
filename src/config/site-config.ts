@@ -146,6 +146,21 @@ export const consultationUpload = {
 /* -------------------------------------------------------------------------- */
 
 /**
+ * The canonical origin, written once and read by everything that needs an
+ * absolute URL: `metadataBase`, the canonical link, the sitemap and robots.
+ *
+ * Apex, no `www`, no trailing slash. The choice matters beyond taste — Google
+ * treats `valentinetattoo.it` and `www.valentinetattoo.it` as different sites,
+ * so whichever one is not canonical has to redirect to this one at the DNS or
+ * host level, or the two will split the same content between them.
+ *
+ * Hard-coded rather than read from the environment: there is one domain and it
+ * is not a secret, and a sitemap that silently loses its origin on a
+ * misconfigured deploy is worse than one that cannot.
+ */
+export const siteUrl = "https://valentinetattoo.it";
+
+/**
  * The title is ordered brand-first: the studio name opens it, the style and
  * the place follow.
  *

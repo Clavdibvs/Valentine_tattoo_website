@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
-import { siteMetadata, artist, instagramProfile } from "@/config/site-config";
+import { siteMetadata, siteUrl, artist, instagramProfile } from "@/config/site-config";
 
 import "./globals.css";
 
@@ -34,6 +34,11 @@ const sansFont = localFont({
 });
 
 export const metadata: Metadata = {
+  /**
+   * Resolves every relative URL Next emits — Open Graph images above all,
+   * which social scrapers reject unless they are absolute.
+   */
+  metadataBase: new URL(siteUrl),
   title: siteMetadata.title,
   description: siteMetadata.description,
   applicationName: artist.brand,
@@ -52,6 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: siteMetadata.locale,
+    url: siteUrl,
     title: siteMetadata.title,
     description: siteMetadata.description,
     siteName: artist.brand,
@@ -61,8 +67,13 @@ export const metadata: Metadata = {
     title: siteMetadata.title,
     description: siteMetadata.description,
   },
+  /**
+   * The page is reachable with query strings appended by ad and social
+   * referrers (`?fbclid=`, `?utm_source=`), and each of those is a distinct URL
+   * to a crawler. The canonical says they are all the same page.
+   */
   alternates: {
-    types: {},
+    canonical: "/",
   },
   other: {
     "instagram:creator": instagramProfile.handleWithAt,

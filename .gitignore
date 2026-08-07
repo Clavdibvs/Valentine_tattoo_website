@@ -48,3 +48,8 @@ next-env.d.ts
 /public/instagram-media/
 /VIDEO INIZIALI/
 .gallery-tmp/
+
+# Rendered section captures — 27 MB of 4K PNGs that nothing on the site loads.
+# They are regenerated from the running app, not authored, so the repo does not
+# need to carry them.
+/SCREENSHOT SEZIONI/
