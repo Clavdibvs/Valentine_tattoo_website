@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { INTRO_TIMING, introRateAt, type IntroConfig } from "@/lib/intro-timing";
+import { INTRO_TIMING, introRateAt, markIntroCued, type IntroConfig } from "@/lib/intro-timing";
+import { lockScroll } from "@/lib/scroll-lock";
 
 import styles from "./IntroOverlay.module.css";
 
@@ -27,18 +28,35 @@ import styles from "./IntroOverlay.module.css";
  * The cue is a DOM event rather than shared state so the animation layer stays
  * decoupled: it waits for `vt:intro-cue`, and it also starts on its own if the
  * event never arrives.
+ *
+ * ## The page is held still while it runs
+ *
+ * Scrolling during the clip pulled the page out from under it — the hero was
+ * gone before its opening had finished. The page is locked for the length of
+ * the clip and released the instant it ends.
+ *
+ * The lock is bound to the same escape paths as everything else, so it cannot
+ * outlive the clip: it is taken only after every early return has been passed,
+ * released when the crossfade completes, released immediately if the visitor
+ * skips, and released again by the effect's cleanup. Nothing that ends the
+ * intro leaves the page stuck.
  */
-export const INTRO_CUE_EVENT = "vt:intro-cue";
-
 function cue() {
   document.documentElement.removeAttribute("data-intro");
-  window.dispatchEvent(new CustomEvent(INTRO_CUE_EVENT));
+  markIntroCued();
 }
 
 export function IntroOverlay({ intro }: { intro: IntroConfig }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cued = useRef(false);
+  const releaseScroll = useRef<(() => void) | null>(null);
   const [phase, setPhase] = useState<"playing" | "fading" | "done">("playing");
+
+  /** Hands the page back. Safe to call any number of times. */
+  const unlock = useCallback(() => {
+    releaseScroll.current?.();
+    releaseScroll.current = null;
+  }, []);
 
   /** Fires the cue at most once. */
   const fireCue = useCallback(() => {
@@ -59,9 +77,26 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
     fireCue();
     window.setTimeout(() => {
       setPhase((current) => (current === "done" ? current : "fading"));
-      window.setTimeout(() => setPhase("done"), INTRO_TIMING.fade * 1000);
+      window.setTimeout(() => {
+        setPhase("done");
+        // The crossfade is timed to end as the clip does, so this is the moment
+        // the intro is genuinely over — and the moment the page comes back.
+        unlock();
+      }, INTRO_TIMING.fade * 1000);
     }, 0);
-  }, [fireCue]);
+  }, [fireCue, unlock]);
+
+  /**
+   * The visitor asking to leave — Escape or the skip button.
+   *
+   * Unlike the clip ending on its own, this releases the page at once rather
+   * than at the end of the crossfade: someone who has just asked to get out
+   * should not find themselves still unable to scroll.
+   */
+  const dismiss = useCallback(() => {
+    unlock();
+    finish();
+  }, [unlock, finish]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -77,6 +112,14 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
       return;
     }
 
+    // Restored scroll position: on a reload part-way down the page the overlay
+    // sits off-screen at the top of the document, so there would be nothing to
+    // watch — and locking the page for it would be inexplicable.
+    if (window.scrollY > 4) {
+      finish();
+      return;
+    }
+
     document.documentElement.setAttribute("data-intro", "playing");
 
     const portrait = window.matchMedia("(max-width: 1023px)").matches;
@@ -86,6 +129,10 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
       return;
     }
     video.src = src;
+
+    // Past every early return: the clip is really going to play, so hold the
+    // page still for it.
+    releaseScroll.current = lockScroll();
 
     // Skip any run-in the master carries before its first real frame.
     const startAt = portrait ? INTRO_TIMING.startAt.mobile : INTRO_TIMING.startAt.desktop;
@@ -168,18 +215,19 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
       window.clearTimeout(watchdog);
       window.clearTimeout(hardStop);
       document.documentElement.removeAttribute("data-intro");
+      unlock();
     };
-  }, [fireCue, finish, intro]);
+  }, [fireCue, finish, unlock, intro]);
 
   // Let a visitor dismiss it. Four seconds is not long, but it is not nothing.
   useEffect(() => {
     if (phase === "done") return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") finish();
+      if (event.key === "Escape") dismiss();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, finish]);
+  }, [phase, dismiss]);
 
   if (phase === "done") return null;
 
@@ -218,7 +266,7 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
         disablePictureInPicture
       />
 
-      <button type="button" className={styles.skip} onClick={finish}>
+      <button type="button" className={styles.skip} onClick={dismiss}>
         Salta
       </button>
     </div>

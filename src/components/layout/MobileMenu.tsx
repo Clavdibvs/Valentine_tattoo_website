@@ -9,6 +9,7 @@ import { CloseIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { a11yContent } from "@/content/site-content";
 import { instagramProfile, navItems, whatsapp } from "@/config/site-config";
 import type { SectionId } from "@/config/site-config";
+import { useScrollLock } from "@/lib/scroll-lock";
 
 import styles from "./MobileMenu.module.css";
 
@@ -30,26 +31,8 @@ export function MobileMenu({
   const reduce = useReducedMotion();
   const titleId = useId();
 
-  /* -------------------------------------------------------------------- */
-  /* Body scroll lock                                                      */
-  /* -------------------------------------------------------------------- */
-  useEffect(() => {
-    if (!open) return;
-
-    const { body } = document;
-    const previousOverflow = body.style.overflow;
-    const previousPaddingRight = body.style.paddingRight;
-    // Compensate for the disappearing scrollbar so the layout does not jump.
-    const scrollbar = window.innerWidth - document.documentElement.clientWidth;
-
-    body.style.overflow = "hidden";
-    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
-
-    return () => {
-      body.style.overflow = previousOverflow;
-      body.style.paddingRight = previousPaddingRight;
-    };
-  }, [open]);
+  // The panel is a modal: the page behind it stays put.
+  useScrollLock(open);
 
   /* -------------------------------------------------------------------- */
   /* Escape + focus trap                                                   */

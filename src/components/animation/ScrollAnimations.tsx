@@ -3,6 +3,8 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+import { onIntroCue } from "@/lib/intro-timing";
 import { useRef } from "react";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -72,16 +74,11 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
       };
 
       if (waitForIntro) {
-        let released = false;
-        const release = () => {
-          if (released) return;
-          released = true;
-          window.removeEventListener("vt:intro-cue", release);
+        const fallback = window.setTimeout(runOpenings, 8000);
+        onIntroCue(() => {
           window.clearTimeout(fallback);
           runOpenings();
-        };
-        const fallback = window.setTimeout(release, 8000);
-        window.addEventListener("vt:intro-cue", release);
+        });
       }
 
       revealBlocks.forEach((block) => {

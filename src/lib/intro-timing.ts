@@ -84,3 +84,53 @@ export function introRateAt(videoTime: number): number {
   // Derived from a linear rate fall; see INTRO_TIMING.
   return Math.max(1, Math.sqrt(INTRO_TIMING.startRate ** 2 - 3 * videoTime));
 }
+
+/* -------------------------------------------------------------------------- */
+/* The cue                                                                    */
+/* -------------------------------------------------------------------------- */
+
+export const INTRO_CUE_EVENT = "vt:intro-cue";
+
+/**
+ * Whether the cue has already gone out.
+ *
+ * An event alone is not enough to coordinate on: whoever subscribes after it
+ * fires never hears it, and it fires very early on several paths — reduced
+ * motion, a missing file, autoplay refused. That race left the header stuck at
+ * zero opacity until its eight-second fallback. So the fact is also recorded,
+ * and listeners check the record before subscribing.
+ */
+declare global {
+  interface Window {
+    __vtIntroCued?: boolean;
+  }
+}
+
+export function markIntroCued(): void {
+  window.__vtIntroCued = true;
+  window.dispatchEvent(new CustomEvent(INTRO_CUE_EVENT));
+}
+
+/**
+ * Runs `callback` once, as soon as the intro cue has gone out — immediately if
+ * it already has. Returns an unsubscribe function.
+ */
+export function onIntroCue(callback: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  if (window.__vtIntroCued) {
+    callback();
+    return () => {};
+  }
+
+  let done = false;
+  const handler = () => {
+    if (done) return;
+    done = true;
+    window.removeEventListener(INTRO_CUE_EVENT, handler);
+    callback();
+  };
+
+  window.addEventListener(INTRO_CUE_EVENT, handler);
+  return () => window.removeEventListener(INTRO_CUE_EVENT, handler);
+}

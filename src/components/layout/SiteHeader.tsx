@@ -9,6 +9,7 @@ import { ChromeButton } from "@/components/ui/ChromeButton";
 import { a11yContent } from "@/content/site-content";
 import { navItems } from "@/config/site-config";
 import { useActiveSection, useScrolled } from "@/lib/hooks/useActiveSection";
+import { onIntroCue } from "@/lib/intro-timing";
 
 import { MobileMenu } from "./MobileMenu";
 import styles from "./SiteHeader.module.css";
@@ -61,28 +62,33 @@ export function SiteHeader({ waitForIntro = false }: { waitForIntro?: boolean })
 
   useEffect(() => {
     if (ready) return;
-    let done = false;
-    const release = () => {
-      if (done) return;
-      done = true;
-      window.removeEventListener("vt:intro-cue", release);
+    const timer = window.setTimeout(() => setReady(true), 8000);
+    const unsubscribe = onIntroCue(() => {
       window.clearTimeout(timer);
       setReady(true);
-    };
-    const timer = window.setTimeout(release, 8000);
-    window.addEventListener("vt:intro-cue", release);
+    });
     return () => {
-      window.removeEventListener("vt:intro-cue", release);
+      unsubscribe();
       window.clearTimeout(timer);
     };
   }, [ready]);
 
-  // Under reduced motion the header simply renders in its final state: no
-  // variants, so nothing animates and nothing can be left hidden.
+  /*
+   * Under reduced motion the header mounts already shown.
+   *
+   * Dropping the props instead — which is what this did at first — leaves the
+   * header invisible for good. `useReducedMotion` reports false on the very
+   * first render and only flips once its media query is read, by which time
+   * `initial="hidden"` has already written `opacity: 0` into the element's
+   * inline style. Removing `animate` afterwards does not take that back:
+   * nothing is left to animate it away. `initial={false}` instead tells Motion
+   * to mount directly in the target state, so the preference is honoured — no
+   * movement — and the element is definitely visible.
+   */
   const motionProps = reduce
-    ? {}
+    ? { initial: false as const, animate: "shown" as const }
     : { initial: "hidden" as const, animate: ready ? ("shown" as const) : ("hidden" as const) };
-  const v = (variants: Variants) => (reduce ? {} : { variants });
+  const v = (variants: Variants) => ({ variants });
 
   return (
     <>
