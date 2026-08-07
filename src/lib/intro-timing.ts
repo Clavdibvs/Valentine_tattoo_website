@@ -14,76 +14,51 @@ export type IntroConfig = {
   mobile: string | null;
   cropDesktop: IntroCrop;
   cropMobile: IntroCrop;
+  /** Real length of each cut, in seconds, as built. See `INTRO_TIMING`. */
+  durationDesktop: number;
+  durationMobile: number;
 };
 
 /**
  * Playback shape.
  *
- * The clips run 7 seconds but should be over in 4. A cut would be obvious, so
- * the first stretch is played fast and slows down into real time:
+ * The masters run 7 seconds and should be over in about 4. A cut would be
+ * obvious, so the opening stretch is played fast and slows into real time:
  *
- *   video 0 → 5s   in 2 real seconds, rate falling smoothly from 4× to 1×
- *   video 5 → end  at 1×, so the last stretch plays exactly as filmed
+ *   clip 0 → 5s   in 2 seconds, rate falling smoothly from 4x to 1x
+ *   clip 5 → end  at 1x, so the last stretch plays exactly as filmed
  *
- * The rate falls *linearly in time*, which is what reads as a ramp rather than
- * a gear change. For a linear fall from r₀ to 1 over 2 seconds, the video time
- * covered is (r₀ + 1) — so r₀ = 4 gives precisely the 5 seconds wanted.
+ * ## The ramp is not applied here any more
  *
- * Rather than tracking elapsed real time and hoping the browser keeps up, the
- * rate is derived from where the video actually is:
+ * It used to be, through `video.playbackRate` on every animation frame. It was
+ * correct and it still stuttered on a phone: the masters are 24 fps, so at the
+ * peak of the ramp the browser was being asked to present about 70 frames a
+ * second on a 60 Hz display. It could only answer by dropping frames, and it
+ * dropped them unevenly — which is what the eye reads as stutter.
  *
- *   rate(v) = √(16 − 3v)      for v ≤ 5      (4× at v=0, 1× at v=5)
+ * The ramp now lives in the files themselves, resampled onto a constant 60 fps
+ * grid by `scripts/bake-intro-ramp.swift`. The clips play at 1x, untouched, and
+ * the arithmetic above survives only as the specification that script applies.
  *
- * which is the same curve solved for video position, and self-correcting: any
- * drift in playback feeds straight back into the next frame's rate.
+ * What is left here is what the page still decides.
  */
 export const INTRO_TIMING = {
   /**
-   * Where each cut actually starts.
+   * When the hero starts appearing, in seconds from the moment playback begins.
    *
-   * The mobile master opens on dead air. Measured frame luminance holds flat at
-   * ~1.4 until 2.5s and only reaches half its final value around 3.5s, so the
-   * cut starts at 2.6 — past the flat part, before the build. Playing that
-   * stretch would be several seconds of black at exactly the moment the visitor
-   * is deciding whether anything is loading.
-   *
-   * The desktop master needs no such trim: it climbs steadily from the first
-   * second.
-   *
-   * Joining the curve later also lowers the opening rate, from 4× to √(16−3·2.6)
-   * ≈ 2.9×. The rate law is untouched — we simply start further along it — and
-   * that alone took dropped frames on mobile from 12.4% to 2.9%.
-   */
-  startAt: { desktop: 0, mobile: 2.6 },
-  /** Video position, in seconds, where the ramp ends and real time begins. */
-  rampUntil: 5,
-  /** Rate at the very start. See the derivation above. */
-  startRate: 4,
-  /**
-   * When the hero starts appearing, in *real* seconds from the moment playback
-   * begins — not in clip position.
-   *
-   * Clip position would mean two different moments on the two cuts, because the
-   * mobile one joins the ramp later and therefore reaches any given frame
-   * sooner. Real time is what the visitor experiences, so that is what this is
-   * measured in.
-   *
-   * Early on purpose: the content now rises slowly over the tail of the clip
-   * rather than waiting for it to be over.
+   * Early on purpose: the content rises slowly over the tail of the clip rather
+   * than waiting for it to be over.
    */
   cueAfterSeconds: 1,
   /** Crossfade length, in seconds. Timed to *end* as the clip does. */
   fade: 1.8,
-  /** Nominal clip length. Only a safety net: playback drives the real timing. */
-  duration: 7.05,
+  /**
+   * Fallback clip length, for the case where metadata never loads. The real
+   * lengths are measured at build time and carried on `IntroConfig`; this is
+   * only ever a floor under a failure.
+   */
+  duration: 4.05,
 } as const;
-
-/** The playback rate for a given position in the clip. */
-export function introRateAt(videoTime: number): number {
-  if (videoTime >= INTRO_TIMING.rampUntil) return 1;
-  // Derived from a linear rate fall; see INTRO_TIMING.
-  return Math.max(1, Math.sqrt(INTRO_TIMING.startRate ** 2 - 3 * videoTime));
-}
 
 /* -------------------------------------------------------------------------- */
 /* The cue                                                                    */

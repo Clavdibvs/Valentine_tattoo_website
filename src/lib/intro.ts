@@ -4,7 +4,8 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 import crops from "@/content/backdrop-crop.json";
-import type { IntroConfig, IntroCrop } from "./intro-timing";
+import manifest from "../../public/intro/intro-manifest.json";
+import { INTRO_TIMING, type IntroConfig, type IntroCrop } from "./intro-timing";
 
 export type { IntroConfig } from "./intro-timing";
 
@@ -18,6 +19,10 @@ export type { IntroConfig } from "./intro-timing";
  *
  * Both are optional. When neither exists the site simply opens on the hero, as
  * it does today — the intro is an enhancement, never a gate.
+ *
+ * The speed ramp is baked into the files by `scripts/build-intro.mjs`, so they
+ * play at 1x. Their real lengths come from `intro-manifest.json`, written by
+ * that same build.
  *
  * ## The crop
  *
@@ -46,10 +51,15 @@ export function resolveIntro(): IntroConfig | null {
   if (!desktop && !mobile) return null;
 
   const table = crops as Record<string, IntroCrop>;
+  const built = manifest as Record<string, { duration: number }>;
   return {
     desktop,
     mobile,
     cropDesktop: table["hero-desktop"] ?? { top: 0, height: 1 },
     cropMobile: table["hero-mobile"] ?? { top: 0, height: 1 },
+    // Measured by the build, not guessed: the baked ramp decides how long each
+    // cut runs, and only the script that applied it knows to the frame.
+    durationDesktop: built.desktop?.duration ?? INTRO_TIMING.duration,
+    durationMobile: built.mobile?.duration ?? INTRO_TIMING.duration,
   };
 }

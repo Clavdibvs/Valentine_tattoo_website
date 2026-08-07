@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { INTRO_TIMING, introRateAt, markIntroCued, type IntroConfig } from "@/lib/intro-timing";
+import { INTRO_TIMING, markIntroCued, type IntroConfig } from "@/lib/intro-timing";
 import { lockScroll } from "@/lib/scroll-lock";
 
 import styles from "./IntroOverlay.module.css";
@@ -10,10 +10,13 @@ import styles from "./IntroOverlay.module.css";
 /**
  * The opening clip.
  *
- * It sits over the hero, plays once on a speed ramp — see `INTRO_TIMING` for the
- * arithmetic — cues the hero content as the ramp ends, then crossfades into the
- * hero image. The clip's last frame *is* that image, so with the same crop
- * applied the handover has nothing to see.
+ * It sits over the hero, plays once, cues the hero content a second in, then
+ * crossfades into the hero image. The clip's last frame *is* that image, so
+ * with the same crop applied the handover has nothing to see.
+ *
+ * It plays at 1x and nothing here touches `playbackRate`. The speed ramp is
+ * baked into the file — see `scripts/build-intro.mjs` for why driving it from
+ * this side could not be made smooth on a phone.
  *
  * ## It can never trap the page
  *
@@ -134,82 +137,46 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
     // page still for it.
     releaseScroll.current = lockScroll();
 
-    // Skip any run-in the master carries before its first real frame.
-    const startAt = portrait ? INTRO_TIMING.startAt.mobile : INTRO_TIMING.startAt.desktop;
-    if (startAt > 0) {
-      const seek = () => {
-        video.currentTime = startAt;
-        video.removeEventListener("loadedmetadata", seek);
-      };
-      if (video.readyState >= 1) seek();
-      else video.addEventListener("loadedmetadata", seek);
-    }
+    const total =
+      (portrait ? intro.durationMobile : intro.durationDesktop) || INTRO_TIMING.duration;
 
-    /*
-     * The speed ramp, driven per frame.
-     *
-     * `timeupdate` fires only a few times a second — far too coarse for a rate
-     * that changes continuously — so the rate is set on every animation frame
-     * instead, from the clip's own position. Deriving it from position rather
-     * than from a stopwatch means a dropped frame or a slow decode corrects
-     * itself on the next one.
-     */
-    let raf = 0;
-    let lastRate = 0;
-    let playbackStarted = 0;
-    const tick = () => {
-      if (video.paused || video.ended) return;
-
-      // Only write the rate when it has moved enough to matter. Assigning
-      // `playbackRate` every frame makes the decoder resync constantly, which
-      // is felt as stutter — and the curve is smooth enough that 0.05 steps are
-      // indistinguishable from continuous.
-      const rate = introRateAt(video.currentTime);
-      if (Math.abs(rate - lastRate) > 0.05) {
-        video.playbackRate = rate;
-        lastRate = rate;
-      }
-
-      // Real elapsed time, not clip position — see INTRO_TIMING.cueAfterSeconds.
-      if (!playbackStarted && video.currentTime > 0) playbackStarted = performance.now();
-      if (playbackStarted && performance.now() - playbackStarted >= INTRO_TIMING.cueAfterSeconds * 1000) {
-        fireCue();
-      }
-
-      // Past the ramp the clip runs at 1×, so the real time left is simply the
-      // clip time left. Start the crossfade so it *ends* as the clip does,
-      // rather than beginning at the last frame and cutting.
-      const total = Number.isFinite(video.duration) ? video.duration : INTRO_TIMING.duration;
-      if (total - video.currentTime <= INTRO_TIMING.fade) {
-        finish();
-        return;
-      }
-
-      raf = requestAnimationFrame(tick);
+    // The cue, and the crossfade, on plain timers.
+    //
+    // They used to be driven from a per-frame loop, because the ramp needed one
+    // anyway and the clip's position was the only honest clock. With the ramp
+    // baked in, clip position and real time are the same thing, so a frame loop
+    // would be doing nothing but waking the main thread sixty times a second
+    // during the one animation that must not be interrupted.
+    let cueTimer = 0;
+    let fadeTimer = 0;
+    const onPlaying = () => {
+      video.removeEventListener("playing", onPlaying);
+      cueTimer = window.setTimeout(fireCue, INTRO_TIMING.cueAfterSeconds * 1000);
+      // Start the crossfade so it *ends* as the clip does, rather than
+      // beginning at the last frame and cutting.
+      fadeTimer = window.setTimeout(finish, Math.max(0, total - INTRO_TIMING.fade) * 1000);
     };
+    video.addEventListener("playing", onPlaying);
 
     video.addEventListener("ended", finish);
     video.addEventListener("error", finish);
 
     // Autoplay is refused on some setups; there is nothing to fall back to but
     // the site itself, so hand it over immediately.
-    video.playbackRate = introRateAt(
-      portrait ? INTRO_TIMING.startAt.mobile : INTRO_TIMING.startAt.desktop,
-    );
-    lastRate = video.playbackRate;
     const started = video.play();
     if (started && typeof started.catch === "function") started.catch(finish);
-    raf = requestAnimationFrame(tick);
 
     // Watchdog: if playback never reaches the cue — stalled network, codec the
     // browser will not decode — the hero must not stay hidden.
-    // Real-time deadlines, not clip time: with the ramp the clip is over in
-    // about four seconds, so these only bite if playback never really starts.
+    // Deadlines in real time: the clip is over in about four seconds, so these
+    // only bite if playback never really starts.
     const watchdog = window.setTimeout(fireCue, 4000);
     const hardStop = window.setTimeout(finish, 8000);
 
     return () => {
-      cancelAnimationFrame(raf);
+      window.clearTimeout(cueTimer);
+      window.clearTimeout(fadeTimer);
+      video.removeEventListener("playing", onPlaying);
       video.removeEventListener("ended", finish);
       video.removeEventListener("error", finish);
       window.clearTimeout(watchdog);
