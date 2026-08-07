@@ -337,6 +337,9 @@
   width: fit-content;
   min-height: 44px;
   padding: var(--space-2xs) var(--space-sm);
+  /* The label wraps to two lines on a phone. Without this the block is centred
+     but its lines are not, which reads as misalignment. */
+  text-align: center;
   color: var(--color-text-dim);
   transition: color var(--dur-mid) var(--ease-out);
 }

@@ -78,8 +78,15 @@ export function ScrollAnimations() {
         // bottom of the first viewport — the hero's scroll indicator among them —
         // stranded below the threshold and permanently invisible.
         if (block.getBoundingClientRect().top < window.innerHeight) {
-          gsap.to(targets, { ...common, delay: openingDelay });
-          openingDelay += 0.12;
+          // `data-reveal-delay` overrides the running stagger, in seconds. The
+          // scroll indicator uses it to arrive well after the copy, so the eye
+          // reads the hero first and only then is invited to scroll.
+          const explicit = Number.parseFloat(block.dataset.revealDelay ?? "");
+          gsap.to(targets, {
+            ...common,
+            delay: Number.isFinite(explicit) ? explicit : openingDelay,
+          });
+          if (!Number.isFinite(explicit)) openingDelay += 0.12;
           return;
         }
 
@@ -187,14 +194,22 @@ export function ScrollAnimations() {
       /* ------------------------------------------------------------------ */
       const strip = document.querySelector<HTMLElement>("[data-backdrop-strip]");
       if (strip) {
+        /*
+         * The strip is 112% of the document tall (see PageBackdrop.module.css),
+         * so it has 12% of spare height to travel through and still cover the
+         * page at every scroll position. Moving it by 12/112 of its own height
+         * spends exactly that slack: the backdrop ends up drifting 12% slower
+         * than the content. At the previous 4% the effect was there but almost
+         * invisible.
+         */
         gsap.to(strip, {
-          yPercent: -4,
+          yPercent: -(12 / 112) * 100,
           ease: "none",
           scrollTrigger: {
             trigger: document.body,
             start: "top top",
             end: "bottom bottom",
-            scrub: 1.4,
+            scrub: 1.2,
           },
         });
       }

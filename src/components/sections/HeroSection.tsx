@@ -136,7 +136,13 @@ export function HeroSection() {
       {/* Scroll indicator                                                  */}
       {/* ---------------------------------------------------------------- */}
       {/* Points at whatever follows the hero — Instagram since the reorder. */}
-      <a href={`#${navItems[1].id}`} className={styles.scroll} data-reveal="">
+      <a
+        href={`#${navItems[1].id}`}
+        className={styles.scroll}
+        data-reveal=""
+        /* Arrives last, once the copy has had time to be read. */
+        data-reveal-delay="2"
+      >
         <OrnamentDivider className={styles.scrollDivider} starSize={14} width="320px" />
         <span className="u-micro">{heroContent.scrollLabel}</span>
         <ChevronDownIcon size={20} className={styles.scrollChevron} />

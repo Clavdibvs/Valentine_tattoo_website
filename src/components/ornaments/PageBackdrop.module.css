@@ -27,7 +27,12 @@
 
   display: flex;
   flex-direction: column;
-  height: 100%;
+  /*
+   * Taller than the document on purpose: the extra 12% is the slack the
+   * parallax travels through, so the strip still covers the page at every
+   * scroll position instead of leaving a gap at the foot.
+   */
+  height: 112%;
   /* Contains the blend so the plates composite against each other and the page
      background, and nothing leaks onto the content above. */
   isolation: isolate;
