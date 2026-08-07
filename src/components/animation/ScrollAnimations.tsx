@@ -91,11 +91,12 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
         const common = {
           opacity: 1,
           y: 0,
-          duration: 1.05,
+          duration: 1.6,
           // A long, decelerating tail is what reads as "smooth"; power2 arrived
-          // too abruptly at rest.
+          // too abruptly at rest. Slower still now that the content rises over
+          // the tail of the opening clip rather than after it.
           ease: "expo.out",
-          stagger: children.length > 0 ? 0.085 : 0,
+          stagger: children.length > 0 ? 0.14 : 0,
           clearProps: "willChange",
         };
 

@@ -87,6 +87,17 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
     }
     video.src = src;
 
+    // Skip any run-in the master carries before its first real frame.
+    const startAt = portrait ? INTRO_TIMING.startAt.mobile : INTRO_TIMING.startAt.desktop;
+    if (startAt > 0) {
+      const seek = () => {
+        video.currentTime = startAt;
+        video.removeEventListener("loadedmetadata", seek);
+      };
+      if (video.readyState >= 1) seek();
+      else video.addEventListener("loadedmetadata", seek);
+    }
+
     /*
      * The speed ramp, driven per frame.
      *
@@ -97,12 +108,26 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
      * itself on the next one.
      */
     let raf = 0;
+    let lastRate = 0;
+    let playbackStarted = 0;
     const tick = () => {
       if (video.paused || video.ended) return;
 
-      video.playbackRate = introRateAt(video.currentTime);
+      // Only write the rate when it has moved enough to matter. Assigning
+      // `playbackRate` every frame makes the decoder resync constantly, which
+      // is felt as stutter — and the curve is smooth enough that 0.05 steps are
+      // indistinguishable from continuous.
+      const rate = introRateAt(video.currentTime);
+      if (Math.abs(rate - lastRate) > 0.05) {
+        video.playbackRate = rate;
+        lastRate = rate;
+      }
 
-      if (video.currentTime >= INTRO_TIMING.cueAtVideoTime) fireCue();
+      // Real elapsed time, not clip position — see INTRO_TIMING.cueAfterSeconds.
+      if (!playbackStarted && video.currentTime > 0) playbackStarted = performance.now();
+      if (playbackStarted && performance.now() - playbackStarted >= INTRO_TIMING.cueAfterSeconds * 1000) {
+        fireCue();
+      }
 
       // Past the ramp the clip runs at 1×, so the real time left is simply the
       // clip time left. Start the crossfade so it *ends* as the clip does,
@@ -121,7 +146,10 @@ export function IntroOverlay({ intro }: { intro: IntroConfig }) {
 
     // Autoplay is refused on some setups; there is nothing to fall back to but
     // the site itself, so hand it over immediately.
-    video.playbackRate = INTRO_TIMING.startRate;
+    video.playbackRate = introRateAt(
+      portrait ? INTRO_TIMING.startAt.mobile : INTRO_TIMING.startAt.desktop,
+    );
+    lastRate = video.playbackRate;
     const started = video.play();
     if (started && typeof started.catch === "function") started.catch(finish);
     raf = requestAnimationFrame(tick);

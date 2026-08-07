@@ -57,7 +57,7 @@ document.head.appendChild(l);}catch(e){}})();`,
         {a11yContent.skipToContent}
       </a>
 
-      <SiteHeader />
+      <SiteHeader waitForIntro={Boolean(intro)} />
 
       {/*
         Section order: the work comes first, the booking invitation next, and

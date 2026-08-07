@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "motion/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { BrandLockup } from "@/components/ornaments/BrandMark";
 import { SigilStar } from "@/components/ornaments/SigilStar";
@@ -30,7 +30,7 @@ const headerVariants: Variants = {
   shown: {
     y: 0,
     opacity: 1,
-    transition: { duration: 0.9, ease: EASE, delayChildren: 0.28, staggerChildren: 0.07 },
+    transition: { duration: 1.2, ease: EASE, delayChildren: 0.34, staggerChildren: 0.1 },
   },
 };
 
@@ -39,21 +39,49 @@ const passThrough: Variants = { hidden: {}, shown: { transition: { staggerChildr
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: -10 },
-  shown: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
+  shown: { opacity: 1, y: 0, transition: { duration: 1, ease: EASE } },
 };
 
-export function SiteHeader() {
+export function SiteHeader({ waitForIntro = false }: { waitForIntro?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const activeSection = useActiveSection(SECTION_IDS, "home");
   const scrolled = useScrolled();
   const reduce = useReducedMotion();
 
+  /**
+   * The header arrives with the rest of the opening rather than before it.
+   *
+   * Without this it was fully drawn while the clip was still playing, which put
+   * the navigation on top of the film for its whole length. It now waits for
+   * the same cue the hero content waits for — and, as everywhere else, a
+   * fallback timer guarantees it appears even if the cue never comes.
+   */
+  const [ready, setReady] = useState(!waitForIntro);
+
+  useEffect(() => {
+    if (ready) return;
+    let done = false;
+    const release = () => {
+      if (done) return;
+      done = true;
+      window.removeEventListener("vt:intro-cue", release);
+      window.clearTimeout(timer);
+      setReady(true);
+    };
+    const timer = window.setTimeout(release, 8000);
+    window.addEventListener("vt:intro-cue", release);
+    return () => {
+      window.removeEventListener("vt:intro-cue", release);
+      window.clearTimeout(timer);
+    };
+  }, [ready]);
+
   // Under reduced motion the header simply renders in its final state: no
   // variants, so nothing animates and nothing can be left hidden.
   const motionProps = reduce
     ? {}
-    : { initial: "hidden" as const, animate: "shown" as const };
+    : { initial: "hidden" as const, animate: ready ? ("shown" as const) : ("hidden" as const) };
   const v = (variants: Variants) => (reduce ? {} : { variants });
 
   return (

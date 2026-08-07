@@ -38,18 +38,42 @@ export type IntroConfig = {
  * drift in playback feeds straight back into the next frame's rate.
  */
 export const INTRO_TIMING = {
+  /**
+   * Where each cut actually starts.
+   *
+   * The mobile master opens on dead air. Measured frame luminance holds flat at
+   * ~1.4 until 2.5s and only reaches half its final value around 3.5s, so the
+   * cut starts at 2.6 — past the flat part, before the build. Playing that
+   * stretch would be several seconds of black at exactly the moment the visitor
+   * is deciding whether anything is loading.
+   *
+   * The desktop master needs no such trim: it climbs steadily from the first
+   * second.
+   *
+   * Joining the curve later also lowers the opening rate, from 4× to √(16−3·2.6)
+   * ≈ 2.9×. The rate law is untouched — we simply start further along it — and
+   * that alone took dropped frames on mobile from 12.4% to 2.9%.
+   */
+  startAt: { desktop: 0, mobile: 2.6 },
   /** Video position, in seconds, where the ramp ends and real time begins. */
   rampUntil: 5,
   /** Rate at the very start. See the derivation above. */
   startRate: 4,
   /**
-   * The hero starts appearing when the ramp ends — the moment the clip settles
-   * into real time is the natural beat for it, and it leaves the whole
-   * real-time tail for the content to arrive over.
+   * When the hero starts appearing, in *real* seconds from the moment playback
+   * begins — not in clip position.
+   *
+   * Clip position would mean two different moments on the two cuts, because the
+   * mobile one joins the ramp later and therefore reaches any given frame
+   * sooner. Real time is what the visitor experiences, so that is what this is
+   * measured in.
+   *
+   * Early on purpose: the content now rises slowly over the tail of the clip
+   * rather than waiting for it to be over.
    */
-  cueAtVideoTime: 5,
+  cueAfterSeconds: 1,
   /** Crossfade length, in seconds. Timed to *end* as the clip does. */
-  fade: 1.2,
+  fade: 1.8,
   /** Nominal clip length. Only a safety net: playback drives the real timing. */
   duration: 7.05,
 } as const;
