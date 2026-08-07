@@ -145,8 +145,31 @@ export const consultationUpload = {
 /* Metadata                                                                   */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The title is ordered brand-first: the studio name opens it, the style and
+ * the place follow.
+ *
+ * That order is a deliberate choice by the client. It puts the name in the one
+ * position nothing can truncate away — mobile results cut the tail, never the
+ * head — so every impression reinforces the brand even when the visitor does
+ * not click. The keywords still sit inside the tag, which is what Google reads;
+ * they simply are not the first thing a human sees.
+ *
+ * "(Bari)" is there because Triggiano on its own has almost no search volume
+ * while the province name is how people actually phrase a local tattoo search.
+ * It is a qualifier, not a claim: she genuinely receives in Triggiano, which
+ * is in the province of Bari, and the description says so in full.
+ *
+ * At 59 characters it renders whole — Google truncates the title around 600px,
+ * roughly 60 characters at this mix of upper and lower case. Anything added
+ * here has to displace something, not extend it.
+ *
+ * The artist's own name is deliberately not in the title: there is no room for
+ * it beside the brand. It is the first thing in the description, where brand
+ * searches still match it, and the H1 and About section carry it on the page.
+ */
 export const siteMetadata = {
-  title: "Valentine Tattoo — Valentina Stucchi | Tatuaggi cyber tribal a Triggiano",
+  title: "Valentine Tattoo | Tatuaggi Cyber Tribal a Triggiano (Bari)",
   description:
     "Valentina Stucchi, tatuatrice di Valenzano. Tatuaggi su misura, cyber tribal e sigil-inspired. Riceve a Triggiano presso Crossbone Studio.",
   locale: "it_IT",
