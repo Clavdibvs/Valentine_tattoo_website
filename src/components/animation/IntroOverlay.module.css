@@ -1,0 +1,95 @@
+/**
+ * The overlay sits exactly where the hero backdrop plate sits — one screen
+ * tall, pinned to the top — so the clip and the image it resolves into occupy
+ * the same box.
+ */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100svh;
+  /* Above the backdrop strip, below the header and the page content. */
+  z-index: 2;
+  overflow: hidden;
+  background: var(--color-bg);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity var(--intro-fade, 1.4s) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.overlay[data-phase="fading"] {
+  opacity: 0;
+}
+
+/**
+ * The same crop the hero plate received, expressed as a scale-and-offset so the
+ * video's last frame registers exactly with the image beneath it. The numbers
+ * come from `backdrop-crop.json`, measured at build time — never retyped.
+ *
+ * Positioned rather than margined: a percentage `margin-top` resolves against
+ * the containing block's *width*, so the offset landed nowhere near where it
+ * was meant to — 34px instead of 109px on a phone. A percentage `top` on an
+ * absolutely positioned box resolves against the height, which is the axis
+ * being cropped.
+ *
+ * `object-fit: fill` matches the plate, which is also stretched rather than
+ * cropped: the ornaments live at the left and right edges and must not move.
+ */
+.video {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--crop-mobile-scale, 100%);
+  top: var(--crop-mobile-offset, 0);
+  object-fit: fill;
+}
+
+@media (min-width: 1024px) {
+  .video {
+    height: var(--crop-desktop-scale, 100%);
+    top: var(--crop-desktop-offset, 0);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Skip                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.skip {
+  position: absolute;
+  right: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vh, 2.5rem);
+  /* The overlay ignores pointer events; this one control does not. */
+  pointer-events: auto;
+  min-height: 44px;
+  padding: 0.6rem 1.15rem;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: rgba(6, 6, 6, 0.55);
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    color var(--dur-mid) var(--ease-out),
+    border-color var(--dur-mid) var(--ease-out);
+}
+
+.skip:hover,
+.skip:focus-visible {
+  color: #fff;
+  border-color: var(--color-line-strong);
+}
+
+.overlay[data-phase="fading"] .skip {
+  pointer-events: none;
+}
+
+/* An opening animation is exactly what reduced motion asks not to be shown. */
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    display: none;
+  }
+}

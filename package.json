@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
     "instagram:refresh": "node scripts/refresh-instagram-token.mjs",
-    "instagram:exchange": "node scripts/refresh-instagram-token.mjs --exchange"
+    "instagram:exchange": "node scripts/refresh-instagram-token.mjs --exchange",
+    "build:backdrops": "node scripts/build-backdrops.mjs",
+    "build:gallery": "node scripts/build-gallery.mjs",
+    "build:intro": "node scripts/build-intro.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

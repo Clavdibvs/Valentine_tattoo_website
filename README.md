@@ -44,6 +44,9 @@ Instagram e il modulo rifiuta gli invii spiegando il motivo. Non inventa mai dat
 
 | Comando | Cosa fa |
 | --- | --- |
+| `npm run build:backdrops` | Rigenera le piastre di sfondo dai master |
+| `npm run build:gallery` | Rigenera le gallerie dai media Instagram esportati |
+| `npm run build:intro` | Rigenera i clip di apertura dai master video |
 | `npm run dev` | Server di sviluppo |
 | `npm run build` | Build di produzione |
 | `npm start` | Avvia la build di produzione |

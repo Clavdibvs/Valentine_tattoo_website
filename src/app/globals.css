@@ -374,11 +374,13 @@ ol {
   content: "";
   position: absolute;
   inset: 0;
+  /* Lighter than it was: the vignette was compounding with the scrim to pull
+     the ornaments at the edges — which is where they all live — into the dark. */
   background: radial-gradient(
     118% 88% at 50% 42%,
-    transparent 38%,
-    rgba(0, 0, 0, 0.55) 82%,
-    rgba(0, 0, 0, 0.85) 100%
+    transparent 46%,
+    rgba(0, 0, 0, 0.34) 84%,
+    rgba(0, 0, 0, 0.6) 100%
   );
 }
 

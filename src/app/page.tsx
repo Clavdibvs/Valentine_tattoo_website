@@ -1,3 +1,4 @@
+import { IntroOverlay } from "@/components/animation/IntroOverlay";
 import { ScrollAnimations } from "@/components/animation/ScrollAnimations";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -9,8 +10,13 @@ import { CollectionSection } from "@/components/sections/CollectionSection";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { InstagramSection } from "@/components/sections/InstagramSection";
 import { a11yContent } from "@/content/site-content";
+import { resolveIntro } from "@/lib/intro";
 
 export default function Home() {
+  // Decided on the server so the animation layer knows whether to wait before
+  // it hydrates — no client-side race over who starts first.
+  const intro = resolveIntro();
+
   return (
     <>
       {/* Shared SVG gradients/filters for every chrome ornament. */}
@@ -22,6 +28,30 @@ export default function Home() {
 
       {/* One continuous ornamental strip behind the entire document. */}
       <PageBackdrop />
+
+      {/* Opening clip, when one has been supplied. Purely additive. */}
+      {intro ? (
+        <>
+          {/*
+            Starts the download during parse — but only for visitors who will
+            actually see it, and only the cut their viewport needs. The video
+            element itself gets its source on hydration; this just means the
+            bytes are already arriving by then.
+          */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var portrait=matchMedia('(max-width: 1023px)').matches;
+var href=portrait?${JSON.stringify(intro.mobile ?? intro.desktop)}:${JSON.stringify(intro.desktop ?? intro.mobile)};
+if(!href)return;
+var l=document.createElement('link');l.rel='preload';l.as='video';l.href=href;
+document.head.appendChild(l);}catch(e){}})();`,
+            }}
+          />
+          <IntroOverlay intro={intro} />
+        </>
+      ) : null}
 
       <a href="#main" className="skip-link">
         {a11yContent.skipToContent}
@@ -50,7 +80,7 @@ export default function Home() {
       {/* Closing line, below every section. */}
       <SiteFooter />
 
-      <ScrollAnimations />
+      <ScrollAnimations waitForIntro={Boolean(intro)} />
     </>
   );
 }

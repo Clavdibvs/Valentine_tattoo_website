@@ -1,0 +1,38 @@
+{
+  "hero-desktop": {
+    "top": 0.02961,
+    "height": 0.86908
+  },
+  "about-desktop": {
+    "top": 0.05987,
+    "height": 0.79145
+  },
+  "instagram-desktop": {
+    "top": 0.01974,
+    "height": 0.71842
+  },
+  "booking-desktop": {
+    "top": 0.02039,
+    "height": 0.72829
+  },
+  "booking-tail-desktop": {
+    "top": 0.02039,
+    "height": 0.71776
+  },
+  "hero-mobile": {
+    "top": 0.0599,
+    "height": 0.67894
+  },
+  "about-mobile": {
+    "top": 0.0599,
+    "height": 0.67969
+  },
+  "instagram-mobile": {
+    "top": 0.0119,
+    "height": 0.72619
+  },
+  "booking-mobile": {
+    "top": 0.0119,
+    "height": 0.72619
+  }
+}

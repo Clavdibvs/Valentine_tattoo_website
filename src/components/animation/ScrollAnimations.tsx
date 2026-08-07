@@ -28,7 +28,7 @@ function queryAll<T extends Element>(selector: string): T[] {
   return Array.from(document.querySelectorAll<T>(selector));
 }
 
-export function ScrollAnimations() {
+export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: boolean }) {
   const scope = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -58,6 +58,32 @@ export function ScrollAnimations() {
 
       let openingDelay = 0.15;
 
+      /**
+       * The opening sequence normally plays at once. When the intro clip is on
+       * screen it waits for the clip's cue instead, so the hero appears over the
+       * video rather than behind it.
+       *
+       * The wait always ends: either the cue arrives, or the fallback timer
+       * does. Nothing is left to an event that might never fire.
+       */
+      const openings: Array<() => void> = [];
+      const runOpenings = () => {
+        while (openings.length) openings.shift()?.();
+      };
+
+      if (waitForIntro) {
+        let released = false;
+        const release = () => {
+          if (released) return;
+          released = true;
+          window.removeEventListener("vt:intro-cue", release);
+          window.clearTimeout(fallback);
+          runOpenings();
+        };
+        const fallback = window.setTimeout(release, 8000);
+        window.addEventListener("vt:intro-cue", release);
+      }
+
       revealBlocks.forEach((block) => {
         const children = block.querySelectorAll<HTMLElement>("[data-reveal-child]");
         const targets = children.length > 0 ? Array.from(children) : [block];
@@ -82,10 +108,12 @@ export function ScrollAnimations() {
           // scroll indicator uses it to arrive well after the copy, so the eye
           // reads the hero first and only then is invited to scroll.
           const explicit = Number.parseFloat(block.dataset.revealDelay ?? "");
-          gsap.to(targets, {
-            ...common,
-            delay: Number.isFinite(explicit) ? explicit : openingDelay,
-          });
+          const delay = Number.isFinite(explicit) ? explicit : openingDelay;
+          const play = () => gsap.to(targets, { ...common, delay });
+
+          if (waitForIntro) openings.push(play);
+          else play();
+
           if (!Number.isFinite(explicit)) openingDelay += 0.12;
           return;
         }
@@ -355,7 +383,7 @@ export function ScrollAnimations() {
         ctx.revert();
       };
     },
-    { scope },
+    { scope, dependencies: [waitForIntro] },
   );
 
   // A zero-size scope node: the animations target the whole document, but

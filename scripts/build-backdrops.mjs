@@ -29,12 +29,23 @@
  */
 
 import { readdirSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import sharp from "sharp";
 
 const DESKTOP_SRC = "new references/Desktop";
 const MOBILE_SRC = "new references/Mobile";
 const OUT = "public/backdrops";
+
+/**
+ * Where the measured crops are published for the app to read.
+ *
+ * The intro video has to be cropped exactly like the hero plate, so that its
+ * final frame lands on the hero image with no visible shift. Rather than
+ * copying magic numbers into CSS, the crop each plate actually received is
+ * written here and the video reuses the hero entry.
+ */
+const CROP_MANIFEST = "src/content/backdrop-crop.json";
+const crops = {};
 
 const DESKTOP_NAMES = ["hero", "about", "instagram", "booking", "booking-tail"];
 const MOBILE_NAMES = ["hero", "about", "instagram", "booking"];
@@ -107,6 +118,12 @@ async function buildSet(srcDir, names, widths, suffix) {
         .toFile(`${OUT}/${name}-${suffix}-${width}.webp`);
     }
 
+    crops[`${name}-${suffix}`] = {
+      // Fractions of the source height, so they survive any resize.
+      top: +(crop.top / crop.sourceHeight).toFixed(5),
+      height: +(crop.height / crop.sourceHeight).toFixed(5),
+    };
+
     console.log(
       `  ${name}-${suffix}: keeps ${kept}% (rows ${crop.top}–${crop.top + crop.height} of ${crop.sourceHeight})`,
     );
@@ -118,4 +135,7 @@ console.log("Desktop plates:");
 await buildSet(DESKTOP_SRC, DESKTOP_NAMES, DESKTOP_WIDTHS, "desktop");
 console.log("Mobile plates:");
 await buildSet(MOBILE_SRC, MOBILE_NAMES, MOBILE_WIDTHS, "mobile");
-console.log("\nDone.");
+
+await writeFile(CROP_MANIFEST, JSON.stringify(crops, null, 2) + "\n");
+console.log(`\nCrops written to ${CROP_MANIFEST}.`);
+console.log("Done.");
