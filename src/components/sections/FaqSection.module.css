@@ -1,0 +1,229 @@
+.faq {
+  position: relative;
+  z-index: 1;
+  overflow: clip;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Decoration                                                                 */
+/* -------------------------------------------------------------------------- */
+
+.decorLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cornerTop,
+.cornerBottom {
+  position: absolute;
+  height: auto;
+}
+
+.cornerTop {
+  top: 2%;
+  right: -12%;
+  width: min(34vw, 300px);
+}
+
+.cornerBottom {
+  bottom: -4%;
+  left: -12%;
+  width: min(38vw, 340px);
+}
+
+@media (max-width: 767px) {
+  .cornerTop {
+    top: 0;
+    right: -30%;
+    width: 58vw;
+  }
+  .cornerBottom {
+    bottom: 1%;
+    left: -34%;
+    width: 62vw;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Layout                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.inner {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.heading {
+  width: 100%;
+}
+
+.supporting {
+  max-width: 56ch;
+  margin: 0;
+  text-align: center;
+  font-size: var(--fs-body-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+.headDivider {
+  margin-block: var(--space-2xs) var(--space-xs);
+}
+
+.panel {
+  width: 100%;
+  /* The answers are prose: past ~72ch the eye loses the line it is on. */
+  max-width: 900px;
+}
+
+.panelInner {
+  padding: clamp(0.35rem, 1.4vw, 0.9rem) clamp(0.5rem, 2vw, 1.5rem);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Items                                                                      */
+/* -------------------------------------------------------------------------- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item + .item {
+  border-top: 1px solid var(--color-line-soft);
+}
+
+.details {
+  width: 100%;
+}
+
+/*
+ * The row is the control, so it carries the whole touch target rather than
+ * just the text inside it: 44px minimum, which the vertical padding alone
+ * already clears at every type size the tokens produce.
+ */
+.summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding-block: clamp(0.85rem, 2.2vw, 1.15rem);
+  cursor: pointer;
+  /* Both are needed: the standard property, and Safari's own marker. */
+  list-style: none;
+  transition: color var(--dur-mid) var(--ease-out);
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summaryStar {
+  flex: none;
+  color: var(--color-text-dim);
+  transition: color var(--dur-mid) var(--ease-out);
+}
+
+.question {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans), sans-serif;
+  font-size: var(--fs-body-sm);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--color-text);
+  /* Questions read as questions, not as tracked labels. */
+  letter-spacing: 0.01em;
+}
+
+.chevron {
+  flex: none;
+  color: var(--color-text-dim);
+  transition:
+    transform var(--dur-mid) var(--ease-out),
+    color var(--dur-mid) var(--ease-out);
+}
+
+.summary:hover .question,
+.summary:hover .chevron,
+.summary:hover .summaryStar {
+  color: var(--color-text);
+}
+
+.details[open] .chevron {
+  transform: rotate(180deg);
+  color: var(--color-text);
+}
+
+.details[open] .summaryStar {
+  color: var(--color-text);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Answer                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * The answer is indented to the width of the star plus its gap, so it lines up
+ * under the question text rather than under the ornament.
+ */
+.answerWrap {
+  padding-left: calc(11px + var(--space-2xs));
+  padding-right: calc(18px + var(--space-2xs));
+  padding-bottom: clamp(0.85rem, 2.2vw, 1.15rem);
+}
+
+.answer {
+  max-width: 72ch;
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.72;
+  color: var(--color-text-muted);
+}
+
+/*
+ * `details` swaps display outright, so there is no height to transition
+ * without scripting it. Fading the answer in on open is the honest version of
+ * the same intent, and it runs on open only because that is when the element
+ * enters the box tree.
+ */
+.details[open] .answerWrap {
+  animation: faq-answer-in var(--dur-mid) var(--ease-out) both;
+}
+
+@keyframes faq-answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .details[open] .answerWrap {
+    animation: none;
+  }
+
+  .chevron {
+    transition: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .answerWrap {
+    /* On the narrowest screens the indent costs more than the alignment buys. */
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

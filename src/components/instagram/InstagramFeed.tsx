@@ -9,6 +9,7 @@ import { instagramFeed } from "@/config/site-config";
 import type { InstagramMedia } from "@/lib/instagram/types";
 
 import { InstagramCard } from "./InstagramCard";
+import { MediaLightbox } from "./MediaLightbox";
 import styles from "./InstagramFeed.module.css";
 
 /**
@@ -38,6 +39,18 @@ export function InstagramFeed({
   const scrollerRef = useRef<HTMLUListElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  /*
+   * Position of the enlarged tile in `media`, or null when nothing is open.
+   *
+   * An index rather than the item itself, because the lightbox steps through
+   * this same list: it needs to know where in the gallery it currently is, not
+   * just which picture it is showing. Kept per carousel rather than in one
+   * shared provider — each gallery already owns its media, only one lightbox
+   * can be open at a time, and a null state renders nothing.
+   */
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const closeLightbox = useCallback(() => setOpenIndex(null), []);
 
   /* ---------------------------------------------------------------------- */
   /* Control availability                                                    */
@@ -162,6 +175,7 @@ export function InstagramFeed({
                 showCaption
                 sizes={shape === "story" ? "(max-width: 1023px) 46vw, 200px" : "(max-width: 1023px) 33vw, 170px"}
                 priority={index < 3}
+                onOpen={() => setOpenIndex(index)}
               />
             </li>
           ))}
@@ -177,6 +191,13 @@ export function InstagramFeed({
       >
         <ChevronRightIcon size={20} />
       </button>
+
+      <MediaLightbox
+        items={media}
+        index={openIndex}
+        onIndexChange={setOpenIndex}
+        onClose={closeLightbox}
+      />
     </div>
   );
 }

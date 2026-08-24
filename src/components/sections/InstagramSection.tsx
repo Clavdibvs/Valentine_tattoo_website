@@ -10,7 +10,7 @@ import { ChromeButton } from "@/components/ui/ChromeButton";
 import { ChromeFrame } from "@/components/ui/ChromeFrame";
 import { ExternalIcon, InstagramIcon } from "@/components/ui/Icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { instagramContent } from "@/content/site-content";
+import { heroContent, instagramContent } from "@/content/site-content";
 import { instagramProfile } from "@/config/site-config";
 import { hasLocalGallery, localFeed } from "@/lib/gallery";
 import { fetchInstagramFeed } from "@/lib/instagram/client";
@@ -28,7 +28,7 @@ export function InstagramSection() {
       </div>
 
       <SideGlyphRail side="left" index="02" />
-      <SideGlyphRail side="right" words={["CYBER TRIBAL", "SIGIL INSPIRED", "CUSTOM WORK"]} />
+      <SideGlyphRail side="right" words={heroContent.railWords} />
 
       <div className={`container ${styles.inner}`}>
         <SectionHeading

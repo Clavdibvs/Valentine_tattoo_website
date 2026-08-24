@@ -84,6 +84,8 @@
   --z-frame: 40;
   --z-header: 60;
   --z-menu: 80;
+  /* Above the menu: opening a tile from a section must cover the header too. */
+  --z-lightbox: 90;
 
   color-scheme: dark;
 }

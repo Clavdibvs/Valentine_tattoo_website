@@ -12,7 +12,7 @@
 import { artist, instagramProfile } from "@/config/site-config";
 
 export const heroContent = {
-  eyebrow: "CYBER TRIBAL · SIGIL · CUSTOM WORK",
+  eyebrow: "CYBER TRIBAL · BIOMECHANICAL · CUSTOM WORK",
   /** Rendered as a single accessible H1; the array is only a line-break hint. */
   titleLines: ["VALENTINE", "TATTOO"] as const,
   titleAccessible: "Valentine Tattoo",
@@ -42,10 +42,10 @@ export const heroContent = {
   primaryCta: "Richiedi una consulenza su WhatsApp",
   secondaryCta: "Scrivimi su Instagram",
   supportingLine:
-    "Tatuaggi su misura · Concept personalizzati · Cyber tribal e sigil-inspired",
+    "Tatuaggi su misura · Concept personalizzati · Cyber tribal e biomeccanico",
   scrollLabel: "SCORRI PER ESPLORARE",
   /** Vertical ornamental rail text — brand words, never fabricated data. */
-  railWords: ["CYBER TRIBAL", "SIGIL INSPIRED", "CUSTOM WORK"] as const,
+  railWords: ["CYBER TRIBAL", "BIOMECHANICAL", "CUSTOM WORK"] as const,
 } as const;
 
 export const aboutContent = {
@@ -60,39 +60,41 @@ export const aboutContent = {
   paragraphs: [
     [
       { text: "Sono ", emphasis: false },
-      { text: `${artist.name}.`, emphasis: true },
-    ],
-    [
-      {
-        text: "Trasformo idee, simboli ed emozioni in tatuaggi costruiti sulla persona e sul corpo.",
-        emphasis: false,
-      },
-    ],
-    [
-      { text: "Ricevo a ", emphasis: false },
+      { text: artist.name, emphasis: true },
+      { text: ", tatuatrice in provincia di ", emphasis: false },
+      { text: "Bari", emphasis: true },
+      { text: ". Ricevo a ", emphasis: false },
       { text: artist.city, emphasis: true },
       { text: " presso ", emphasis: false },
       { text: artist.studio, emphasis: true },
+      { text: ".", emphasis: false },
+    ],
+    [
       {
-        text: ", dove ogni progetto nasce dal confronto tra tecnica, ricerca e visione.",
+        text: "Il mio lavoro consiste nel trasformare idee, simboli ed emozioni in tatuaggi unici, progettati per adattarsi armoniosamente alle forme del corpo e valorizzarne la struttura.",
         emphasis: false,
       },
     ],
     [
-      { text: "Il mio linguaggio visivo incontra ", emphasis: false },
-      { text: "cyber tribal", emphasis: true },
+      { text: "Il mio linguaggio visivo unisce influenze ", emphasis: false },
+      { text: "cybertribal", emphasis: true },
       { text: ", ", emphasis: false },
-      { text: "sigilism", emphasis: true },
+      { text: "biomeccaniche", emphasis: true },
       { text: " e ", emphasis: false },
       { text: "dark ornamental", emphasis: true },
+      { text: ".", emphasis: false },
+    ],
+    [
       {
-        text: ": linee affilate, forme organiche e composizioni progettate per dialogare con il placement.",
+        text: "Ogni progetto nasce dall\u2019ascolto della tua richiesta e prende forma direttamente sul corpo, attraverso una bozza realizzata a pennarello: permette di vedere fin da subito l\u2019insieme del tatuaggio sulla zona scelta. Da quella base sviluppo poi il disegno definitivo.",
         emphasis: false,
       },
     ],
     [
+      { text: "Il preventivo tiene conto del tempo necessario alla progettazione, di una prima seduta di ", emphasis: false },
+      { text: "ghostlines", emphasis: true },
       {
-        text: "Ogni progetto è personale. Ogni tatuaggio parte dall’ascolto.",
+        text: " \u2014 in cui l\u2019intero stencil viene ricalcato con linee molto leggere \u2014 e delle sedute successive, durante le quali il tatuaggio viene completato progressivamente.",
         emphasis: false,
       },
     ],
@@ -108,7 +110,7 @@ export const aboutContent = {
     { id: "studio", title: "TRIGGIANO", description: `Presso ${artist.studio}` },
   ] as const,
   cta: "SCOPRI I MIEI LAVORI SU INSTAGRAM",
-  portraitAlt: `Ritratto di ${artist.name}, tatuatrice di ${artist.brand}`,
+  portraitAlt: `${artist.name}, tatuatrice di ${artist.brand}, mentre realizza un tatuaggio nel suo studio`,
   portraitPlaceholderNotice: "Ritratto in attesa della foto ufficiale",
   signatureRole: artist.role,
 } as const;
@@ -116,7 +118,7 @@ export const aboutContent = {
 export const instagramContent = {
   eyebrow: "CONNECT WITH THE TRIBE",
   title: "INSTAGRAM FEED",
-  supporting: `Uno sguardo dietro le linee: lavori, dettagli, processi e nuovi progetti pubblicati su ${instagramProfile.handleWithAt}.`,
+  supporting: `Uno sguardo ai lavori e ai nuovi progetti pubblicati su ${instagramProfile.handleWithAt}.`,
   cta: `APRI ${instagramProfile.handleWithAt.toUpperCase()} SU INSTAGRAM`,
   footerEyebrow: "ENTRA NEL MONDO VALENTINE",
   carouselLabel: "Ultimi post di Instagram",
@@ -134,6 +136,22 @@ export const instagramContent = {
     REELS: "Reel",
     CAROUSEL_ALBUM: "Carosello",
   } as const,
+  /**
+   * The enlarged view. A tap on a tile opens the image here first; the link out
+   * to Instagram is the deliberate second step, under it.
+   */
+  lightbox: {
+    /** Accessible name of the dialog. */
+    label: "Immagine ingrandita",
+    close: "Chiudi l'immagine",
+    /** Hint on the tile itself, for screen readers and title tooltips. */
+    openHint: "Ingrandisci l'immagine",
+    cta: "APRI SU INSTAGRAM",
+    /** Sits above the button, explaining where it goes. */
+    ctaEyebrow: "GUARDA IL POST ORIGINALE",
+    previous: "Foto precedente",
+    next: "Foto successiva",
+  },
 } as const;
 
 /**
@@ -145,7 +163,7 @@ export const collectionContent = {
     eyebrow: "SELECTED WORK",
     title: "CREAZIONI",
     supporting:
-      "Progetti realizzati: linee, simboli e composizioni nate dal confronto con chi le porta addosso.",
+      "La continua ricerca della mia espressione artistica, in forme sempre diverse.",
     cta: "VEDI TUTTO SU INSTAGRAM",
     emptyTitle: "Nessuna creazione da mostrare",
     emptyBody: `I lavori più recenti sono pubblicati su ${instagramProfile.handleWithAt}.`,
@@ -155,7 +173,7 @@ export const collectionContent = {
     eyebrow: "READY TO INK",
     title: "FLASH",
     supporting:
-      "Disegni già pronti, pensati per essere tatuati così come sono. Scrivimi per sapere quali sono ancora disponibili.",
+      "Disegni già pronti, pensati per essere tatuati. Scrivimi per sapere quali sono ancora disponibili.",
     cta: "CHIEDI DISPONIBILITÀ",
     emptyTitle: "Nessun flash disponibile ora",
     emptyBody: `I nuovi flash vengono pubblicati su ${instagramProfile.handleWithAt}.`,
@@ -270,6 +288,97 @@ export const bookingContent = {
     copyright: `© ${new Date().getFullYear()} ${artist.brand} · ${artist.name}`,
     privacy: "I dati inviati tramite il modulo vengono usati solo per rispondere alla richiesta.",
   },
+} as const;
+
+/**
+ * Frequently asked questions.
+ *
+ * Every answer here comes from something the client has actually described —
+ * where she works, the three influences, the marker draft taken directly on the
+ * body, the ghostlines session, the three things a quote is built from. Nothing
+ * states a price, a duration, a response time or an availability, for the same
+ * reason nothing else on this file does: none of it has been supplied.
+ *
+ * ## Written to be quoted
+ *
+ * Each answer names its own subject and stands on its own, rather than
+ * continuing the question grammatically ("Valentina Stucchi tatua a
+ * Triggiano...", not "A Triggiano, presso..."). A search result snippet, a
+ * Google AI Overview or an assistant summarising the page lifts one answer out
+ * of its context, and a fragment that only parses next to its heading arrives
+ * there as nonsense. The named entities — the artist, the brand, the town, the
+ * province, the studio, the three styles, ghostlines — are repeated inside the
+ * answers for the same reason.
+ *
+ * The questions are phrased the way someone would actually type or ask them,
+ * which is what a question-shaped query has to match.
+ */
+export const faqContent = {
+  eyebrow: "BEFORE YOU BOOK",
+  /**
+   * Two lines, not one.
+   *
+   * "DOMANDE FREQUENTI" set on a single line is the widest heading on the
+   * site: 336px against the 346px a 390px-wide phone has to give it. It fits,
+   * but with 5px a side, and only above roughly 382px — narrower than that it
+   * wraps on its own, so the same heading looked deliberate on one phone and
+   * cramped on the next. Worse, the fallback face renders before Bodoni loads
+   * and does not have to be the same width, which puts a real overflow inside
+   * the margin of error. Breaking it here makes the shape the same everywhere.
+   *
+   * The break is visual only — `titleAccessible` is what a screen reader says.
+   */
+  titleLines: ["DOMANDE", "FREQUENTI"] as const,
+  titleAccessible: "Domande frequenti",
+  supporting:
+    "Come nasce un progetto, come si svolgono le sedute e come richiedere una consulenza.",
+  items: [
+    {
+      id: "dove",
+      question: "Dove tatua Valentine Tattoo?",
+      answer: `Valentine Tattoo \u00e8 il progetto di ${artist.name}, tatuatrice in provincia di Bari. Riceve a ${artist.city}, presso ${artist.studio}.`,
+    },
+    {
+      id: "stili",
+      question: "Quali stili di tatuaggio realizza Valentina Stucchi?",
+      answer:
+        "Il linguaggio visivo di Valentine Tattoo unisce influenze cybertribal, biomeccaniche e dark ornamental. Sono tatuaggi custom: ogni disegno nasce su misura e viene progettato per adattarsi alle forme del corpo e valorizzarne la struttura.",
+    },
+    {
+      id: "progetto",
+      question: "Come nasce un tatuaggio custom?",
+      answer:
+        "Ogni progetto parte dall\u2019ascolto della richiesta. Il tatuaggio prende poi forma direttamente sul corpo, con una bozza realizzata a pennarello che permette di vedere fin da subito l\u2019insieme del disegno sulla zona scelta. Da quella base viene sviluppato il disegno definitivo.",
+    },
+    {
+      id: "ghostlines",
+      question: "Che cosa sono le ghostlines?",
+      answer:
+        "Le ghostlines sono la prima seduta del tatuaggio: l\u2019intero stencil viene ricalcato sulla pelle con linee molto leggere, fissando la struttura completa del disegno. Le sedute successive partono da quella traccia e completano il tatuaggio progressivamente.",
+    },
+    {
+      id: "preventivo",
+      question: "Come viene calcolato il preventivo di un tatuaggio?",
+      answer:
+        "Il preventivo tiene conto di tre elementi: il tempo necessario alla progettazione del disegno, la prima seduta di ghostlines e le sedute successive in cui il tatuaggio viene completato. Ogni progetto viene valutato singolarmente, perch\u00e9 soggetto, dimensione, zona del corpo e livello di dettaglio cambiano il tempo di lavoro.",
+    },
+    {
+      id: "idea",
+      question: "Posso proporre una mia idea o portare dei riferimenti?",
+      answer:
+        "S\u00ec: il punto di partenza \u00e8 sempre la tua idea. Nel modulo di consulenza di questa pagina puoi descrivere soggetto, significato, zona del corpo e dimensione, e allegare le immagini di riferimento che ti sembrano utili.",
+    },
+    {
+      id: "flash",
+      question: "Che differenza c\u2019\u00e8 tra un flash e un tatuaggio custom?",
+      answer: `I flash sono disegni gi\u00e0 pronti, pensati per essere tatuati; un tatuaggio custom viene invece progettato da zero sulla tua richiesta e sul tuo corpo. I flash ancora disponibili vengono pubblicati su Instagram, su ${instagramProfile.handleWithAt}.`,
+    },
+    {
+      id: "consulenza",
+      question: "Come si richiede una consulenza a Valentine Tattoo?",
+      answer: `Puoi compilare il modulo di consulenza in questa pagina, raccontando la tua idea e allegando eventuali riferimenti, oppure scrivere un messaggio privato su Instagram a ${instagramProfile.handleWithAt}. Ogni richiesta viene letta e valutata singolarmente.`,
+    },
+  ] as const,
 } as const;
 
 export const a11yContent = {

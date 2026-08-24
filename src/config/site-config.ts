@@ -160,6 +160,27 @@ export const consultationUpload = {
  */
 export const siteUrl = "https://valentinetattoo.it";
 
+/* -------------------------------------------------------------------------- */
+/* Analytics                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The Google Tag Manager container.
+ *
+ * Not a secret — it ships in the HTML of every page and anyone can read it —
+ * so it is hard-coded rather than pulled from the environment.
+ *
+ * It is deliberately inert outside production. With the ID compiled in
+ * unconditionally, every `next dev` session and every local build would report
+ * itself to the live container, and the first weeks of data would be mostly
+ * the people who built the site. Real deploys set NODE_ENV=production, so the
+ * tag fires there and only there.
+ */
+export const googleTagManager = {
+  id: "GTM-P6XTVW6T",
+  enabled: process.env.NODE_ENV === "production",
+} as const;
+
 /**
  * The title is ordered brand-first: the studio name opens it, the style and
  * the place follow.
@@ -186,7 +207,7 @@ export const siteUrl = "https://valentinetattoo.it";
 export const siteMetadata = {
   title: "Valentine Tattoo | Tatuaggi Cyber Tribal a Triggiano (Bari)",
   description:
-    "Valentina Stucchi, tatuatrice di Valenzano. Tatuaggi su misura, cyber tribal e sigil-inspired. Riceve a Triggiano presso Crossbone Studio.",
+    "Valentina Stucchi, tatuatrice in provincia di Bari. Tatuaggi su misura in stile cyber tribal, biomeccanico e dark ornamental. Riceve a Triggiano presso Crossbone Studio.",
   locale: "it_IT",
   lang: "it",
 } as const;

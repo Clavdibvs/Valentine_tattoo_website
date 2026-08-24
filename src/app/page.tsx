@@ -7,6 +7,7 @@ import { PageBackdrop } from "@/components/ornaments/PageBackdrop";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { BookingSection } from "@/components/sections/BookingSection";
 import { CollectionSection } from "@/components/sections/CollectionSection";
+import { FaqSection } from "@/components/sections/FaqSection";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { InstagramSection } from "@/components/sections/InstagramSection";
 import { a11yContent } from "@/content/site-content";
@@ -75,6 +76,8 @@ document.head.appendChild(l);}catch(e){}})();`,
         <CollectionSection id="merch" railIndex="05" railWords={["MERCH", "WEAR THE MARK"]} />
         <BookingSection />
         <AboutSection />
+        {/* Closes the page: the questions someone still has after reading it. */}
+        <FaqSection />
       </main>
 
       {/* Closing line, below every section. */}

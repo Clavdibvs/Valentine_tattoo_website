@@ -129,26 +129,37 @@ produzione.
 
 ---
 
-## 5. Fotografie reali — ❌ MANCANTI, da fornire
+## 5. Fotografie reali — ✅ ritratto presente
 
-| File richiesto | Uso | Proporzioni | Stato |
+| File | Uso | Proporzioni | Stato |
 | --- | --- | --- | --- |
-| `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **mancante** |
-| `public/images/valentina/portrait-mobile.webp` | crop mobile (facoltativo) | 4:5 | mancante — ricade su `portrait.webp` |
+| `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **presente** — 1594×1935, 218 KB |
+| `public/images/valentina/portrait-mobile.webp` | crop mobile (facoltativo) | 4:5 | non fornito — ricade su `portrait.webp` |
 
-**Comportamento attuale:** `src/lib/portrait.ts` verifica l'esistenza del file al
-render lato server. Se manca, `PortraitFrame` mostra un placeholder dichiarato —
-sigillo neutro + testo *"Ritratto in attesa della foto ufficiale"* — che mantiene
-le proporzioni esatte, così l'inserimento della foto non causa layout shift.
+Il ritratto è generato da `scripts/build-portrait.mjs` a partire dalla foto
+originale, che resta fuori dal repository come ogni altro sorgente:
+
+```
+node scripts/build-portrait.mjs [percorso/della/foto]
+```
+
+Lo script ridimensiona al massimo che il layout possa richiedere (1600 px, mai
+un ingrandimento), scrive WebP qualità 88 e non riporta i metadati EXIF —
+quindi data, dispositivo ed eventuali coordinate GPS della foto non vengono
+pubblicati.
+
+**Comportamento se il file manca:** `src/lib/portrait.ts` verifica l'esistenza
+del file al render lato server. Senza file, `PortraitFrame` mostra un
+placeholder dichiarato — sigillo neutro + testo *"Ritratto in attesa della foto
+ufficiale"* — che mantiene le proporzioni esatte. Nessuna modifica al codice è
+richiesta in nessuno dei due casi.
 
 **Il ritratto femminile visibile negli screenshot di riferimento è un'immagine
 generata da AI e non è stato usato.** Presentarla come Valentina sarebbe stato
 scorretto.
 
-Per completare: copiare i file nei percorsi indicati. Nessuna modifica al codice.
-
-Consigli di esportazione: lato lungo 1600 px, WebP qualità ~80, soggetto nella metà
-superiore (l'`object-position` è `center 22%`).
+Consigli per una foto sostitutiva: lato lungo ≥ 1600 px, verticale vicino a 4:5,
+soggetto nella metà superiore (l'`object-position` è `center 22%`).
 
 ---
 

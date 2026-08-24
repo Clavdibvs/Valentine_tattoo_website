@@ -46,6 +46,8 @@ function toMedia(item: ManifestItem, permalink: string): InstagramMedia {
     id: item.id,
     displayUrl: `${item.src}-800.webp`,
     srcSet: WIDTHS.map((w) => `${item.src}-${w}.webp ${w}w`).join(", "),
+    width: item.width,
+    height: item.height,
     permalink,
     mediaType: item.mediaType === "REELS" ? "REELS" : "IMAGE",
     captionExcerpt: null,

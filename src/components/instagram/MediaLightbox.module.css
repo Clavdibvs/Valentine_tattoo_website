@@ -1,0 +1,249 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-lightbox);
+  display: grid;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 3, 3, 0.94);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+/*
+ * `svh` is the whole trick on mobile.
+ *
+ * `vh` measures the viewport with the browser toolbar retracted, so a panel
+ * sized in it is taller than what is actually on screen when the toolbar is
+ * out — and the footer, which is the last thing in the column, is what falls
+ * off the bottom. `dvh` tracks the toolbar but reflows the image while the
+ * visitor scrolls. `svh` is the smallest the viewport ever gets: everything
+ * fits at every moment, and nothing moves.
+ */
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  height: 100svh;
+  /* Clears the close button at the top and breathes at the bottom. */
+  padding: calc(46px + var(--space-sm)) var(--gutter) var(--space-md);
+  pointer-events: none;
+}
+
+/*
+ * The panel is a click-through layer so that everything which is not the image
+ * or a control — the empty space beside a portrait image, most of the screen
+ * on a wide monitor — still reaches the backdrop and closes the lightbox.
+ * Only the things worth clicking take pointer events back.
+ */
+.close,
+.footer,
+.image,
+.caption,
+.nav {
+  pointer-events: auto;
+}
+
+.close {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--gutter);
+  display: grid;
+  place-items: center;
+  /* 46px keeps the tap target above the 44px minimum on touch. */
+  width: 46px;
+  height: 46px;
+  color: var(--color-text);
+  border: 1px solid var(--color-line);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  background: rgba(12, 12, 12, 0.6);
+  transition: border-color var(--dur-mid) var(--ease-out);
+}
+
+.close:hover {
+  border-color: var(--color-line-strong);
+}
+
+/*
+ * `min-height: 0` is load-bearing. A flex item defaults to `min-height: auto`,
+ * which refuses to shrink below its content — so without this the image keeps
+ * its natural height and pushes the footer out of the panel instead of
+ * yielding to it.
+ */
+.figure {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  width: 100%;
+  margin: 0;
+}
+
+/*
+ * The arrows are positioned against the figure rather than the panel so they
+ * sit centred on the image band and never drift down over the footer as the
+ * image's height changes from one photo to the next. Out of flow, so they
+ * take nothing away from the space the image gets.
+ */
+.nav {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  /* Same 46px touch target as the close control. */
+  width: 46px;
+  height: 46px;
+  margin-top: -23px;
+  color: var(--color-text);
+  border: 1px solid var(--color-line);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  background: rgba(12, 12, 12, 0.66);
+  transition:
+    border-color var(--dur-mid) var(--ease-out),
+    opacity var(--dur-mid) var(--ease-out);
+}
+
+.nav:hover:not(:disabled) {
+  border-color: var(--color-line-strong);
+}
+
+.nav:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.prev {
+  left: 0;
+}
+
+.next {
+  right: 0;
+}
+
+/*
+ * `display: contents` so the wrapper disappears from layout and the `<img>`
+ * becomes the flex item of `.figure` directly. Otherwise the picture element
+ * sits between them, sized to its content, and the image's `max-height: 100%`
+ * resolves against that auto height instead of the space the figure has left —
+ * which breaks the one constraint holding the footer on screen.
+ */
+.picture {
+  display: contents;
+}
+
+.image {
+  max-width: 100%;
+  /* Bounded by the figure, which is bounded by the panel: the image is always
+     the element that gives way, never the button below it. */
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid var(--color-line-soft);
+  background: var(--color-surface);
+  /* Remounted on every step through the gallery, so this runs per photo. */
+  animation: lightbox-photo-in var(--dur-mid) var(--ease-out) both;
+  /* The swipe is a page turn, not a text selection or a native image drag. */
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@keyframes lightbox-photo-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    animation: none;
+  }
+}
+
+.counter {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.22em;
+}
+
+.caption {
+  flex: 0 0 auto;
+  max-width: 60ch;
+  color: var(--color-text-muted);
+  font-size: var(--fs-body-sm);
+  text-align: center;
+  /* Two lines at most: the caption is context for the image, not the content. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.footer {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+  text-align: center;
+}
+
+.footerEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+  color: var(--color-text-dim);
+}
+
+/* Short landscape screens — a phone turned sideways — have almost no vertical
+   room. The eyebrow is the first thing that can go, and the image takes what
+   it frees up. */
+@media (max-height: 460px) {
+  .footerEyebrow {
+    display: none;
+  }
+
+  .panel {
+    gap: var(--space-2xs);
+    padding-top: var(--space-xs);
+  }
+
+  .caption {
+    display: none;
+  }
+}

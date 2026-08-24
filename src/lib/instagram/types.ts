@@ -11,6 +11,15 @@ export type InstagramMedia = {
    * unset — `next/image` handles those instead.
    */
   srcSet?: string;
+  /**
+   * Intrinsic pixel size, when the site owns the file and therefore knows it.
+   * Only the lightbox needs it: it reserves the frame at the right aspect ratio
+   * before the full-size image arrives, so opening one does not jolt the
+   * layout. Remote CDN media leaves this unset and the lightbox falls back to a
+   * neutral box.
+   */
+  width?: number;
+  height?: number;
   permalink: string;
   mediaType: InstagramMediaType;
   /** Sanitized, shortened caption excerpt. Never the full raw caption. */
