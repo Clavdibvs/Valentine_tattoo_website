@@ -133,7 +133,7 @@ produzione.
 
 | File | Uso | Proporzioni | Stato |
 | --- | --- | --- | --- |
-| `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **presente** — 1600×2143, 234 KB |
+| `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **presente** — 959×1199, 88 KB |
 | `public/images/valentina/portrait-mobile.webp` | crop mobile (facoltativo) | 4:5 | non fornito — ricade su `portrait.webp` |
 
 Il ritratto è generato da `scripts/build-portrait.mjs` a partire dalla foto

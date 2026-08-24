@@ -110,7 +110,7 @@ export const aboutContent = {
     { id: "studio", title: "TRIGGIANO", description: `Presso ${artist.studio}` },
   ] as const,
   cta: "SCOPRI I MIEI LAVORI SU INSTAGRAM",
-  portraitAlt: `${artist.name}, tatuatrice di ${artist.brand}, mentre realizza un tatuaggio nel suo studio`,
+  portraitAlt: `${artist.name}, tatuatrice di ${artist.brand}`,
   portraitPlaceholderNotice: "Ritratto in attesa della foto ufficiale",
   signatureRole: artist.role,
 } as const;
