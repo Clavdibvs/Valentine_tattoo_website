@@ -133,15 +133,18 @@ produzione.
 
 | File | Uso | Proporzioni | Stato |
 | --- | --- | --- | --- |
-| `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **presente** — 1594×1935, 218 KB |
+| `public/images/valentina/portrait.webp` | ritratto About | 4:5 verticale | **presente** — 1600×2143, 234 KB |
 | `public/images/valentina/portrait-mobile.webp` | crop mobile (facoltativo) | 4:5 | non fornito — ricade su `portrait.webp` |
 
 Il ritratto è generato da `scripts/build-portrait.mjs` a partire dalla foto
 originale, che resta fuori dal repository come ogni altro sorgente:
 
 ```
-node scripts/build-portrait.mjs [percorso/della/foto]
+node scripts/build-portrait.mjs "<percorso/della/foto>"
 ```
+
+Il percorso è obbligatorio: lo script non indovina il sorgente, per non poter
+mai rigenerare il ritratto dalla foto sbagliata quando ne esiste più di una.
 
 Lo script ridimensiona al massimo che il layout possa richiedere (1600 px, mai
 un ingrandimento), scrive WebP qualità 88 e non riporta i metadati EXIF —

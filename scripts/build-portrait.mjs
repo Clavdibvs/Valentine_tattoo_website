@@ -3,7 +3,7 @@
  * Turns the supplied photograph of Valentina into the portrait the About
  * section renders.
  *
- *   node scripts/build-portrait.mjs [percorso/della/foto.png]
+ *   node scripts/build-portrait.mjs <percorso/della/foto.png>
  *
  * Requires a one-off `npm i --no-save sharp`. Only the WebP derivative under
  * `public/images/valentina/` is versioned; the multi-megabyte original stays
@@ -48,39 +48,34 @@ import sharp from "sharp";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-/**
- * Where to look when no path is given. `new references/` is the project's
- * gitignored home for source art; the repository root is where a file dropped
- * in by hand tends to land.
- */
-const CANDIDATES = [
-  "new references/valentine pic.png",
-  "valentine pic.png",
-];
-
 /** Matches `PORTRAIT_PATHS.main` in `src/lib/portrait.ts`. */
 const OUT = resolve(ROOT, "public/images/valentina/portrait.webp");
 
 /** Upper bound on what the layout can ask for; never an upscale. */
 const MAX_WIDTH = 1600;
 
+/**
+ * The source path is required, deliberately.
+ *
+ * An earlier version guessed from a list of likely filenames. That list went
+ * stale the first time the photograph was replaced: a second file appeared
+ * beside the first, the guess still resolved to the older one, and running the
+ * script with no argument would have quietly rebuilt the portrait from the
+ * picture nobody wanted any more. A wrong photograph of a real person is not a
+ * failure worth risking to save typing a path.
+ */
 function resolveSource() {
   const given = process.argv[2];
-  if (given) {
-    const path = resolve(ROOT, given);
-    if (!existsSync(path)) throw new Error(`Sorgente non trovata: ${path}`);
-    return path;
+  if (!given) {
+    throw new Error(
+      "Indica la foto sorgente:\n" +
+        "  node scripts/build-portrait.mjs \"Valentine pic 2.png\"",
+    );
   }
 
-  for (const candidate of CANDIDATES) {
-    const path = resolve(ROOT, candidate);
-    if (existsSync(path)) return path;
-  }
-
-  throw new Error(
-    `Nessuna sorgente trovata. Cercata in:\n  ${CANDIDATES.join("\n  ")}\n` +
-      `Oppure passa il percorso: node scripts/build-portrait.mjs <file>`,
-  );
+  const path = resolve(ROOT, given);
+  if (!existsSync(path)) throw new Error(`Sorgente non trovata: ${path}`);
+  return path;
 }
 
 async function main() {
