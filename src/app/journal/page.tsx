@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Journal | Valentine Tattoo",
-  description: "Linguaggi, cultura e progettazione del tatuaggio. Il journal di Valentine Tattoo: approfondimenti su Cyber Sigilism, Cyber Tribal e Neo Tribal.",
+  description: "Linguaggi, cultura e progettazione del tatuaggio. Il journal di Valentine Tattoo: approfondimenti su Cyber Tribal, Cyber Sigilism e Neo Tribal.",
   alternates: { canonical: "/journal" },
   openGraph: { title: "Journal | Valentine Tattoo", type: "website", locale: "it_IT", siteName: artist.brand, url: `${siteUrl}/journal`, images: [{ url: editorialArticles[0].ogImage, width: 1200, height: 630 }] },
   twitter: { card: "summary_large_image", title: "Journal | Valentine Tattoo", images: [editorialArticles[0].ogImage] },

@@ -41,7 +41,7 @@ function ChapterContent({ chapter, sources }: { chapter: EditorialChapter; sourc
       <>
         <p className={`text-pool ${styles.sectionIntro}`}>{chapter.intro}</p>
         <table className={styles.styleComparison}>
-          <caption className="sr-only">Differenze tra Cyber Sigilism, Cyber Tribal e Neo Tribal</caption>
+          <caption className="sr-only">Differenze tra Cyber Tribal, Cyber Sigilism e Neo Tribal</caption>
           <thead><tr><th scope="col">Linguaggio</th><th scope="col">Cosa osservare</th><th scope="col">Coordinate visive</th></tr></thead>
           <tbody>{chapter.styles.map((style, i) => <tr key={style.name}>
             <th scope="row"><span className={styles.styleNumber} aria-hidden="true">0{i + 1}</span><h3>{style.name}</h3></th>

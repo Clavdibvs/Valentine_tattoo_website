@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // Preserve the published article's links after changing its editorial focus.
+  redirects() {
+    return [{ source: "/journal/cyber-sigilism", destination: "/journal/cyber-tribal", permanent: true }];
+  },
+
   images: {
     /**
      * Instagram serves media from short-lived CDN urls. Only Meta's image hosts

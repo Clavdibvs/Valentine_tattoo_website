@@ -1,0 +1,145 @@
+import type { EditorialArticle } from "./types";
+
+export const cyberTribal: EditorialArticle = {
+  slug: "cyber-tribal",
+  issue: "001",
+  title: "Cyber Tribal",
+  seoTitle: "Cyber Tribal Tattoo: guida allo stile | Valentine Tattoo",
+  headline: "Cyber Tribal Tattoo: stile, origini e differenze con Cyber Sigilism",
+  topics: ["Cyber Tribal", "Cyber Tribal Tattoo", "Neo Tribal Tattoo", "Cyber Sigilism", "Cybersigilism"],
+  titleLines: ["Cyber", "Tribal"],
+  subtitle: "Cyber Sigilism / Neo Tribal Tattoo",
+  dek: "Il futuro segue il corpo.",
+  definition: "Il Cyber Tribal è un linguaggio contemporaneo del tatuaggio che reinterpreta il neo tribal attraverso un’estetica futuristica, cyberpunk e biomeccanica. Linee allungate, punte, ramificazioni e spazi di pelle libera costruiscono composizioni che seguono l’anatomia. Può usare tratti sottili o forme più corpose e si intreccia con il Cyber Sigilism, senza coincidere con un’unica tecnica o un repertorio fisso di simboli.",
+  description: "Cyber Tribal Tattoo: stile, origini, significato e progettazione sul corpo. Differenze con Cyber Sigilism e Neo Tribal, nel journal di Valentine Tattoo.",
+  datePublished: "2026-10-02",
+  dateModified: "2026-10-02",
+  readingMinutes: 10,
+  cover: {
+    src: "/gallery/feed/02",
+    alt: "Tatuaggio nero cyber tribal sul braccio, con linee allungate e ramificazioni che seguono la spalla",
+    caption: "Linee che seguono il corpo. Lavoro dal portfolio Valentine Tattoo.",
+    position: "50% 42%",
+  },
+  ogImage: "/editorial/cyber-tribal-og.jpg",
+  chapters: [
+    {
+      type: "definition", id: "linguaggio", label: "Il linguaggio", title: "Cos’è il Cyber Tribal Tattoo?",
+      intro: "Il Cyber Tribal Tattoo combina il movimento delle forme neo tribali con un immaginario organico e artificiale. Curve, spine e diramazioni possono ricordare radici, circuiti o strutture biomeccaniche. Il tratto distintivo è il rapporto tra silhouette e corpo: il disegno segue un volume, lo avvolge o ne accentua una direzione.",
+      image: {
+        src: "/gallery/feed/08", alt: "Composizione cyber tribal nera sul torace e sulla spalla, con punte curve e ampie porzioni di pelle non tatuata",
+        caption: "Organico / artificiale. Una composizione del portfolio Valentine Tattoo.", position: "52% 45%",
+      },
+      traits: [
+        { title: "Linea", text: "Sottile o più corposa, netta o ramificata. Linework e blackwork possono convivere: il fine line è una possibilità, non un requisito dello stile." },
+        { title: "Ramificazione", text: "Spine, uncini e curvature aprono più direzioni. La loro distribuzione crea il flow: il movimento con cui il tatuaggio accompagna l’anatomia." },
+        { title: "Spazio negativo", text: "La pelle lasciata libera è parte del disegno. Separa le forme, rende leggibile la silhouette e dà respiro alla composizione." },
+      ],
+    },
+    {
+      type: "comparison", id: "differenze", label: "Le differenze", title: "Cyber Tribal e linguaggi vicini.",
+      intro: "Cyber Tribal e Cyber Sigilism si sovrappongono spesso, ma non sono sinonimi perfetti. Il primo può descrivere un campo più ampio di forme neo tribali futuristiche; il secondo richiama soprattutto glifi e composizioni simili a sigilli. Il Neo Tribal è una famiglia precedente e più ampia. Il portfolio aiuta a capire come ogni artista interpreta questi nomi.",
+      styles: [
+        { name: "Cyber Tribal", text: "Silhouette e flow neo tribali reinterpretati attraverso codici cyber, organici e biomeccanici. Può alternare linee sottili e forme più corpose, senza dover raffigurare un sigillo.", features: "Flow / futurismo / organico" },
+        { name: "Cyber Sigilism", text: "Forme simili a sigilli, glifi, punte e ramificazioni, spesso in linework nero. Cybersigilism è un’altra grafia dello stesso termine; i suoi confini con il cyber tribal restano aperti.", features: "Glifi / linework / ramificazioni" },
+        { name: "Neo Tribal", text: "Forme nere astratte, curve, campiture e vuoti progettati sul corpo. Il movimento occidentale precede il Cybersigilism di decenni; il registro futuristico è una possibile reinterpretazione.", features: "Blackwork / silhouette / anatomia" },
+      ],
+      note: "“Tribal Tattoo” e “tatuaggi tribali” sono espressioni ampie. Il neo tribal occidentale e il cyber tribal contemporaneo vanno distinti da tradizioni vive come il tā moko Māori o il tatau samoano, che hanno storie e significati propri. Un riferimento culturale va compreso prima di diventare un motivo decorativo.",
+      source: "tepapa",
+    },
+    {
+      type: "history", id: "origini", label: "Le origini", title: "Dal neo tribal al futuro.",
+      intro: "Il Cyber Tribal si comprende attraverso l’incontro tra neo tribal, immaginario digitale e sensibilità biomeccanica. Le fonti raccontano scene e influenze che si contaminano: non documentano un unico inventore o una data di nascita certa per tutta questa famiglia di lavori.",
+      timeline: [
+        { era: "1982", title: "La grammatica neo tribale", text: "Leo Zulueta e Tattoo Time: New Tribalism, pubblicato da Don Ed Hardy, sono riferimenti chiave per il neo tribal occidentale: nero, silhouette e rapporto con il corpo. Questa storia precede le etichette cyber contemporanee.", source: "atlas" },
+        { era: "Y2K", title: "Un immaginario tra corpo e macchina", text: "Videogiochi, cyberpunk e revival Y2K offrono codici visivi al tattoo contemporaneo. Nelle interviste di 032c ricorrono la cultura videoludica, H.R. Giger e la grafica metal: riferimenti che aiutano a leggere le forme cyber-organiche.", source: "032c" },
+        { era: "2010s", title: "L’incontro con il Cybersigilism", text: "Il Cyber Sigilism emerge nello stesso universo di contaminazioni. GQ documenta lavori di Aingelblood già nel 2018 a Los Angeles; Berlino è un altro contesto importante di diffusione. Il ruolo dell’artista nel nome Cybersigilism non equivale a inventare tutto il cyber tribal.", source: "gq" },
+        { era: "2022 →", title: "Post-human, nu-tribal, cyber", text: "Dazed descrive nel 2022 tatuaggi post-human e nu-tribal: forme fluide che intrecciano tribal Y2K, H.R. Giger e suggestioni fantascientifiche. È una lettura della scena, non una tassonomia ufficiale dei suoi stili.", source: "dazed" },
+      ],
+      influences: ["H.R. Giger / biomeccanico", "Y2K / videogame culture", "Cyberpunk / futurismo", "Gothic / metal graphics", "Techno / club culture"],
+    },
+    {
+      type: "statement", id: "significato", label: "Il significato", title: "Che cosa esprime il Cyber Tribal?",
+      intro: "Un tatuaggio Cyber Tribal non ha un significato universale. Può evocare l’incontro tra corpo e tecnologia, una forma di trasformazione o un’immagine personale; può anche essere scelto per il movimento delle sue linee. Il senso nasce dal progetto e da chi lo porta.",
+      statement: "Il significato nasce dal progetto, non dall’etichetta.",
+      paragraphs: [
+        "Una silhouette che ricorda un’armatura o una struttura aliena è una suggestione visiva, non un codice condiviso. Non esiste un dizionario che assegni a ogni punta, curva o ramificazione un significato di protezione, forza o rinascita.",
+        "Quando il disegno dialoga con il Cyber Sigilism, i glifi possono evocare sigilli. La storia dei sigilli, anche nelle pratiche associate ad Austin Osman Spare, precede questo linguaggio tattoo: una forma simile a un sigillo non appartiene automaticamente a una pratica esoterica. Le interviste di 032c mostrano approcci personali diversi.",
+      ], source: "032c",
+    },
+    {
+      type: "process", id: "progettazione", label: "Il progetto", title: "Il corpo è la prima linea.",
+      intro: "Un tatuaggio Cyber Tribal su misura parte dall’anatomia: asse, volume, movimento e spazio disponibile. Simmetria e asimmetria sono scelte compositive. Prima dei dettagli conta il flow: come il disegno accompagna il corpo, dove si espande e quali vuoti lascia respirare.",
+      image: {
+        src: "/gallery/feed/07", alt: "Tatuaggio cyber tribal sulla parte alta della schiena, con un nucleo centrale e linee che si aprono verso le spalle",
+        caption: "La direzione del disegno dialoga con schiena e spalle. Portfolio Valentine Tattoo.", position: "50% 36%",
+      },
+      steps: [
+        { title: "Ascoltare l’idea", text: "Soggetto, intenzione e riferimenti aiutano a definire la direzione. Una reference serve a spiegare ciò che ti interessa: una curva, un ritmo, un contrasto. Da qui nasce un progetto personale." },
+        { title: "Vedere il disegno sul corpo", text: "Nel processo di Valentine Tattoo, la bozza a pennarello permette di valutare l’insieme sulla zona scelta. Da questa base nasce il disegno definitivo." },
+        { title: "Costruire la struttura", text: "Silhouette, direzione delle linee e vuoti devono funzionare insieme, anche quando il corpo cambia posizione. Freehand, disegno digitale e stencil possono essere strumenti complementari." },
+        { title: "Dalle ghostlines al tatuaggio", text: "Valentina fissa l’intero stencil con linee molto leggere nella prima seduta di ghostlines. Le sedute successive completano progressivamente il progetto." },
+      ],
+      note: "Il processo di Valentina è descritto anche nella sezione About del sito. La fotografia mostra un lavoro del portfolio; non è una sequenza documentata delle sedute.",
+    },
+    {
+      type: "placements", id: "placement", label: "Sul corpo", title: "La forma cambia con il placement.",
+      intro: "Il placement di un Cyber Tribal Tattoo cambia scala, direzione e quantità di dettaglio. Un disegno sviluppato per la schiena va riprogettato quando passa a un braccio: cambia il volume, cambia il movimento delle linee. La zona migliore dipende dal progetto e dalla persona.",
+      items: [
+        { title: "Schiena / colonna", text: "Un asse verticale da cui far partire ramificazioni verso le scapole. La simmetria può dare struttura; l’asimmetria può creare tensione." },
+        { title: "Sterno / torace", text: "La linea mediana e le curve del torace invitano a espansioni laterali. Il disegno va valutato anche con il corpo in movimento." },
+        { title: "Braccio / avambraccio", text: "Un volume che ruota: le linee possono allungarsi o avvolgerlo. Conta ciò che si vede da più angolazioni, non solo dalla foto frontale." },
+        { title: "Spalla", text: "Una superficie curva che collega torace, schiena e braccio. È utile decidere se il pezzo resterà autonomo o farà parte di un progetto più ampio." },
+        { title: "Fianchi / zona lombare", text: "Le curve naturali possono guidare una silhouette orizzontale o obliqua. Il rapporto tra vuoti e linee definisce il ritmo." },
+        { title: "Gamba / polpaccio", text: "La direzione longitudinale offre spazio per forme allungate. Curvatura e posizione del corpo cambiano la lettura della composizione." },
+      ],
+    },
+    {
+      type: "portfolio", id: "portfolio", label: "Sulla pelle", title: "Cyber Tribal sulla pelle.",
+      intro: "Una selezione dal portfolio di Valentina Stucchi, tra cyber tribal, biomeccanico e dark ornamental. Osserva come le linee seguono i volumi e come i vuoti danno forma al disegno: è da questi dettagli che può iniziare la conversazione sul tuo progetto.",
+      images: [
+        { src: "/gallery/feed/02", alt: "Tatuaggio cyber tribal sul braccio con forme nere affilate che seguono spalla e parte superiore dell’arto", caption: "01 / Braccio — linee e volume", position: "50% 40%" },
+        { src: "/gallery/feed/06", alt: "Tatuaggio astratto nero sull’avambraccio, con curve intrecciate e spazio negativo tra le linee", caption: "02 / Avambraccio — curve e vuoti", position: "50% 50%" },
+        { src: "/gallery/feed/10", alt: "Piccola composizione nera di glifi e punte sulla gamba, dal portfolio di Valentine Tattoo", caption: "03 / Gamba — segno e ramificazione", position: "50% 45%" },
+      ],
+    },
+    {
+      type: "longevity", id: "nel-tempo", label: "Nel tempo", title: "Pensare oltre la prima fotografia.",
+      intro: "Anche un tatuaggio Cyber Tribal cambia nel tempo. Scala, distanza tra i tratti, esecuzione, zona e cura della pelle influenzano la leggibilità. Una composizione va valutata per come distribuisce linee, campiture e vuoti, non soltanto per la sua complessità nella prima fotografia.",
+      items: [
+        { title: "Progetto leggibile", text: "Un disegno molto piccolo e denso offre meno margine tra i dettagli. Valuta con l’artista dimensioni e vuoti, e chiedi fotografie di lavori guariti quando disponibili." },
+        { title: "Fresh e healed", text: "Una foto appena dopo la seduta e una foto a guarigione completata raccontano momenti diversi. Le immagini di questa guida sono un archivio del portfolio, non una prova di resa a distanza di anni." },
+        { title: "Cura e protezione", text: "Segui le indicazioni ricevute in studio durante la guarigione. Per la pelle tatuata guarita, l’American Academy of Dermatology raccomanda protezione dai raggi UV con un solare ad ampio spettro SPF 30 o superiore." },
+      ], source: "aad",
+    },
+    {
+      type: "artist", id: "valentina", label: "Valentine Tattoo", title: "Il tuo Cyber Tribal, con Valentina.",
+      intro: "Valentine Tattoo è il nome con cui Valentina Stucchi firma il suo lavoro. La tattoo artist riceve a Triggiano presso Crossbone Studio, in provincia di Bari, Puglia. Il cyber tribal è parte del suo linguaggio, insieme al biomeccanico e al dark ornamental, con disegni sviluppati su misura.",
+      image: { src: "/images/valentina/portrait.webp", width: 959, height: 1199, alt: "Valentina Stucchi, conosciuta come Valentine Tattoo, tattoo artist che riceve a Triggiano presso Crossbone Studio", caption: "Valentina Stucchi / Valentine Tattoo", position: "50% 22%" },
+      quote: "Ogni progetto nasce dall’ascolto della tua richiesta e prende forma direttamente sul corpo.",
+      paragraphs: [
+        "Per un progetto Cyber Tribal nell’area di Bari, il punto di partenza è una consulenza: racconta l’idea, la zona del corpo e le dimensioni. Aggiungi i riferimenti che ti aiutano a spiegare la direzione visiva, dalle forme neo tribali ai glifi del Cyber Sigilism.",
+        "Il preventivo viene valutato sul singolo progetto. Tiene conto del tempo di progettazione, della prima seduta di ghostlines e delle sedute successive. Puoi esplorare il portfolio e poi usare il modulo di booking per inviare la tua richiesta.",
+      ],
+    },
+  ],
+  faqs: [
+    { question: "Cos’è un tatuaggio Cyber Tribal?", answer: "Un tatuaggio Cyber Tribal reinterpreta forme e flow neo tribali attraverso un immaginario futuristico, cyberpunk e biomeccanico. Usa linee, punte, ramificazioni e spazio negativo per costruire un disegno sul corpo. Cybertribal è una grafia alternativa dello stesso termine; non indica uno stile diverso." },
+    { question: "Che differenza c’è tra Cyber Tribal e Cyber Sigilism?", answer: "Cyber Tribal può descrivere un campo più ampio di composizioni neo tribali futuristiche. Cyber Sigilism, scritto anche Cybersigilism, enfatizza spesso glifi e forme simili a sigilli. I due linguaggi si sovrappongono, ma i confini non sono ufficiali e non sono sinonimi perfetti." },
+    { question: "Cyber Tribal e Neo Tribal sono la stessa cosa?", answer: "No. Il Neo Tribal è una famiglia più ampia e storicamente precedente. Il Cyber Tribal ne reinterpreta silhouette e rapporto con l’anatomia attraverso codici cyber e futuristici. Il neo tribal occidentale, associato al New Tribalism del 1982, va inoltre distinto dalle tradizioni tatuatorie indigene." },
+    { question: "Chi ha inventato il Cyber Tribal?", answer: "Le fonti non documentano un unico inventore del Cyber Tribal. Il linguaggio intreccia neo tribal, immaginario digitale e biomeccanico attraverso più scene. Aingelblood è associata alla denominazione Cybersigilism, ma questo non permette di attribuirle l’intera famiglia dei tatuaggi cyber tribali." },
+    { question: "Che significato ha un tatuaggio Cyber Tribal?", answer: "Non ha un significato universale. Il senso può essere personale oppure legato alla forma e al movimento del disegno sul corpo. Anche quando compaiono glifi simili a sigilli, non si tratta automaticamente di simboli appartenenti a una pratica esoterica." },
+    { question: "Un Cyber Tribal deve essere simmetrico o fine line?", answer: "No. Simmetria e fine line sono possibilità progettuali, non requisiti. Un Cyber Tribal può essere asimmetrico e alternare tratti sottili, linee più corpose e campiture nere: contano silhouette, flow e rapporto con l’anatomia." },
+    { question: "Come cambia un tatuaggio Cyber Tribal nel tempo?", answer: "Tutti i tatuaggi cambiano. Scala, spaziatura, esecuzione, zona e cura incidono sulla leggibilità; l’etichetta Cyber Tribal da sola non permette di prevedere la resa futura. Valuta il progetto con l’artista e osserva lavori guariti quando sono disponibili." },
+    { question: "Quanto costa un tatuaggio Cyber Tribal con Valentina?", answer: "Il preventivo è individuale. Valentina considera progettazione, prima seduta di ghostlines e sedute successive; dimensione, zona e dettaglio cambiano il tempo necessario. Il modulo di consulenza permette di descrivere l’idea e allegare riferimenti." },
+    { question: "Dove riceve Valentina Stucchi?", answer: "Valentina Stucchi, conosciuta come Valentine Tattoo, riceve a Triggiano presso Crossbone Studio, in provincia di Bari, Puglia. Puoi richiedere una consulenza tramite il booking del sito o scriverle su Instagram a @valentine.ttt." },
+  ],
+  sources: [
+    { id: "032c", name: "032c", title: "Cybersigilism: the Forever Trend — interviste ad artisti e contesto visivo", url: "https://magazine.032c.com/magazine/cybersigilism-the-forever-trend" },
+    { id: "gq", name: "GQ", title: "What’s a Cybersigilism Tattoo and Why Are You Seeing Them Everywhere?", url: "https://www.gq.com/story/whats-a-cybersigilism-tattoo-and-why-are-you-seeing-them-everywhere" },
+    { id: "dazed", name: "Dazed", title: "Grimes’ ‘alien scars’ are fuelling the post-human tattoo trend", url: "https://www.dazeddigital.com/beauty/article/55568/1/grimes-alien-scars-fuel-the-post-human-tattoo-trend" },
+    { id: "atlas", name: "Tattoo History Atlas", title: "Tribal and Neo-Tribal Tattoo Style — storia del neo tribal occidentale", url: "https://tattoohistoryatlas.com/styles/tribal/" },
+    { id: "tepapa", name: "Te Papa", title: "Tāmoko — storia, pratica e significati nella cultura Māori", url: "https://www.tepapa.govt.nz/digital-museum/explore-digital-museum/maori/tamoko-maori-tattoos-history-practice-and-meanings" },
+    { id: "aad", name: "American Academy of Dermatology", title: "Caring for tattooed skin — indicazioni sulla protezione dai raggi UV", url: "https://www.aad.org/public/everyday-care/skin-care-basics/tattoos/caring-for-tattooed-skin" },
+  ],
+};
