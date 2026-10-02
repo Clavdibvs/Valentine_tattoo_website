@@ -1,8 +1,7 @@
 .form {
   display: flex;
   flex-direction: column;
-  /* Tight: the panel was running far longer than the contact card beside it. */
-  gap: var(--space-xs);
+  gap: clamp(0.95rem, 0.85rem + 0.4vw, 1.2rem);
   width: 100%;
 }
 
@@ -11,11 +10,13 @@
   align-items: center;
   justify-content: center;
   gap: 0.8em;
-  margin: 0 0 var(--space-3xs);
+  margin: 0 0 var(--space-2xs);
+  padding-bottom: var(--space-sm);
   font-size: var(--fs-label);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--color-text);
+  border-bottom: 1px solid var(--color-line-soft);
 }
 
 /* `clip` suppresses painting but not layout, so the input's box escaped the
@@ -48,7 +49,7 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 7px;
   min-width: 0;
 }
 
@@ -69,14 +70,21 @@
   color: var(--color-text-dim);
 }
 
+/*
+ * 16px minimum on the control text, always: below that, iOS Safari zooms the
+ * whole page in when a field takes focus, and leaves it zoomed.
+ */
 .control {
+  /* Block, so it sits flush in its wrapper with no inline descender gap under
+     it — the focus ring is drawn on the wrapper's edge. */
+  display: block;
   width: 100%;
-  min-height: 46px;
-  padding: 0.6rem 0.85rem;
+  min-height: 50px;
+  padding: 0.7rem 0.95rem;
   color: var(--color-text);
-  font-size: var(--fs-body-sm);
+  font-size: max(1rem, var(--fs-body-sm));
   line-height: 1.5;
-  background: rgba(8, 8, 8, 0.55);
+  background: rgba(12, 12, 13, 0.72);
   border: 1px solid var(--color-line);
   border-radius: 0;
   transition:
@@ -92,14 +100,18 @@
 }
 
 .control:hover {
-  border-color: rgba(235, 235, 235, 0.26);
+  border-color: rgba(235, 235, 235, 0.28);
 }
 
+/* Focus: the rim brightens and a violet ember wakes around it. */
 .control:focus-visible {
   outline: none;
-  border-color: var(--color-line-strong);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.24), inset 0 0 18px rgba(255, 255, 255, 0.04);
-  background: rgba(16, 16, 16, 0.7);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 0 0 4px var(--ember-soft),
+    inset 0 0 18px rgba(255, 255, 255, 0.04);
+  background: rgba(18, 17, 20, 0.85);
 }
 
 .control[data-invalid] {
@@ -107,7 +119,7 @@
 }
 
 .textarea {
-  min-height: 84px;
+  min-height: 120px;
   resize: vertical;
 }
 
@@ -126,12 +138,73 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* Select                                                                     */
+/* Molten focus                                                               */
+/*                                                                            */
+/* A bead of light runs round the rim of the field being filled in — the     */
+/* molten layer's violet, caught in the metal. A conic gradient turned by a   */
+/* registered angle, masked down to a one-pixel ring over the field's own     */
+/* border. Where `@property` is not supported the ring simply stands still.   */
 /* -------------------------------------------------------------------------- */
 
+@property --vt-orbit {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.controlWrap,
 .selectWrap {
   position: relative;
+  display: block;
 }
+
+.controlWrap::after,
+.selectWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--vt-orbit),
+    transparent 0%,
+    transparent 56%,
+    rgba(196, 146, 255, 0.85) 72%,
+    #ffffff 79%,
+    rgba(196, 146, 255, 0.85) 86%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out);
+}
+
+.controlWrap:focus-within::after,
+.selectWrap:focus-within::after {
+  opacity: 1;
+  animation: vt-orbit 2.8s linear infinite;
+}
+
+@keyframes vt-orbit {
+  to {
+    --vt-orbit: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .controlWrap:focus-within::after,
+  .selectWrap:focus-within::after {
+    animation: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Select                                                                     */
+/* -------------------------------------------------------------------------- */
 
 .select {
   padding-right: 2.75rem;

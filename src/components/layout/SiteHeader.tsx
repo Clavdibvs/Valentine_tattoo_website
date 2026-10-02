@@ -3,12 +3,14 @@
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
+import { playDecode } from "@/components/animation/motion-kit";
 import { BrandLockup } from "@/components/ornaments/BrandMark";
 import { SigilStar } from "@/components/ornaments/SigilStar";
 import { ChromeButton } from "@/components/ui/ChromeButton";
-import { a11yContent } from "@/content/site-content";
+import { ArrowRightIcon } from "@/components/ui/Icons";
+import { a11yContent, siteChromeContent } from "@/content/site-content";
 import { navItems } from "@/config/site-config";
-import { useActiveSection, useScrolled } from "@/lib/hooks/useActiveSection";
+import { useActiveSection, useHeaderScrollState } from "@/lib/hooks/useActiveSection";
 import { onIntroCue } from "@/lib/intro-timing";
 
 import { MobileMenu } from "./MobileMenu";
@@ -43,11 +45,32 @@ const itemVariants: Variants = {
   shown: { opacity: 1, y: 0, transition: { duration: 1, ease: EASE } },
 };
 
+/**
+ * The site header.
+ *
+ * ## Three states
+ *
+ * - **Over the hero** it has no bar at all. The hero plate was drawn with its
+ *   own header band — the logo sigil top left, a star beside where the call to
+ *   action sits — so on a wide screen the header lines up with that artwork
+ *   instead of covering it with a strip of black: the lockup's mark is held
+ *   invisible over the plate's sigil, at the sigil's size, and the name sits
+ *   beside it. The plate becomes the logo.
+ * - **Scrolled**, it condenses into a dark bar and the mark fades in at
+ *   its compact size — the art it was standing in for has scrolled away.
+ * - **Hidden**, on a phone only, while reading downwards. See
+ *   `useHeaderScrollState`.
+ *
+ * Motion owns the entrance (a transform on `<header>`); the hide is a CSS
+ * `translate` on the wrapper, so the two never write the same property.
+ */
 export function SiteHeader({ waitForIntro = false }: { waitForIntro?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const activeSection = useActiveSection(SECTION_IDS, "home");
-  const scrolled = useScrolled();
+  // The top state ends with the first pixel of scroll: past that, the plate's
+  // sigil has started to slide away from the name set beside it.
+  const { atTop, hidden } = useHeaderScrollState({ topThreshold: 2 });
   const reduce = useReducedMotion();
 
   /**
@@ -92,80 +115,103 @@ export function SiteHeader({ waitForIntro = false }: { waitForIntro?: boolean })
 
   return (
     <>
-      <motion.header
-        className={styles.header}
-        data-scrolled={scrolled ? "" : undefined}
-        {...motionProps}
-        {...v(headerVariants)}
+      <div
+        className={styles.shell}
+        data-top={atTop ? "" : undefined}
+        data-hidden={hidden && !menuOpen ? "" : undefined}
       >
-        <motion.div className={styles.bar} {...v(passThrough)}>
-          <motion.a
-            href="#home"
-            className={styles.brand}
-            aria-label="Valentine Tattoo — torna all’inizio"
-            {...v(itemVariants)}
-          >
-            <BrandLockup
-              markSize={32}
-              className={styles.lockup}
-              wordmarkClassName={styles.wordmark}
-              nameClassName={styles.brandName}
-              taglineClassName={styles.brandTagline}
-            />
-          </motion.a>
-
-          <motion.nav
-            className={styles.nav}
-            aria-label={a11yContent.primaryNavLabel}
-            {...v(passThrough)}
-          >
-            <ul className={styles.navList}>
-              {/* No separator glyphs: with seven items they cost the width the
-                  labels need. The active underline carries the emphasis. */}
-              {navItems.map((navItem) => (
-                <motion.li key={navItem.id} className={styles.navItem} {...v(itemVariants)}>
-                  <a
-                    href={navItem.href}
-                    className={styles.navLink}
-                    aria-current={activeSection === navItem.id ? "page" : undefined}
-                    data-active={activeSection === navItem.id ? "" : undefined}
-                  >
-                    {navItem.label}
-                    <span className={styles.navUnderline} aria-hidden="true" />
-                  </a>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.nav>
-
-          <motion.div className={styles.actions} {...v(itemVariants)}>
-            <SigilStar size={18} className={styles.actionStar} />
-            <ChromeButton href="#booking" size="sm" className={styles.bookingButton} tracked>
-              BOOKING
-            </ChromeButton>
-
-            <motion.button
-              ref={triggerRef}
-              type="button"
-              className={styles.burger}
-              aria-label={a11yContent.openMenu}
-              aria-expanded={menuOpen}
-              aria-haspopup="dialog"
-              onClick={() => setMenuOpen(true)}
-              whileTap={reduce ? undefined : { scale: 0.94 }}
-              transition={{ type: "spring", stiffness: 420, damping: 26 }}
+        <motion.header className={styles.header} {...motionProps} {...v(headerVariants)}>
+          <motion.div className={styles.bar} {...v(passThrough)}>
+            <motion.a
+              href="#home"
+              className={styles.brand}
+              aria-label="Valentine Tattoo — torna all’inizio"
+              {...v(itemVariants)}
             >
-              <span className={styles.burgerLines} aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </span>
-            </motion.button>
-          </motion.div>
-        </motion.div>
+              <BrandLockup
+                markSize={32}
+                className={styles.lockup}
+                markClassName={styles.mark}
+                wordmarkClassName={styles.wordmark}
+                nameClassName={styles.brandName}
+                taglineClassName={styles.brandTagline}
+              />
+            </motion.a>
 
-        <span className={styles.divider} aria-hidden="true" data-decor="" />
-      </motion.header>
+            <motion.nav
+              className={styles.nav}
+              aria-label={a11yContent.primaryNavLabel}
+              {...v(passThrough)}
+            >
+              <ul className={styles.navList}>
+                {/* No separator glyphs: with seven items they cost the width the
+                    labels need. The active underline carries the emphasis. */}
+                {navItems.map((navItem) => (
+                  <motion.li key={navItem.id} className={styles.navItem} {...v(itemVariants)}>
+                    <a
+                      href={navItem.href}
+                      className={styles.navLink}
+                      aria-current={activeSection === navItem.id ? "page" : undefined}
+                      data-active={activeSection === navItem.id ? "" : undefined}
+                      // The label resolves out of noise under the pointer — a
+                      // sigil being read. Its width is held, so nothing shifts.
+                      onPointerEnter={
+                        reduce
+                          ? undefined
+                          : (event) => {
+                              if (event.pointerType !== "mouse") return;
+                              const label = event.currentTarget.querySelector<HTMLElement>("[data-decode]");
+                              if (label) playDecode(label, 0.55);
+                            }
+                      }
+                    >
+                      <span className={styles.navLabel} data-decode="">
+                        {navItem.label}
+                      </span>
+                      <span className={styles.navUnderline} aria-hidden="true" />
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.nav>
+
+            <motion.div className={styles.actions} {...v(itemVariants)}>
+              <SigilStar size={16} className={styles.actionStar} />
+              <ChromeButton
+                href="#booking"
+                size="sm"
+                variant="solid"
+                className={styles.bookingButton}
+                tracked
+                magnetic
+                trailing={<ArrowRightIcon size={14} />}
+              >
+                {siteChromeContent.headerCta}
+              </ChromeButton>
+
+              <motion.button
+                ref={triggerRef}
+                type="button"
+                className={styles.burger}
+                aria-label={a11yContent.openMenu}
+                aria-expanded={menuOpen}
+                aria-haspopup="dialog"
+                onClick={() => setMenuOpen(true)}
+                whileTap={reduce ? undefined : { scale: 0.94 }}
+                transition={{ type: "spring", stiffness: 420, damping: 26 }}
+              >
+                <span className={styles.burgerLines} aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </motion.button>
+            </motion.div>
+          </motion.div>
+
+          <span className={styles.divider} aria-hidden="true" data-decor="" />
+        </motion.header>
+      </div>
 
       <MobileMenu
         open={menuOpen}

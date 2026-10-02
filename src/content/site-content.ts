@@ -13,6 +13,12 @@ import { artist, instagramProfile } from "@/config/site-config";
 
 export const heroContent = {
   eyebrow: "CYBER TRIBAL · BIOMECHANICAL · CUSTOM WORK",
+  /**
+   * The same three words as separate items, so a phone can break them as
+   * "CYBER TRIBAL · BIOMECHANICAL" over "CUSTOM WORK" instead of leaving a
+   * separator hanging at the end of the first line.
+   */
+  eyebrowItems: ["CYBER TRIBAL", "BIOMECHANICAL", "CUSTOM WORK"] as const,
   /** Rendered as a single accessible H1; the array is only a line-break hint. */
   titleLines: ["VALENTINE", "TATTOO"] as const,
   titleAccessible: "Valentine Tattoo",
@@ -39,10 +45,21 @@ export const heroContent = {
    * artist's name and studio are given in full in About either way.
    */
   introShort: `Resident presso ${artist.studio}`,
-  primaryCta: "Richiedi una consulenza su WhatsApp",
+  /**
+   * The primary call to action stays on the page: it leads to Booking, where
+   * the form and every direct channel are together. The secondary one opens a
+   * direct channel — WhatsApp when a number is configured, Instagram otherwise.
+   */
+  bookingCta: "Richiedi una consulenza",
+  primaryCta: "Scrivimi su WhatsApp",
   secondaryCta: "Scrivimi su Instagram",
   supportingLine:
     "Tatuaggi su misura · Concept personalizzati · Cyber tribal e biomeccanico",
+  supportingItems: [
+    "Tatuaggi su misura",
+    "Concept personalizzati",
+    "Cyber tribal e biomeccanico",
+  ] as const,
   scrollLabel: "SCORRI PER ESPLORARE",
   /** Vertical ornamental rail text — brand words, never fabricated data. */
   railWords: ["CYBER TRIBAL", "BIOMECHANICAL", "CUSTOM WORK"] as const,
@@ -50,7 +67,6 @@ export const heroContent = {
 
 export const aboutContent = {
   eyebrow: "ABOUT",
-  columnEyebrow: "ABOUT ME",
   titleLines: ["THE ART BEHIND", "VALENTINE TATTOO"] as const,
   titleAccessible: "The art behind Valentine Tattoo",
   /**
@@ -195,8 +211,10 @@ export const bookingContent = {
   eyebrow: "BOOKING / CONSULENZA",
   titleLines: ["LA TUA IDEA,", "LA MIA VISIONE."] as const,
   titleAccessible: "La tua idea, la mia visione.",
-  intro:
-    "Ogni tatuaggio nasce da un confronto. Raccontami il soggetto, il significato, la zona del corpo, le dimensioni e i riferimenti che hai in mente.",
+  /** Set as a lead line in the display serif, then a quieter deck below it. */
+  introLead: "Ogni tatuaggio nasce da un confronto.",
+  introBody:
+    "Raccontami il soggetto, il significato, la zona del corpo, le dimensioni e i riferimenti che hai in mente.",
   contactCardTitle: "SCEGLI IL CANALE",
   whatsappCta: "RICHIEDI UNA CONSULENZA SU WHATSAPP",
   whatsappSupport: "Contatto diretto",
@@ -332,6 +350,11 @@ export const faqContent = {
   titleAccessible: "Domande frequenti",
   supporting:
     "Come nasce un progetto, come si svolgono le sedute e come richiedere una consulenza.",
+  /** The close of the page: where to go once the questions are answered. */
+  closingTitle: "Hai un’altra domanda?",
+  closingBody: "Scrivimi: ogni richiesta viene letta e valutata singolarmente.",
+  closingBooking: "Richiedi una consulenza",
+  closingInstagram: "Scrivimi su Instagram",
   items: [
     {
       id: "dove",
@@ -379,6 +402,13 @@ export const faqContent = {
       answer: `Puoi compilare il modulo di consulenza in questa pagina, raccontando la tua idea e allegando eventuali riferimenti, oppure scrivere un messaggio privato su Instagram a ${instagramProfile.handleWithAt}. Ogni richiesta viene letta e valutata singolarmente.`,
     },
   ] as const,
+} as const;
+
+/** Persistent chrome: header call to action, footer, back-to-top. */
+export const siteChromeContent = {
+  headerCta: "CONSULENZA",
+  footerPlace: `${artist.city} · ${artist.studio}`,
+  backToTop: "Torna su",
 } as const;
 
 export const a11yContent = {

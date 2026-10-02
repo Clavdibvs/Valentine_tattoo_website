@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useId, useRef } from "react";
 
+import { playDecode } from "@/components/animation/motion-kit";
 import { CornerSigil } from "@/components/ornaments/SigilOrnament";
 import { SigilStar } from "@/components/ornaments/SigilStar";
 import { CloseIcon, InstagramIcon, WhatsAppIcon } from "@/components/ui/Icons";
@@ -77,16 +78,37 @@ export function MobileMenu({
 
   /* -------------------------------------------------------------------- */
   /* Move focus in on open, restore it on close                            */
+  /*                                                                       */
+  /* Only on a real close. The effect also runs on mount, with `open`      */
+  /* false, and restoring focus then put it on the burger the moment the   */
+  /* page loaded — invisible, but it kept the header pinned on screen,     */
+  /* and it is not where a keyboard user starts a page.                    */
   /* -------------------------------------------------------------------- */
+  const wasOpen = useRef(false);
+
   useEffect(() => {
     if (open) {
+      wasOpen.current = true;
+      const timers: number[] = [];
       // Wait a frame so the panel is mounted and measurable.
       const raf = requestAnimationFrame(() => {
         const panel = panelRef.current;
         panel?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+        // The chapter names resolve out of noise as they rise in, one after
+        // another — the same reading of a sigil the headings do.
+        if (panel && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          panel.querySelectorAll<HTMLElement>("[data-decode]").forEach((label, index) => {
+            timers.push(window.setTimeout(() => playDecode(label, 0.5), 90 + index * 55));
+          });
+        }
       });
-      return () => cancelAnimationFrame(raf);
+      return () => {
+        cancelAnimationFrame(raf);
+        timers.forEach((timer) => window.clearTimeout(timer));
+      };
     }
+    if (!wasOpen.current) return;
+    wasOpen.current = false;
     triggerRef.current?.focus();
   }, [open, triggerRef]);
 
@@ -168,7 +190,9 @@ export function MobileMenu({
                       <span className={styles.linkIndex} aria-hidden="true">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-                      <span className={styles.linkLabel}>{navItem.label}</span>
+                      <span className={styles.linkLabel} data-decode="">
+                        {navItem.label}
+                      </span>
                       <SigilStar size={13} className={styles.linkStar} />
                     </a>
                   </motion.li>

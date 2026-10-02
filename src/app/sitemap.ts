@@ -1,15 +1,15 @@
 import type { MetadataRoute } from "next";
 
 import { siteUrl } from "@/config/site-config";
+import { editorialArticles } from "@/content/editorial/articles";
+import { articlePath } from "@/lib/editorial";
 
 /**
  * The sitemap.
  *
- * One entry, because the site is one page: every nav item is an anchor into
- * `/`, not a route of its own. Listing `#creazioni`, `#booking` and the rest
- * would be actively harmful — a sitemap declares indexable URLs, fragments are
- * not URLs to a crawler, and Google reports them as errors rather than
- * indexing them separately.
+ * The home remains one entry: its section anchors are not separate pages.
+ * Journal URLs follow the editorial registry, so future articles are included
+ * without maintaining a second list of routes.
  *
  * `lastModified` is the build time. The page is fully static, so its content
  * cannot change between deploys, which makes the moment it was built the exact
@@ -27,5 +27,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
+    {
+      url: `${siteUrl}/journal`,
+      lastModified: editorialArticles.reduce((latest, article) => article.dateModified > latest ? article.dateModified : latest, "2026-10-02"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    ...editorialArticles.map((article) => ({
+      url: `${siteUrl}${articlePath(article)}`,
+      lastModified: article.dateModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+      images: [`${siteUrl}${article.ogImage}`],
+    })),
   ];
 }

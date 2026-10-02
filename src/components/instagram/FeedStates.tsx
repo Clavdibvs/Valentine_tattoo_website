@@ -9,11 +9,18 @@ import styles from "./FeedStates.module.css";
 
 /**
  * Skeleton shown while the server component streams the feed in.
- * Uses the exact card geometry so no layout shift occurs on swap.
+ * Mirrors the gallery it stands in for — the feed's wall or a collection's
+ * rail — so the swap does not shift the page.
  */
-export function LoadingSkeleton() {
+export function LoadingSkeleton({ variant = "grid" }: { variant?: "grid" | "rail" }) {
   return (
-    <div className={styles.skeletonWrap} role="status" aria-live="polite">
+    <div
+      className={[styles.skeletonWrap, variant === "rail" ? styles.skeletonRail : ""]
+        .filter(Boolean)
+        .join(" ")}
+      role="status"
+      aria-live="polite"
+    >
       <span className="sr-only">{instagramContent.loadingLabel}</span>
       <ul className={styles.skeletonList} aria-hidden="true">
         {Array.from({ length: instagramFeed.limit }).map((_, i) => (

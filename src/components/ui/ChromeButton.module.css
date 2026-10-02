@@ -120,6 +120,13 @@
 
 .trailing {
   margin-left: auto;
+  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* The arrow leans the way the button goes. */
+.button:hover .trailing,
+.button:focus-visible .trailing {
+  transform: translateX(3px);
 }
 
 .labels {
@@ -194,21 +201,49 @@
   box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.07);
 }
 
+/*
+ * The primary control: a polished chrome rim around a faintly lit face. The
+ * face is a vertical gradient — lighter at the top edge, as metal catches an
+ * overhead light — and on hover the light deepens and a violet ember wakes
+ * inside it, the same colour the molten layer pours through the backdrop.
+ */
 .solid {
-  --btn-fill: rgba(16, 16, 17, 0.96);
+  --btn-fill: linear-gradient(180deg, rgba(46, 46, 51, 0.98) 0%, rgba(20, 20, 22, 0.98) 52%, rgba(11, 11, 12, 0.98) 100%);
   --btn-stroke: linear-gradient(
     150deg,
-    rgba(255, 255, 255, 0.6),
-    rgba(140, 148, 158, 0.24) 40%,
-    rgba(255, 255, 255, 0.5) 70%,
-    rgba(110, 118, 128, 0.3)
+    rgba(255, 255, 255, 0.92),
+    rgba(150, 158, 168, 0.36) 36%,
+    rgba(255, 255, 255, 0.8) 66%,
+    rgba(120, 128, 138, 0.45)
   );
+  /* The clip-path on the layers would cut a box-shadow off at the rim, so the
+     glow is a filter on the whole control instead. */
+  filter: drop-shadow(0 0 14px rgba(196, 146, 255, 0.16));
+  transition:
+    color var(--dur-mid) var(--ease-out),
+    filter 420ms var(--ease-out);
+}
+
+.solid .label {
+  color: #fff;
+}
+
+.solid::after {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.solid:hover,
+.solid:focus-visible {
+  filter: drop-shadow(0 0 20px rgba(196, 146, 255, 0.3));
 }
 
 .solid:hover::after,
 .solid:focus-visible::after {
-  background: rgba(26, 26, 27, 0.96);
-  box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(54, 50, 62, 0.98) 0%, rgba(22, 20, 26, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 0 28px var(--ember-soft),
+    inset 0 -10px 24px rgba(196, 146, 255, 0.1);
 }
 
 .ghost {

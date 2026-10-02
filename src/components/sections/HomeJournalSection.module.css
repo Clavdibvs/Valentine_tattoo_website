@@ -1,0 +1,36 @@
+.journal { z-index: 1; overflow: clip; padding-top: clamp(70px, 8vw, 120px); }
+.inner { display: grid; grid-template-columns: .8fr 1.5fr; align-items: start; gap: clamp(35px, 6vw, 85px); border-top: 1px solid var(--color-line-strong); padding-top: clamp(35px, 5vw, 65px); }
+.intro { padding-top: 5px; }
+.eyebrow { font-size: .72rem; text-transform: uppercase; letter-spacing: .16em; color: #c3b5ce; }
+.title { font-family: var(--font-display), serif; font-size: clamp(3.5rem, 6vw, 6rem); font-weight: 400; line-height: 1.05; letter-spacing: -.03em; margin: 24px 0; color: #ece9ef; }
+.description { max-width: 35ch; font-size: 1.0625rem; line-height: 1.8; color: #d5d1d8; margin-bottom: 30px; }
+.feature { display: grid; grid-template-columns: .85fr 1fr; gap: clamp(20px, 3vw, 38px); }
+.imageLink { display: block; min-width: 0; }
+.imageLink figure > div { aspect-ratio: 3 / 4; }
+.imageLink img { transition: transform 650ms var(--ease-out); }
+.imageLink:hover img { transform: scale(1.035); }
+.featureCopy { padding-top: 5px; }
+.featureCopy h3 { font-family: var(--font-display), serif; font-size: clamp(2rem, 3vw, 3rem); font-weight: 400; line-height: 1.1; letter-spacing: -.02em; margin: 22px 0 18px; }
+.featureCopy h3 a:hover { color: #d4b4ec; }
+.subtitle { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: #c6b4d3; line-height: 1.6; margin-bottom: 20px; }
+.featureDescription { font-size: 1rem; line-height: 1.75; color: #d5d1d8; }
+.read { display: flex; align-items: center; justify-content: space-between; gap: 15px; width: fit-content; min-height: 48px; margin-top: 20px; border-bottom: 1px solid var(--color-line-strong); font-size: .875rem; }
+.read:hover { color: var(--ember); border-color: var(--ember); }
+@media(max-width: 1023px) {
+  .inner { grid-template-columns: 1fr; gap: 40px; }
+  .intro { max-width: 650px; }
+  .description { max-width: 55ch; }
+  .feature { grid-template-columns: .8fr 1fr; gap: 35px; }
+}
+@media(max-width: 699px) {
+  .inner { padding-top: 35px; gap: 40px; }
+  .title { font-size: 4.3rem; margin-block: 20px; }
+  .feature { grid-template-columns: 1fr; gap: 24px; }
+  .imageLink figure > div { aspect-ratio: 4 / 3; }
+  .featureCopy h3 { font-size: 2.5rem; margin-top: 18px; }
+  .featureDescription { font-size: 1.0625rem; }
+}
+@media(prefers-reduced-motion: reduce) {
+  .imageLink img { transition: none; }
+  .imageLink:hover img { transform: none; }
+}

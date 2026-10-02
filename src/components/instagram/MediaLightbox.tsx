@@ -73,6 +73,7 @@ export function MediaLightbox({
   index,
   onIndexChange,
   onClose,
+  morphed = false,
 }: {
   /** The whole gallery this lightbox belongs to. */
   items: InstagramMedia[];
@@ -80,6 +81,11 @@ export function MediaLightbox({
   index: number | null;
   onIndexChange: (index: number) => void;
   onClose: () => void;
+  /**
+   * The photograph flew in from its tile (a view transition): the figure must
+   * not fade in on top of that flight, or the picture dims halfway through.
+   */
+  morphed?: boolean;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -249,7 +255,7 @@ export function MediaLightbox({
     },
   };
 
-  const frame = reduce
+  const frame = reduce || morphed
     ? { hidden: { opacity: 1 }, visible: { opacity: 1 }, exit: { opacity: 1 } }
     : {
         hidden: { opacity: 0, scale: 0.97 },
@@ -397,6 +403,9 @@ function MediaImage({ media }: { media: InstagramMedia }) {
         height={media.height}
         decoding="async"
         draggable={false}
+        // The gallery hands the shared view-transition name to this image, so
+        // the tile that was clicked can fly into it (see InstagramFeed).
+        data-lightbox-image=""
       />
     </picture>
   );

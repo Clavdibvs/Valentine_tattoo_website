@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: clamp(0.85rem, 0.7rem + 0.6vw, 1.35rem);
 }
 
 .center {
@@ -36,22 +36,92 @@
   opacity: 0.75;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Eyebrow: ── 02 ✦ CONNECT WITH THE TRIBE ──                                 */
+/* -------------------------------------------------------------------------- */
+
 .eyebrow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.7em;
+  justify-content: center;
+  gap: 0.75em;
+  width: 100%;
+  max-width: 40rem;
   margin: 0;
 }
 
-.eyebrowStar {
-  opacity: 0.85;
+.start .eyebrow {
+  justify-content: flex-start;
 }
+
+@media (min-width: 1024px) {
+  .startDesktop .eyebrow {
+    justify-content: flex-start;
+  }
+}
+
+/* The hairlines take whatever width is left and give it up first: on a 360px
+   phone they collapse to nothing rather than wrapping the label. */
+.rule {
+  flex: 1 1 2.5rem;
+  min-width: 0;
+  max-width: 4.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-line-strong));
+}
+
+.ruleEnd {
+  background: linear-gradient(90deg, var(--color-line-strong), transparent);
+}
+
+/* A start-aligned eyebrow has nothing before it to lead in from. */
+.start .rule:first-child {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .startDesktop .rule:first-child {
+    display: none;
+  }
+
+  .startDesktop .ruleEnd {
+    max-width: 7rem;
+  }
+}
+
+.index {
+  flex: none;
+  font-size: 1.32em;
+  letter-spacing: 0.06em;
+  color: var(--color-text);
+  /* Optically centred on the caps beside it. */
+  translate: 0 -0.04em;
+}
+
+.eyebrowStar {
+  opacity: 0.8;
+}
+
+.eyebrowText {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* On the narrowest phones a long eyebrow may still need two lines. */
+@media (max-width: 380px) {
+  .eyebrowText {
+    white-space: normal;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Title                                                                      */
+/* -------------------------------------------------------------------------- */
 
 .titleRow {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.75rem, 2.5vw, 2.25rem);
   width: 100%;
 }
 
@@ -69,23 +139,15 @@
   }
 }
 
-.flank {
-  flex: 0 0 auto;
-  opacity: 0.8;
-}
-
-/* Hide the flanking stars once they start eating the heading's width. */
-@media (max-width: 480px) {
-  .flank {
-    display: none;
-  }
-}
-
 .title {
-  font-size: var(--fs-h2);
-  letter-spacing: 0.012em;
-  line-height: 0.98;
   margin: 0;
+  font-size: var(--fs-h2);
+  letter-spacing: 0.01em;
+  line-height: 0.96;
+}
+
+.md .title {
+  font-size: var(--fs-h2-sm);
 }
 
 .center .title {

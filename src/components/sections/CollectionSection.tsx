@@ -2,7 +2,6 @@ import { Suspense } from "react";
 
 import { DemoDataNotice, IntegrationErrorState, LoadingSkeleton } from "@/components/instagram/FeedStates";
 import { InstagramFeed } from "@/components/instagram/InstagramFeed";
-import { OrnamentDivider } from "@/components/ornaments/OrnamentDivider";
 import { SideGlyphRail } from "@/components/ornaments/SideGlyphRail";
 import { ChromeButton } from "@/components/ui/ChromeButton";
 import { ChromeFrame } from "@/components/ui/ChromeFrame";
@@ -18,10 +17,12 @@ import styles from "./InstagramSection.module.css";
 /**
  * Creazioni, Flash and Merch.
  *
- * All three are the same composition as the Instagram feed — deliberately, so
- * the page keeps one gallery language rather than three. They share the
- * section stylesheet, the carousel, the card and the loading/empty/error states;
- * only the copy, the rail index and the data source differ.
+ * All three share the Instagram section's stylesheet, card and states, so the
+ * page keeps one gallery language. What sets them apart from the feed is the
+ * format — stories, shown as a rail rather than a wall — and a lighter
+ * heading: they are one series of three, and repeating the feed's full arc
+ * and ornament stack over each of them is what made the page read as a
+ * template.
  *
  * The media come from the real feed filtered by caption markers: Instagram's
  * official API exposes no story-highlights edge. See `lib/instagram/collections`.
@@ -32,7 +33,7 @@ export function CollectionSection({
   railWords,
 }: {
   id: CollectionId;
-  /** Two-digit index shown on the decorative side rail. */
+  /** Two-digit chapter index, shown in the eyebrow and on the side rail. */
   railIndex: string;
   railWords: readonly string[];
 }) {
@@ -40,29 +41,31 @@ export function CollectionSection({
   const headingId = `${id}-title`;
 
   return (
-    <section id={id} className={`section ${styles.instagram}`} aria-labelledby={headingId}>
+    <section
+      id={id}
+      className={`section ${styles.instagram} ${styles.collection}`}
+      aria-labelledby={headingId}
+    >
       <SideGlyphRail side="left" index={railIndex} />
       <SideGlyphRail side="right" words={railWords} />
 
       <div className={`container ${styles.inner}`}>
         <SectionHeading
           id={headingId}
+          index={railIndex}
           eyebrow={copy.eyebrow}
           lines={[copy.title]}
           align="center"
-          arc
+          size="md"
           divider={false}
-          flankStars
           className={styles.heading}
         />
 
-        <p className={styles.supporting} data-reveal="">
+        <p className={styles.supporting} data-reveal="words">
           {copy.supporting}
         </p>
 
-        <OrnamentDivider className={styles.headDivider} width="300px" />
-
-        <Suspense fallback={<Shell><LoadingSkeleton /></Shell>}>
+        <Suspense fallback={<Shell><LoadingSkeleton variant="rail" /></Shell>}>
           <CollectionContent id={id} />
         </Suspense>
 
@@ -76,6 +79,7 @@ export function CollectionSection({
             icon={<InstagramIcon size={19} />}
             trailing={<ExternalIcon size={14} />}
             className={styles.cta}
+            magnetic
           >
             {copy.cta}
           </ChromeButton>
@@ -111,19 +115,17 @@ async function CollectionContent({ id }: { id: CollectionId }) {
   if ((result.status !== "ok" || result.source === "demo") && hasLocalGallery(id)) {
     return (
       <div className={styles.feedArea}>
-        <InstagramFeed media={localCollection(id)} label={copy.carouselLabel} shape="story" />
+        <InstagramFeed media={localCollection(id)} label={copy.carouselLabel} shape="story" variant="rail" />
       </div>
     );
   }
 
   if (result.status === "ok") {
-    // InstagramFeed brings its own chrome frame so the carousel controls can
-    // sit outside it without being clipped.
     return (
       <>
         {result.source === "demo" ? <DemoDataNotice /> : null}
         <div className={styles.feedArea}>
-          <InstagramFeed media={result.media} label={copy.carouselLabel} shape="story" />
+          <InstagramFeed media={result.media} label={copy.carouselLabel} shape="story" variant="rail" />
         </div>
       </>
     );

@@ -2,7 +2,6 @@ import { Suspense } from "react";
 
 import { DemoDataNotice, IntegrationErrorState, LoadingSkeleton } from "@/components/instagram/FeedStates";
 import { InstagramFeed } from "@/components/instagram/InstagramFeed";
-import { CornerSigil } from "@/components/ornaments/SigilOrnament";
 import { OrnamentDivider } from "@/components/ornaments/OrnamentDivider";
 import { SideGlyphRail } from "@/components/ornaments/SideGlyphRail";
 import { SigilStar } from "@/components/ornaments/SigilStar";
@@ -17,46 +16,47 @@ import { fetchInstagramFeed } from "@/lib/instagram/client";
 
 import styles from "./InstagramSection.module.css";
 
+/**
+ * The feed: the first thing after the hero, and the page's main body of work.
+ *
+ * It opens the second movement of the page, so it keeps the full heading — the
+ * arc over the eyebrow — and shows the posts as a wall rather than a strip.
+ * The plates carry the corner ornaments; the hand-built SVG copies that used
+ * to sit here hidden are no longer rendered.
+ */
 export function InstagramSection() {
   return (
     <section id="instagram" className={`section ${styles.instagram}`} aria-labelledby="instagram-title">
-
-      <div className={styles.decorLayer} aria-hidden="true" data-decor="">
-        <CornerSigil corner="top-left" className={styles.cornerTop} opacity={0.4} />
-        <CornerSigil corner="bottom-left" className={styles.cornerBottomLeft} opacity={0.5} />
-        <CornerSigil corner="bottom-right" className={styles.cornerBottomRight} opacity={0.42} />
-      </div>
-
       <SideGlyphRail side="left" index="02" />
       <SideGlyphRail side="right" words={heroContent.railWords} />
 
       <div className={`container ${styles.inner}`}>
         <SectionHeading
           id="instagram-title"
+          index="02"
           eyebrow={instagramContent.eyebrow}
           lines={[instagramContent.title]}
           align="center"
           arc
           divider={false}
-          flankStars
           className={styles.heading}
         />
 
-        <p className={styles.supporting} data-reveal="">
+        <p className={styles.supporting} data-reveal="words">
           {instagramContent.supporting}
         </p>
 
-        <OrnamentDivider className={styles.headDivider} width="300px" />
+        <OrnamentDivider className={styles.headDivider} width="280px" />
 
         {/* Streamed in so the rest of the page is never blocked by the API. */}
-        <Suspense fallback={<FeedShell><LoadingSkeleton /></FeedShell>}>
+        <Suspense fallback={<FeedShell><LoadingSkeleton variant="grid" /></FeedShell>}>
           <FeedContent />
         </Suspense>
 
         <div className={styles.footer} data-reveal="">
           <p className={`u-label ${styles.footerEyebrow}`}>
             <SigilStar size={10} />
-            <span>{instagramContent.footerEyebrow}</span>
+            <span data-decode="">{instagramContent.footerEyebrow}</span>
             <SigilStar size={10} />
           </p>
 
@@ -68,6 +68,7 @@ export function InstagramSection() {
             icon={<InstagramIcon size={19} />}
             trailing={<ExternalIcon size={14} />}
             className={styles.cta}
+            magnetic
           >
             {instagramContent.cta}
           </ChromeButton>
@@ -82,7 +83,7 @@ export function InstagramSection() {
  *
  * Deliberately NOT a `data-reveal` block: this subtree streams in from a
  * Suspense boundary, and letting GSAP style it before React hydrates it causes
- * a hydration mismatch. The skeleton-to-content swap is the transition here.
+ * a hydration mismatch. The gallery stages its own arrival instead.
  */
 function FeedShell({
   children,
@@ -120,20 +121,18 @@ async function FeedContent() {
     if (hasLocalGallery("feed")) {
       return (
         <div className={styles.feedArea}>
-          <InstagramFeed media={localFeed()} />
+          <InstagramFeed media={localFeed()} variant="grid" />
         </div>
       );
     }
   }
 
   if (feed.status === "ok") {
-    // InstagramFeed brings its own chrome frame so the carousel controls can sit
-    // outside it without being clipped.
     return (
       <>
         {feed.source === "demo" ? <DemoDataNotice /> : null}
         <div className={styles.feedArea}>
-          <InstagramFeed media={feed.media} />
+          <InstagramFeed media={feed.media} variant="grid" />
         </div>
       </>
     );

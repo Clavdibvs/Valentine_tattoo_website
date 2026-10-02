@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { CarouselIcon, ReelIcon } from "@/components/ui/Icons";
+import { CarouselIcon, ExpandIcon, ReelIcon } from "@/components/ui/Icons";
 import { instagramContent } from "@/content/site-content";
 import { isDemoUrl } from "@/lib/instagram/demo-data";
 import type { InstagramMedia } from "@/lib/instagram/types";
@@ -62,6 +62,7 @@ export function InstagramCard({
       rel="noopener noreferrer"
       className={[styles.card, className].filter(Boolean).join(" ")}
       data-media-card=""
+      data-cursor={onOpen ? "open" : "link"}
       onClick={handleClick}
       aria-haspopup={onOpen ? "dialog" : undefined}
       title={onOpen ? instagramContent.lightbox.openHint : undefined}
@@ -98,6 +99,10 @@ export function InstagramCard({
           />
         )}
         <span className={styles.overlay} aria-hidden="true" />
+        {/* A soft disc of light carried to wherever the pointer is (see
+            InstagramFeed), and the dark veil the photograph arrives out of. */}
+        <span className={styles.sheen} aria-hidden="true" data-sheen="" />
+        <span className={styles.veil} aria-hidden="true" data-veil="" />
       </span>
 
       {media.mediaType !== "IMAGE" ? (
@@ -112,7 +117,12 @@ export function InstagramCard({
         </span>
       ) : null}
 
-      <span className={styles.corner} aria-hidden="true" />
+      {/* What a click does here — enlarge — shown where a pointer can hover. */}
+      {onOpen ? (
+        <span className={styles.open} aria-hidden="true">
+          <ExpandIcon size={15} />
+        </span>
+      ) : null}
     </a>
   );
 }

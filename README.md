@@ -119,7 +119,7 @@ src/
     ornaments/                  sigilli, rail, divisori, monogramma (tutti SVG)
     instagram/                  card, feed, stati (skeleton / vuoto / errore)
     booking/                    ConsultationForm, ReferenceUploader
-    animation/                  ScrollAnimations (solo GSAP)
+    animation/                  ScrollAnimations (GSAP), motion-kit, CursorFollower, ScrollMeter, IntroOverlay
   config/site-config.ts         identità, contatti, navigazione, integrazioni
   content/site-content.ts       TUTTI i testi visibili
   lib/
@@ -144,13 +144,62 @@ impilate si ripeterebbero come bordi lungo la pagina: vedi
 `scripts/build-backdrops.mjs` e ASSETS.md. Per sostituire un'immagine si
 rimpiazza il sorgente e si rilancia lo script.
 
-**Divisione delle librerie di animazione** (nessun elemento è animato da entrambe):
+**Divisione delle librerie di animazione** (nessuna proprietà è animata da due
+librerie sullo stesso elemento):
 
-- **GSAP + ScrollTrigger** — reveal di sezione, entrata/uscita delle sezioni,
-  parallasse dello sfondo, line draw, sweep chrome. Solo animazioni da scroll.
-- **Motion** — menu mobile, stati hover/tap dei pulsanti, presence del form,
-  transizioni di layout dell'uploader.
-- **Transizioni CSS** — colore, opacità, bordo, glow.
+- **GSAP** (ScrollTrigger, SplitText, DrawSVG, CustomEase — tutti inclusi nel
+  pacchetto `gsap` dalla 3.13) — reveal di sezione, entrata/uscita delle
+  sezioni, parallasse dello sfondo, sweep chrome, bagliore sul wordmark, arrivo
+  delle gallerie, tilt delle card. La decodifica delle etichette è una piccola
+  funzione propria (`playDecode` in `motion-kit.ts`), non un plugin.
+- **Motion** — menu mobile, stati hover/tap e attrazione magnetica dei pulsanti,
+  presence del form, transizioni di layout dell'uploader.
+- **Transizioni/animazioni CSS** — colore, opacità, bordo, glow, anello di luce
+  sui campi del modulo.
+- **View Transitions API** — il "volo" della miniatura nel lightbox (con
+  fallback automatico dove non è supportata).
+
+### Sistema di motion — "molten chrome"
+
+Il vocabolario sta in `src/components/animation/motion-kit.ts`. I reveal si
+attivano con attributi nel markup, senza toccare JavaScript:
+
+| Attributo | Effetto |
+| --- | --- |
+| `data-reveal` | blocco che si rivela entrando nello schermo (`data-reveal="words"` ecc. per un elemento singolo) |
+| `data-reveal-child` | figlio del blocco, in sequenza; valori: *(vuoto)* salita, `mask` titolo lettera per lettera / lettering da maschera, `words` parole che emergono una dopo l'altra, `lines` righe da maschera, `forge` "battuto" in posizione, `track` spaziatura che si chiude |
+| `data-draw="left\|right\|center"` | linea sottile disegnata dal lato indicato |
+| `data-decode` / `data-decode="digits"` | etichetta che si decodifica dal rumore |
+| `data-scrub-words` | parole che si illuminano seguendo lo scroll (lead dell'About) |
+| `data-cursor="open\|drag"` | etichetta del cursore personalizzato su quella zona |
+
+Gli stati iniziali stanno in `globals.css` dietro la classe `.js-motion`: senza
+JavaScript o con `prefers-reduced-motion` la pagina è completa e ferma (verificato:
+nessun elemento resta nascosto, nessuno split resta nel DOM).
+
+**Lo sfondo non è animato da questo sistema**: piastre, ordine, parallasse e layer
+molten sono invariati. Gli unici elementi aggiunti sopra lo sfondo sono
+d'interfaccia: il misuratore di scroll sul bordo della cornice
+(`ScrollMeter`, solo desktop) e il cursore (`CursorFollower`, solo mouse); per
+toglierli basta rimuoverli da `page.tsx`.
+
+**Regole di performance** (verificate con le tracce di Chrome; chi aggiunge
+un'animazione dovrebbe rispettarle, altrimenti torna il "lag" durante lo scroll):
+
+- Si animano solo `transform` e `opacity`. Niente `filter`, `clip-path` o
+  proprietà di layout animate sulle fotografie: ridipingono l'immagine a ogni
+  frame.
+- Nessuna lettura di layout (`scrollY`, `getBoundingClientRect`, `scrollLeft`…)
+  dentro un frame di animazione: la posizione di scroll si legge nell'evento
+  `scroll` (listener in *capture*), le misure al resize.
+- Gli elementi si preparano con `prime()` / `stage()` di `motion-kit.ts` e poi si
+  animano con `to`, non con `fromTo`: un `fromTo` rilegge i propri valori di
+  partenza quando parte, forzando un ricalcolo di stile per ogni elemento.
+- Niente `will-change` permanente: GSAP porta l'elemento su un layer solo per la
+  durata del reveal.
+- Niente transizione CSS su proprietà che GSAP sta animando sullo stesso elemento.
+- Le rail con `scroll-snap` sospendono lo snap mentre le card entrano: le card sono
+  i punti di aggancio e il browser inseguirebbe la card in movimento.
 
 ---
 
@@ -367,13 +416,17 @@ nel percorso indicato: nessuna modifica al codice.
 - Skip link, focus visibile ovunque, target interattivi ≥ 44 × 44 px.
 - Menu mobile: `role="dialog"`, focus trap, chiusura con `Esc`, blocco dello scroll,
   focus restituito al pulsante che l'ha aperto.
-- Carosello Instagram: navigabile da tastiera (frecce ←/→), controlli etichettati.
+- Rail delle raccolte (Creazioni, Flash, Merch): navigabili da tastiera (frecce ←/→),
+  controlli etichettati; il feed Instagram è una griglia di link reali.
 - Modulo: label reali, descrizioni collegate, errori associati con `aria-describedby`,
   stati di caricamento/successo/errore annunciati.
 - `alt` derivato da un estratto **sanificato e accorciato** della caption reale;
   gli ornamenti sono `aria-hidden` e `pointer-events: none`.
-- `prefers-reduced-motion: reduce`: parallasse, deriva e shimmer disattivati, nessuna
+- `prefers-reduced-motion: reduce`: parallasse, shimmer, reveal, cursore personalizzato,
+  attrazione magnetica e morph del lightbox disattivati, nessuna
   animazione in esecuzione, tutti i contenuti visibili.
+- L'animazione CSS dell'indicatore di scroll nell'hero si mette in pausa quando
+  l'indicatore è sparito, invece di girare nascosta per tutta la visita.
 - Senza JavaScript la pagina è completamente leggibile e utilizzabile: i reveal
   vengono messi in scena solo quando il motore di animazione è realmente attivo, con
   un watchdog che li rimuove se non parte.

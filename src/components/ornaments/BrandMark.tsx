@@ -40,19 +40,22 @@ export function LogoMark({ size = 34, className }: { size?: number; className?: 
 export function BrandLockup({
   markSize = 34,
   className,
+  markClassName,
   wordmarkClassName,
   nameClassName,
   taglineClassName,
 }: {
   markSize?: number;
   className?: string;
+  /** Lets the header resize and fade the mark with its own states. */
+  markClassName?: string;
   wordmarkClassName?: string;
   nameClassName?: string;
   taglineClassName?: string;
 }) {
   return (
     <span className={className}>
-      <LogoMark size={markSize} />
+      <LogoMark size={markSize} className={markClassName} />
       <span className={wordmarkClassName}>
         <span className={nameClassName}>{artist.brand.split(" ")[0].toUpperCase()}</span>
         <span className={taglineClassName}>{artist.brand.split(" ")[1].toUpperCase()}</span>

@@ -2,56 +2,8 @@
   position: relative;
   z-index: 1;
   overflow: clip;
-  /* The gallery panel runs wider than the text container in the reference. */
+  /* The gallery runs wider than the text column. */
   --container-max: 1400px;
-}
-
-.decorLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.cornerTop,
-.cornerBottomLeft,
-.cornerBottomRight {
-  position: absolute;
-  height: auto;
-}
-
-.cornerTop {
-  top: 4%;
-  left: -13%;
-  width: min(32vw, 290px);
-}
-
-.cornerBottomLeft {
-  bottom: -3%;
-  left: -12%;
-  width: min(42vw, 380px);
-}
-
-.cornerBottomRight {
-  bottom: -5%;
-  right: -12%;
-  width: min(40vw, 360px);
-}
-
-@media (max-width: 767px) {
-  .cornerTop {
-    top: 1%;
-    left: -30%;
-    width: 60vw;
-  }
-  .cornerBottomLeft {
-    bottom: 2%;
-    left: -34%;
-    width: 66vw;
-  }
-  .cornerBottomRight {
-    display: none;
-  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -72,17 +24,17 @@
 }
 
 .supporting {
-  max-width: 56ch;
-  margin: 0;
+  max-width: 52ch;
+  margin: var(--space-3xs) 0 0;
   text-align: center;
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
   line-height: 1.7;
-  color: var(--color-text-muted);
+  color: #b4b4b4;
+  text-shadow: var(--halo);
 }
 
 .headDivider {
-  max-width: 300px;
-  margin-block: var(--space-3xs) var(--space-2xs);
+  margin-block: var(--space-2xs) var(--space-xs);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -91,13 +43,12 @@
 
 .feedArea {
   width: 100%;
-  /* Room for the carousel controls, which sit outside the frame on desktop. */
-  padding-inline: 0;
 }
 
+/* On a wide screen the gallery keeps clear of the plates' outermost rails. */
 @media (min-width: 1024px) {
   .feedArea {
-    padding-inline: clamp(28px, 3.4vw, 58px);
+    padding-inline: clamp(12px, 2.4vw, 44px);
   }
 }
 
@@ -127,7 +78,7 @@
   align-items: center;
   gap: var(--space-xs);
   width: 100%;
-  margin-top: var(--space-sm);
+  margin-top: var(--space-md);
 }
 
 .footerEyebrow {
@@ -140,14 +91,26 @@
 
 .cta {
   width: 100%;
-  max-width: 520px;
+  max-width: 460px;
 }
 
-/* ---------------------------------------------------------------------------
-   The supplied backdrop plates carry the corner ornaments at every breakpoint
-   now, so the hand-built SVG versions are retired. They stay in the codebase as
-   a fallback if a plate ever needs to be pulled.
-   --------------------------------------------------------------------------- */
-.decorLayer {
-  display: none;
+/* -------------------------------------------------------------------------- */
+/* The collections — Creazioni, Flash, Merch                                  */
+/*                                                                            */
+/* One series of three, so they sit closer together than the chapters        */
+/* around them and their call to action is quieter.                          */
+/* -------------------------------------------------------------------------- */
+
+/* Two classes: it must outrank the global `.section` padding regardless of
+   stylesheet order. */
+.instagram.collection {
+  padding-block: clamp(2.75rem, 1.8rem + 3.4vw, 5.5rem);
+}
+
+.collection .footer {
+  margin-top: var(--space-sm);
+}
+
+.collection .cta {
+  max-width: 360px;
 }

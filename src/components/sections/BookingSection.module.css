@@ -1,72 +1,9 @@
 .booking {
   position: relative;
   z-index: 1;
+  /* `clip`, not `hidden`: it does not create a scroll container, so the
+     sticky column below still sticks to the viewport. */
   overflow: clip;
-  padding-bottom: var(--space-xl);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Decoration                                                                 */
-/* -------------------------------------------------------------------------- */
-
-.decorLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.cornerTopLeft,
-.cornerTopRight,
-.cornerBottomLeft,
-.cornerBottomRight {
-  position: absolute;
-  height: auto;
-}
-
-.cornerTopLeft {
-  top: 2%;
-  left: -13%;
-  width: min(36vw, 330px);
-}
-
-.cornerTopRight {
-  top: 1%;
-  right: -13%;
-  width: min(34vw, 310px);
-}
-
-.cornerBottomLeft {
-  bottom: -2%;
-  left: -12%;
-  width: min(40vw, 360px);
-}
-
-.cornerBottomRight {
-  bottom: -3%;
-  right: -13%;
-  width: min(38vw, 350px);
-}
-
-@media (max-width: 767px) {
-  .cornerTopLeft {
-    top: 0;
-    left: -34%;
-    width: 68vw;
-  }
-  .cornerTopRight {
-    top: 1%;
-    right: -32%;
-    width: 66vw;
-  }
-  .cornerBottomLeft {
-    bottom: 4%;
-    left: -36%;
-    width: 66vw;
-  }
-  .cornerBottomRight {
-    display: none;
-  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -86,59 +23,65 @@
   width: 100%;
 }
 
-/* Lives inside the contact card, as in the desktop reference: it gives the
-   left column the body it needs to balance the form panel beside it. */
+/* The section's opening: one line in the display serif — an invitation, not a
+   form instruction — and the practical detail under it in the text face. */
 .intro {
-  position: relative;
-  max-width: 46ch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin: calc(var(--space-2xs) * -1) 0 var(--space-2xs);
+  text-align: center;
+}
+
+.introLead {
   margin: 0;
-  font-size: var(--fs-body-sm);
-  line-height: 1.8;
-  color: var(--color-text-muted);
+  font-family: var(--font-display), serif;
+  font-size: var(--fs-lead);
+  font-style: italic;
+  line-height: 1.3;
+  color: #e2e2e2;
+}
+
+.introBody {
+  max-width: 50ch;
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  color: #a9a9a9;
 }
 
 /**
- * Mobile order follows the mobile reference: CTAs, reassurance row, form.
- * Desktop follows the desktop reference: the two panels side by side with the
- * reassurance strip spanning underneath.
+ * Phone: channels, reassurances, form — one column.
+ * Wide screen: channels and reassurances in a column that holds still beside
+ * the form while it is filled in.
  */
 .panels {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "contact"
-    "reassure"
-    "form";
   gap: var(--space-md);
   width: 100%;
+  max-width: 1120px;
   align-items: start;
 }
 
-/* Natural heights. Stretching the contact card to match the form left a large
-   void above its CTAs; giving the card the intro copy balances the columns by
-   content instead. */
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
 
-/* Desktop: consultation card left, form panel right (~45 / 55). */
 @media (min-width: 1024px) {
   .panels {
-    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
-    grid-template-areas:
-      "contact form"
-      "reassure reassure";
-    gap: clamp(1.5rem, 2.6vw, 2.5rem);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 2.6vw, 2.75rem);
   }
-}
 
-.contactArea {
-  grid-area: contact;
-}
-
-.formArea {
-  grid-area: form;
-}
-
-.reassuranceArea {
-  grid-area: reassure;
+  .aside {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-sm));
+    gap: var(--space-sm);
+  }
 }
 
 .panel {
@@ -153,50 +96,50 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   height: 100%;
   padding: clamp(1.25rem, 2.6vw, 2rem);
   overflow: hidden;
-  background: linear-gradient(165deg, rgba(14, 14, 15, 0.97), rgba(5, 5, 6, 0.98));
+  background: linear-gradient(165deg, rgba(16, 16, 18, 0.97), rgba(5, 5, 6, 0.98));
 }
 
 .contactSigil {
   position: absolute;
-  top: -8%;
-  right: -22%;
-  width: 58%;
+  top: -14%;
+  right: -24%;
+  width: 62%;
   height: auto;
-  opacity: 0.16;
+  opacity: 0.14;
   pointer-events: none;
 }
 
 .contactTitle {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.7em;
   margin: 0;
   letter-spacing: 0.3em;
-  position: relative;
+  color: var(--color-text);
 }
 
 .channels {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  margin-top: auto;
+  gap: var(--space-sm);
 }
 
 .channel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3xs);
+  gap: 0.45rem;
 }
 
 .channelNote {
   margin: 0;
   text-align: center;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.24em;
 }
 
 .channelDisabled {
@@ -212,13 +155,17 @@
 /* Form panel                                                                 */
 /* -------------------------------------------------------------------------- */
 
+.formArea {
+  min-width: 0;
+}
+
 .formInner {
-  padding: clamp(1.1rem, 2vw, 1.75rem);
-  background: linear-gradient(180deg, rgba(10, 10, 11, 0.97), rgba(5, 5, 6, 0.98));
+  padding: clamp(1.15rem, 2.4vw, 2.25rem);
+  background: linear-gradient(180deg, rgba(12, 12, 13, 0.97), rgba(5, 5, 6, 0.98));
 }
 
 /* -------------------------------------------------------------------------- */
-/* Reassurance strip                                                          */
+/* Reassurances                                                               */
 /* -------------------------------------------------------------------------- */
 
 .reassurance {
@@ -226,51 +173,35 @@
 }
 
 .reassuranceInner {
-  background: rgba(9, 9, 9, 0.95);
+  background: rgba(9, 9, 10, 0.95);
 }
 
 .reassuranceList {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   margin: 0;
-}
-
-@media (min-width: 480px) {
-  .reassuranceList {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .reassuranceItem {
   display: flex;
   align-items: center;
-  gap: var(--space-2xs);
-  padding: var(--space-sm) var(--space-xs);
-  border-bottom: 1px solid var(--color-line-soft);
+  gap: var(--space-xs);
+  padding: var(--space-sm) clamp(1rem, 2vw, 1.5rem);
 }
 
-.reassuranceItem:last-child {
-  border-bottom: none;
+.reassuranceItem + .reassuranceItem {
+  border-top: 1px solid var(--color-line-soft);
 }
 
-@media (min-width: 480px) {
-  .reassuranceItem {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-3xs);
-    border-bottom: none;
-    border-right: 1px solid var(--color-line-soft);
-  }
-
-  .reassuranceItem:last-child {
-    border-right: none;
-  }
+.reassuranceIcon {
+  flex: none;
+  opacity: 0.9;
 }
 
 .reassuranceText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
 }
 

@@ -33,6 +33,10 @@ export function OrnamentDivider({
 
 /**
  * Wide ornamental arc used above centred section eyebrows.
+ *
+ * The `data-arc-*` hooks let the reveal draw it from its keystone outward:
+ * the curves run out from the centre, the star turns into place, the beads
+ * light. Each bead carries its resting opacity, which the reveal returns to.
  */
 export function OrnamentArc({ className }: { className?: string }) {
   return (
@@ -43,21 +47,29 @@ export function OrnamentArc({ className }: { className?: string }) {
       viewBox="0 0 620 60"
       fill="none"
       data-decor=""
+      data-arc=""
       style={{ pointerEvents: "none" }}
     >
       <path
         d="M10 52C120 22 220 8 310 8s190 14 300 44"
         stroke="url(#vt-hairline)"
         strokeWidth="1"
+        data-arc-line=""
       />
-      <path d="M150 44c60-16 110-24 160-24s100 8 160 24" stroke="url(#vt-hairline)" strokeWidth="0.75" opacity="0.7" />
-      <g fill="url(#vt-chrome)">
+      <path
+        d="M150 44c60-16 110-24 160-24s100 8 160 24"
+        stroke="url(#vt-hairline)"
+        strokeWidth="0.75"
+        opacity="0.7"
+        data-arc-line=""
+      />
+      <g fill="url(#vt-chrome)" data-arc-star="">
         <path d="M310 0c.5 7 1.9 11 4.6 12.4L322 15l-7.4 2.6C311.9 19 310.5 23 310 30c-.5-7-1.9-11-4.6-12.4L298 15l7.4-2.6C308.1 11 309.5 7 310 0Z" />
       </g>
-      <circle cx="228" cy="26" r="1.6" fill="#fff" opacity="0.6" />
-      <circle cx="392" cy="26" r="1.6" fill="#fff" opacity="0.6" />
-      <circle cx="128" cy="38" r="1.2" fill="#fff" opacity="0.4" />
-      <circle cx="492" cy="38" r="1.2" fill="#fff" opacity="0.4" />
+      <circle cx="228" cy="26" r="1.6" fill="#fff" opacity="0.6" data-arc-dot="0.6" />
+      <circle cx="392" cy="26" r="1.6" fill="#fff" opacity="0.6" data-arc-dot="0.6" />
+      <circle cx="128" cy="38" r="1.2" fill="#fff" opacity="0.4" data-arc-dot="0.4" />
+      <circle cx="492" cy="38" r="1.2" fill="#fff" opacity="0.4" data-arc-dot="0.4" />
     </svg>
   );
 }

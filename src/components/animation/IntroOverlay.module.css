@@ -71,7 +71,6 @@
   background: rgba(6, 6, 6, 0.55);
   border: 1px solid var(--color-line);
   backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   transition:
     color var(--dur-mid) var(--ease-out),
     border-color var(--dur-mid) var(--ease-out);

@@ -163,6 +163,21 @@ export function CarouselIcon({ size = 16, className }: IconProps) {
   );
 }
 
+/** Enlarge: four corner ticks opening outwards. */
+export function ExpandIcon({ size = 16, className, strokeWidth = 1.3 }: IconProps) {
+  return (
+    <svg {...base(size, className)}>
+      <path
+        d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function UploadIcon({ size = 24, className, strokeWidth = 1.3 }: IconProps) {
   return (
     <svg {...base(size, className)}>

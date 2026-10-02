@@ -1,20 +1,43 @@
-.header {
+/*
+ * The fixed wrapper. It owns the slide-away on phones through the individual
+ * `translate` property, which composes with — and never overwrites — the
+ * `transform` Motion writes on the <header> for its entrance.
+ */
+.shell {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: var(--z-header);
-  /* Opaque enough that the backdrop plate's ornaments do not compete with
-     the logo lockup behind the bar. */
-  background: rgba(5, 5, 5, 0.72);
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  transition: background var(--dur-slow) var(--ease-out);
+  transition: translate 460ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Background opacity increases once the page has scrolled. */
-.header[data-scrolled] {
-  background: rgba(5, 5, 5, 0.9);
+.shell[data-hidden] {
+  translate: 0 -110%;
+}
+
+/* A keyboard user tabbing into a hidden header must be able to see it. Only
+   keyboard focus: a tapped link keeps focus on some phones, and that alone
+   must not pin the bar on screen. */
+.shell[data-hidden]:has(:focus-visible) {
+  translate: 0 0;
+}
+
+/*
+ * A plain dark bar, deliberately without `backdrop-filter`. The blur had to be
+ * recomputed over the WebGL layer on every frame of every scroll, and over the
+ * bright chrome thorns it smeared them into grey smudges inside the bar. At
+ * this opacity the blur was invisible anyway everywhere else.
+ */
+.header {
+  position: relative;
+  background-color: rgba(5, 5, 5, 0.9);
+  transition: background-color 420ms var(--ease-out);
+}
+
+/* Over the hero there is no bar: the plate's own header band shows through. */
+.shell[data-top] .header {
+  background-color: rgba(5, 5, 5, 0);
 }
 
 .bar {
@@ -22,10 +45,10 @@
   align-items: center;
   gap: var(--space-sm);
   width: 100%;
-  max-width: calc(var(--container-max) + 2 * var(--gutter));
-  min-height: var(--header-h);
+  height: var(--header-h);
   margin-inline: auto;
   padding-inline: var(--gutter);
+  transition: height 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .divider {
@@ -35,9 +58,16 @@
     90deg,
     transparent,
     var(--color-line) 12%,
+    var(--color-line-strong) 50%,
     var(--color-line) 88%,
     transparent
   );
+  opacity: 1;
+  transition: opacity 520ms var(--ease-out);
+}
+
+.shell[data-top] .divider {
+  opacity: 0;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -55,29 +85,79 @@
 .lockup {
   display: inline-flex;
   align-items: center;
-  gap: clamp(0.5rem, 1.4vw, 0.9rem);
+  gap: clamp(0.55rem, 1.2vw, 0.85rem);
+}
+
+/*
+ * Leaving the hero, the mark waits for the bar to darken over the plate's
+ * sigil before it fades in, so the two marks are never seen together. Coming
+ * back, it goes at once (the rule under `[data-top]` below).
+ */
+.mark {
+  height: 30px;
+  width: auto;
+  opacity: 1;
+  transition:
+    height 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 320ms var(--ease-out) 260ms;
 }
 
 .wordmark {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .brandName {
   font-family: var(--font-display), serif;
-  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.375rem);
+  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.3rem);
   line-height: 1;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.17em;
   color: var(--color-text);
+  transition: font-size 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .brandTagline {
   font-size: 0.5625rem;
-  letter-spacing: 0.42em;
+  letter-spacing: 0.46em;
   text-transform: uppercase;
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   line-height: 1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Desktop: aligned to the hero plate                                         */
+/*                                                                            */
+/* The plate is stretched to the viewport (`object-fit: fill`), so anything    */
+/* drawn on it sits at a fixed fraction of the width and of the height. Its    */
+/* logo sigil spans 4.9%–7.8% across and 0.6%–7.2% down; the bar mirrors those */
+/* numbers so the lockup lands on the artwork at every desktop size.           */
+/* -------------------------------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .bar {
+    /* Full bleed, on the plate's own margins rather than the content grid. */
+    padding-inline: 4.9%;
+  }
+
+  .shell[data-top] .bar {
+    /* Centres the row on the sigil (3.9% down), never shorter than a bar. */
+    height: max(64px, 7.8svh);
+  }
+
+  /* Held invisible over the plate's sigil, at its size, so the name lands
+     beside the drawn mark. */
+  .shell[data-top] .mark {
+    height: 6.6svh;
+    opacity: 0;
+    transition:
+      height 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 160ms var(--ease-out);
+  }
+
+  .shell[data-top] .brandName {
+    font-size: clamp(1.2rem, 0.7rem + 1vw, 1.6rem);
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -93,7 +173,7 @@
 .navList {
   display: flex;
   align-items: center;
-  gap: clamp(0.9rem, 1.5vw, 1.75rem);
+  gap: clamp(1rem, 1.7vw, 2.1rem);
   margin: 0;
 }
 
@@ -109,7 +189,7 @@
   min-height: 44px;
   padding-inline: 2px;
   font-size: var(--fs-label);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   white-space: nowrap;
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -121,24 +201,31 @@
   color: #fff;
 }
 
+/* Its own box, so the decode can hold it at its set width while the letters
+   resolve (see `playDecode`). */
+.navLabel {
+  display: inline-block;
+}
+
 .navUnderline {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 8px;
+  bottom: 9px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  box-shadow: 0 0 10px 1px var(--ember-glow);
   transform: scaleX(0);
   transform-origin: center;
-  transition: transform var(--dur-mid) var(--ease-out);
+  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.navLink:hover .navUnderline {
+  transform: scaleX(0.45);
 }
 
 .navLink[data-active] .navUnderline {
   transform: scaleX(1);
-}
-
-.navSeparator {
-  opacity: 0.45;
 }
 
 /* Seven items do not fit beside the logo and the CTA below this width; the
@@ -161,9 +248,22 @@
   flex: 0 0 auto;
 }
 
+/* The star is the plate's on a wide screen — drawn beside where the call to
+   action sits — so the header's own copy appears only on narrower layouts. */
 .actionStar {
-  display: none;
-  opacity: 0.7;
+  opacity: 0.75;
+}
+
+@media (min-width: 1024px) {
+  .actionStar {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .actionStar {
+    display: none;
+  }
 }
 
 .bookingButton {
@@ -171,7 +271,6 @@
 }
 
 @media (min-width: 1200px) {
-  .actionStar,
   .bookingButton {
     display: inline-flex;
   }
@@ -187,7 +286,7 @@
   width: 46px;
   height: 46px;
   color: var(--color-text);
-  background: rgba(12, 12, 12, 0.45);
+  background: rgba(12, 12, 12, 0.5);
   border: 1px solid var(--color-line);
   clip-path: polygon(
     10px 0,
@@ -206,24 +305,31 @@
 
 .burger:hover {
   border-color: var(--color-line-strong);
-  background: rgba(20, 20, 20, 0.6);
+  background: rgba(20, 20, 20, 0.66);
 }
 
 .burgerLines {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 5px;
   width: 20px;
 }
 
 .burgerLines > span {
+  width: 100%;
   height: 1.5px;
   background: currentColor;
   border-radius: 1px;
+  transition: width var(--dur-mid) var(--ease-out);
 }
 
 .burgerLines > span:nth-child(2) {
-  width: 75%;
+  width: 65%;
+}
+
+.burger:hover .burgerLines > span:nth-child(2) {
+  width: 100%;
 }
 
 @media (min-width: 1200px) {
@@ -232,16 +338,14 @@
   }
 }
 
-/* Below the desktop nav the star sits between the logo and the burger. */
-@media (max-width: 1199px) {
-  .actionStar {
-    display: inline-flex;
-    margin-right: var(--space-2xs);
-  }
-}
-
-@media (max-width: 380px) {
-  .actionStar {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  .shell,
+  .header,
+  .bar,
+  .mark,
+  .shell[data-top] .mark,
+  .brandName,
+  .divider {
+    transition: none;
   }
 }

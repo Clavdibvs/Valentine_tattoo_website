@@ -73,7 +73,7 @@ export function ChromeFrame({
 
 function FrameNodes() {
   return (
-    <span aria-hidden="true" data-decor="" className={styles.nodes}>
+    <span aria-hidden="true" data-decor="" data-frame-ornament="nodes" className={styles.nodes}>
       <span className="chrome-node" style={{ top: -1, left: "var(--frame-notch)" }} />
       <span className="chrome-node" style={{ top: -1, right: "var(--frame-notch)" }} />
       <span className="chrome-node" style={{ bottom: -1, left: "var(--frame-notch)" }} />
@@ -86,7 +86,7 @@ function FrameNodes() {
 function FrameBrackets() {
   const corners = ["tl", "tr", "bl", "br"] as const;
   return (
-    <span aria-hidden="true" data-decor="" className={styles.brackets}>
+    <span aria-hidden="true" data-decor="" data-frame-ornament="brackets" className={styles.brackets}>
       {corners.map((c) => (
         <svg key={c} className={[styles.bracket, styles[c]].join(" ")} viewBox="0 0 90 90" fill="none">
           <path

@@ -3,34 +3,29 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+import { useRef } from "react";
 
 import { BACKDROP_PARALLAX, BACKDROP_STRIP_SELECTOR } from "@/lib/backdrop-parallax";
 import { onIntroCue } from "@/lib/intro-timing";
-import { useRef } from "react";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+import { addArcReveal, addChildReveal, dropTransform, FORGE, frameClose, prime, queryAll } from "./motion-kit";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 
 /**
  * The site's scroll-driven animation layer.
  *
- * GSAP owns scroll work only — section reveals, parallax, ornamental drift,
- * line draws and the chrome sweep. Interaction states (buttons, menu, form,
- * cards) belong to Motion, and nothing here touches those elements.
+ * GSAP owns scroll work — section reveals, the hero's light and exit, the
+ * backdrop parallax, the chrome sweep, the portrait reveal. Interaction states
+ * (buttons, menu, form, cards) belong to Motion or to their own components,
+ * and nothing here touches those elements.
  *
  * Reveal start states live in CSS behind the `.js-motion` class, which a
  * pre-paint script adds only when motion will actually run — so content is
  * fully visible before hydration and stays visible if the script never runs.
+ * The vocabulary of the reveals themselves is in `motion-kit.ts`.
  */
-
-/**
- * Selector strings resolved inside a `useGSAP` scope are scoped to that scope
- * element, which would silently match nothing here. Every lookup goes through
- * this document-level helper instead.
- */
-function queryAll<T extends Element>(selector: string): T[] {
-  return Array.from(document.querySelectorAll<T>(selector));
-}
-
 export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: boolean }) {
   const scope = useRef<HTMLDivElement>(null);
 
@@ -52,50 +47,76 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
       const ctx = gsap.matchMedia();
 
       /* ------------------------------------------------------------------ */
-      /* Section reveals — opacity + small translation, restrained easing    */
+      /* The opening sequence                                                */
       /*                                                                     */
-      /* Start states come from CSS (`.js-motion`), so GSAP only animates     */
-      /* forwards. Each element is animated exactly once, by one library.     */
+      /* Everything on screen at load plays as one sequence. It waits for     */
+      /* the intro clip's cue when there is a clip, and for the fonts in any  */
+      /* case: the titles are split into letters as they play, and a split   */
+      /* measured in the fallback face would set every letter in the wrong   */
+      /* place. Both waits are bounded — nothing is left to an event that     */
+      /* might never fire.                                                    */
       /* ------------------------------------------------------------------ */
-      const revealBlocks = queryAll<HTMLElement>("[data-reveal]");
-
-      let openingDelay = 0.15;
-
-      /**
-       * The opening sequence normally plays at once. When the intro clip is on
-       * screen it waits for the clip's cue instead, so the hero appears over the
-       * video rather than behind it.
-       *
-       * The wait always ends: either the cue arrives, or the fallback timer
-       * does. Nothing is left to an event that might never fire.
-       */
       const openings: Array<() => void> = [];
+      let opened = false;
       const runOpenings = () => {
+        if (opened) return;
+        opened = true;
         while (openings.length) openings.shift()?.();
+        heroLight();
+      };
+
+      const fonts: Promise<unknown> = Promise.race([
+        document.fonts?.ready ?? Promise.resolve(),
+        new Promise((resolve) => window.setTimeout(resolve, 1500)),
+      ]);
+      const open = () => {
+        void fonts.then(runOpenings);
       };
 
       if (waitForIntro) {
-        const fallback = window.setTimeout(runOpenings, 8000);
+        const fallback = window.setTimeout(open, 8000);
         onIntroCue(() => {
           window.clearTimeout(fallback);
-          runOpenings();
+          open();
         });
+      } else {
+        open();
       }
 
-      revealBlocks.forEach((block) => {
-        const children = block.querySelectorAll<HTMLElement>("[data-reveal-child]");
-        const targets = children.length > 0 ? Array.from(children) : [block];
+      /* ------------------------------------------------------------------ */
+      /* Reveals                                                             */
+      /* ------------------------------------------------------------------ */
+      let openingDelay = 0.15;
+      const blocks = queryAll<HTMLElement>("[data-reveal]");
 
-        const common = {
-          opacity: 1,
-          y: 0,
-          duration: 1.6,
-          // A long, decelerating tail is what reads as "smooth"; power2 arrived
-          // too abruptly at rest. Slower still now that the content rises over
-          // the tail of the opening clip rather than after it.
-          ease: "expo.out",
-          stagger: children.length > 0 ? 0.14 : 0,
-          clearProps: "willChange",
+      // Everything the reveals will move is read once, here, while nothing has
+      // been written yet; their staged opacity (0, as the CSS already has it)
+      // goes inline. Without this each reveal read its elements back as it
+      // started, mid-frame, forcing a style and layout pass every time.
+      prime(
+        blocks.flatMap((block) => {
+          const children = queryAll<HTMLElement>("[data-reveal-child]", block);
+          return children.length ? children : [block];
+        }),
+        0,
+      );
+      prime(queryAll("[data-reveal] [data-draw]"));
+
+      blocks.forEach((block) => {
+        const children = queryAll<HTMLElement>("[data-reveal-child]", block);
+        const arc = block.querySelector<SVGSVGElement>("svg[data-arc]");
+
+        const build = (vars: gsap.TimelineVars) => {
+          const tl = gsap.timeline(vars);
+          // A heading's arc is drawn first; its eyebrow and title follow it.
+          const offset = arc ? 0.3 : 0;
+          if (arc) addArcReveal(tl, arc, 0);
+          if (children.length === 0) {
+            addChildReveal(tl, block, offset, block.dataset.reveal ?? "");
+          } else {
+            children.forEach((child, index) => addChildReveal(tl, child, offset + index * 0.14));
+          }
+          return tl;
         };
 
         // Anything already on screen at load plays as part of the opening
@@ -108,37 +129,53 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
           // reads the hero first and only then is invited to scroll.
           const explicit = Number.parseFloat(block.dataset.revealDelay ?? "");
           const delay = Number.isFinite(explicit) ? explicit : openingDelay;
-          const play = () => gsap.to(targets, { ...common, delay });
-
-          if (waitForIntro) openings.push(play);
-          else play();
-
+          openings.push(() => build({ delay }));
           if (!Number.isFinite(explicit)) openingDelay += 0.12;
           return;
         }
 
-        gsap.to(targets, {
-          ...common,
+        build({
           scrollTrigger: {
             trigger: block,
             /**
-             * "top 92%" needs the page scrolled until the block's top sits 92%
-             * down the viewport. For content in the last 8% of the document —
-             * the final section's CTA, for instance — that scroll position does
-             * not exist, so the trigger never fires and the element stays
-             * invisible forever. When the threshold is out of reach, fall back
-             * to revealing as soon as the block enters the viewport at all.
+             * "top 88%" needs the page scrolled until the block's top sits 88%
+             * down the viewport. For content in the last stretch of the
+             * document — the final section's CTA, for instance — that scroll
+             * position does not exist, so the trigger would never fire and the
+             * element would stay invisible forever. When the threshold is out
+             * of reach, fall back to revealing as soon as the block enters.
              *
              * A function keeps this correct across refreshes, since late-loading
              * images change the document height.
              */
             start: () => {
               const blockTop = block.getBoundingClientRect().top + window.scrollY;
-              const required = blockTop - window.innerHeight * 0.92;
-              return required <= ScrollTrigger.maxScroll(window) ? "top 92%" : "top bottom";
+              const required = blockTop - window.innerHeight * 0.88;
+              return required <= ScrollTrigger.maxScroll(window) ? "top 88%" : "top bottom";
             },
             invalidateOnRefresh: true,
             once: true,
+          },
+        });
+      });
+
+      /* ------------------------------------------------------------------ */
+      /* Frames close on their panels                                        */
+      /*                                                                     */
+      /* Every chrome panel that wears corner brackets has them converge onto */
+      /* it as it arrives, and its nodes flash alight. The galleries stream   */
+      /* in after this layer mounts, so they close their own frames.          */
+      /* ------------------------------------------------------------------ */
+      queryAll<HTMLElement>(".chrome-frame").forEach((frame) => {
+        if (frame.closest("[data-gallery]")) return;
+        if (!frame.querySelector(":scope > [data-frame-ornament]")) return;
+        const close = frameClose(frame);
+        ScrollTrigger.create({
+          trigger: frame,
+          start: "top 86%",
+          once: true,
+          onEnter: () => {
+            close.play();
           },
         });
       });
@@ -155,15 +192,13 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
       /* The scrub is short (0.45s) and the dimming shallow. At 1.1s the       */
       /* opacity took over a second to catch up after the wheel stopped, so    */
       /* scrolling back up left the whole page trailing dim — it read as a     */
-      /* bug rather than as easing. Depth was cut for the same reason: any     */
-      /* residual lag on a shallow fade is invisible.                          */
+      /* bug rather than as easing.                                            */
       /* ------------------------------------------------------------------ */
       ctx.add("(min-width: 768px)", () => {
         queryAll<HTMLElement>("main > section").forEach((section, index) => {
           const inner = section.querySelector<HTMLElement>(".container");
           if (!inner) return;
 
-          // Entry: rises the last stretch into place.
           if (index > 0) {
             gsap.fromTo(
               inner,
@@ -183,15 +218,11 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
           }
 
           /**
-           * Exit: drifts up and dims as the section leaves.
-           *
            * `fromTo` with `immediateRender: false`, not `to`. Two tweens write
            * `y` on this element, and a plain `to` infers its start value from
            * whatever `y` holds when it first renders — which is the entry
            * tween's `from` value, applied at creation. The exit therefore
-           * snapped the section downwards the moment its trigger activated,
-           * before animating up. Stating both ends explicitly, and refusing to
-           * render before the trigger fires, removes the guesswork.
+           * snapped the section downwards the moment its trigger activated.
            */
           gsap.fromTo(
             inner,
@@ -213,24 +244,15 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
       });
 
       /* ------------------------------------------------------------------ */
-      /* Backdrop parallax                                                   */
+      /* Backdrop parallax — unchanged: the plates' arrangement is the art.  */
       /*                                                                     */
       /* The ornamental strip drifts slower than the page, which is what      */
-      /* gives the scroll its depth. Scrubbed with a little inertia so it     */
-      /* glides rather than tracks rigidly.                                   */
+      /* gives the scroll its depth. Every strip moves, not just the first:  */
+      /* the molten layer renders a second copy as its luminance matte, and  */
+      /* the two must travel as one.                                         */
       /* ------------------------------------------------------------------ */
-      // Every strip, not just the first: the molten layer renders a second copy
-      // as its luminance matte, and the two must travel as one.
       const strips = queryAll(BACKDROP_STRIP_SELECTOR);
       if (strips.length) {
-        /*
-         * The strip is 112% of the document tall (see PageBackdrop.module.css),
-         * so it has 12% of spare height to travel through and still cover the
-         * page at every scroll position. Moving it by 12/112 of its own height
-         * spends exactly that slack: the backdrop ends up drifting 12% slower
-         * than the content. At the previous 4% the effect was there but almost
-         * invisible.
-         */
         gsap.to(strips, {
           yPercent: BACKDROP_PARALLAX.yPercent,
           ease: "none",
@@ -245,134 +267,258 @@ export function ScrollAnimations({ waitForIntro = false }: { waitForIntro?: bool
 
       /* ------------------------------------------------------------------ */
       /* Chrome highlight sweep — slow, continuous, paused off-screen        */
+      /*                                                                     */
+      /* It waits for the title's reveal to finish before it starts, so the   */
+      /* letters are whole again when the light begins to move over them.     */
+      /*                                                                      */
+      /* Wide screens with a mouse only, and unhurried: every step of it      */
+      /* repaints the title under its filters, which a phone pays for in      */
+      /* battery and in the smoothness of the scroll around it. On a phone    */
+      /* the highlight still runs once, as each title arrives.                */
       /* ------------------------------------------------------------------ */
-      queryAll<HTMLElement>("[data-chrome-sweep]").forEach((element, index) => {
-        // A slow, endlessly repeating pass. It used to fire once and stop dead,
-        // which read as the metal "switching off". The long `repeatDelay` keeps
-        // it a highlight travelling over the surface rather than a blink.
-        const sweep = gsap.fromTo(
-          element,
-          { "--chrome-sweep": "8%" },
-          {
-            "--chrome-sweep": "92%",
-            duration: 3.4,
-            ease: "sine.inOut",
-            repeat: -1,
-            // Travels back instead of restarting: without yoyo the tween snaps
-            // from 92% to 8% each cycle, which reads as a flash.
-            yoyo: true,
-            repeatDelay: 1.1,
-            paused: true,
-          },
-        );
+      ctx.add("(min-width: 1024px) and (hover: hover)", () => {
+        queryAll<HTMLElement>("[data-chrome-sweep]").forEach((element) => {
+          // From the resting point (0.5) down, across, and back to rest, so the
+          // loop begins and ends where the title already is — no jump when it
+          // starts, none between cycles.
+          const sweep = gsap.timeline({ repeat: -1, repeatDelay: 2.4, paused: true });
+          sweep
+            .to(element, { "--sweep-p": 0.92, duration: 2.2, ease: "sine.inOut" })
+            .to(element, { "--sweep-p": 0.08, duration: 4.4, ease: "sine.inOut" })
+            .to(element, { "--sweep-p": 0.5, duration: 2.2, ease: "sine.inOut" });
 
-        // Only animates while the heading is on screen: an off-screen tween
-        // still burns frames.
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top bottom",
-          end: "bottom top",
-          onEnter: () => gsap.delayedCall(0.25 + index * 0.12, () => sweep.play()),
-          onEnterBack: () => sweep.play(),
-          onLeave: () => sweep.pause(),
-          onLeaveBack: () => sweep.pause(),
-        });
-      });
-
-      /* ------------------------------------------------------------------ */
-      /* Desktop-only: parallax + pointer response on the hero sigil         */
-      /* ------------------------------------------------------------------ */
-      ctx.add("(min-width: 1024px) and (pointer: fine)", () => {
-        const sigil = document.querySelector<SVGSVGElement>("[data-hero-sigil]");
-        if (!sigil) return;
-
-        const quickX = gsap.quickTo(sigil, "x", { duration: 0.9, ease: "power3.out" });
-        const quickY = gsap.quickTo(sigil, "y", { duration: 0.9, ease: "power3.out" });
-
-        const onPointerMove = (event: PointerEvent) => {
-          const nx = event.clientX / window.innerWidth - 0.5;
-          const ny = event.clientY / window.innerHeight - 0.5;
-          // Maximum displacement stays inside the 6–12px budget.
-          quickX(nx * 22);
-          quickY(ny * 18);
-        };
-
-        window.addEventListener("pointermove", onPointerMove, { passive: true });
-        return () => window.removeEventListener("pointermove", onPointerMove);
-      });
-
-      /* ------------------------------------------------------------------ */
-      /* Scroll-linked parallax on decorative layers                         */
-      /* ------------------------------------------------------------------ */
-      ctx.add("(min-width: 768px)", () => {
-        queryAll<HTMLElement>("[data-parallax]").forEach((layer) => {
-          const depth = Number(layer.dataset.parallax) || 1;
-          gsap.to(layer, {
-            yPercent: -6 * depth,
-            ease: "none",
-            scrollTrigger: {
-              trigger: layer.closest("section") ?? layer,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.8,
+          let started = false;
+          ScrollTrigger.create({
+            trigger: element,
+            start: "top bottom",
+            end: "bottom top",
+            onEnter: () => {
+              if (started) return sweep.play();
+              started = true;
+              gsap.delayedCall(3, () => sweep.play());
             },
+            onEnterBack: () => sweep.play(),
+            onLeave: () => sweep.pause(),
+            onLeaveBack: () => sweep.pause(),
           });
         });
       });
 
       /* ------------------------------------------------------------------ */
-      /* Slow ornamental drift — paused while off-screen                     */
+      /* Hero: the light on the lettering, and the exit                      */
       /* ------------------------------------------------------------------ */
-      queryAll<HTMLElement>("[data-drift]").forEach((ornament, index) => {
-        const tween = gsap.to(ornament, {
-          y: index % 2 === 0 ? 12 : -12,
-          rotation: index % 2 === 0 ? 1.1 : -1.1,
-          duration: 9 + (index % 4),
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-          paused: true,
-        });
+      const hero = document.getElementById("home");
+      const lettering = hero?.querySelector<HTMLElement>("[data-hero-title]");
+      const glint = hero?.querySelector<HTMLElement>("[data-glint]");
+      const glintBar = glint?.querySelector<HTMLElement>("[data-glint-bar]");
+      /*
+       * `at` is where the band of light sits across the lettering (0 its left
+       * edge, 1 its right), `o` how bright it is. The bar is 2.8× the
+       * lettering's width with the band at its middle, so placing the band at
+       * `at` means shifting the bar by (at − 1.4) of the lettering — written as
+       * a transform, so following the pointer never repaints the wordmark.
+       */
+      const glintState = { at: -0.6, o: 0 };
+      const writeGlint = () => {
+        if (!glint || !glintBar) return;
+        glintBar.style.transform = `translate3d(${(((glintState.at - 1.4) / 2.8) * 100).toFixed(2)}%, 0, 0)`;
+        glint.style.opacity = glintState.o.toFixed(3);
+      };
 
+      /** A bar of light crossing the chrome, as polished metal catches a lamp. */
+      const glintPass = (delay = 0) =>
+        gsap.fromTo(
+          glintState,
+          { at: -0.6, o: 1 },
+          {
+            at: 1.6,
+            duration: 1.6,
+            delay,
+            ease: "power2.inOut",
+            onUpdate: writeGlint,
+            onComplete: () => {
+              glintState.o = 0;
+              writeGlint();
+            },
+          },
+        );
+
+      /** Called once the opening sequence starts. */
+      function heroLight() {
+        if (!glint) return;
+        glintPass(1.35);
+      }
+
+      // Pointer: the reflection follows the eye across the lettering, and the
+      // letters turn very slightly toward it.
+      ctx.add("(min-width: 1024px) and (pointer: fine)", () => {
+        if (!hero || !lettering || !glint) return;
+        gsap.set(lettering, { transformPerspective: 900 });
+        const toAt = gsap.quickTo(glintState, "at", { duration: 0.9, ease: "power3", onUpdate: writeGlint });
+        const toO = gsap.quickTo(glintState, "o", { duration: 0.6, ease: "power2", onUpdate: writeGlint });
+        const tiltX = gsap.quickTo(lettering, "rotationX", { duration: 1.2, ease: "power3" });
+        const tiltY = gsap.quickTo(lettering, "rotationY", { duration: 1.2, ease: "power3" });
+
+        const onMove = (event: PointerEvent) => {
+          const nx = event.clientX / window.innerWidth;
+          const ny = event.clientY / window.innerHeight;
+          // The bright band sits under the pointer, wherever it crosses.
+          const box = lettering.getBoundingClientRect();
+          toAt(gsap.utils.clamp(-0.4, 1.4, (event.clientX - box.left) / box.width));
+          toO(0.65);
+          tiltY((nx - 0.5) * 9);
+          tiltX(-(ny - 0.5) * 7);
+        };
+        const onLeave = () => {
+          toO(0);
+          tiltX(0);
+          tiltY(0);
+        };
+
+        hero.addEventListener("pointermove", onMove, { passive: true });
+        hero.addEventListener("pointerleave", onLeave);
+        return () => {
+          hero.removeEventListener("pointermove", onMove);
+          hero.removeEventListener("pointerleave", onLeave);
+        };
+      });
+
+      // Touch: the light passes on its own every few seconds while the hero is
+      // on screen.
+      ctx.add("(max-width: 1023px), (pointer: coarse)", () => {
+        if (!hero || !glint) return;
+        const loop = gsap.timeline({ repeat: -1, repeatDelay: 4.5, delay: 6, paused: true });
+        loop.fromTo(
+          glintState,
+          { at: -0.6, o: 1 },
+          { at: 1.6, duration: 1.8, ease: "power2.inOut", onUpdate: writeGlint },
+        );
+        loop.set(glintState, { o: 0, onComplete: writeGlint });
         ScrollTrigger.create({
-          trigger: ornament.closest("section") ?? ornament,
+          trigger: hero,
           start: "top bottom",
           end: "bottom top",
-          onEnter: () => tween.play(),
-          onEnterBack: () => tween.play(),
-          onLeave: () => tween.pause(),
-          onLeaveBack: () => tween.pause(),
+          onToggle: (self) => (self.isActive ? loop.play() : loop.pause()),
         });
       });
 
-      /* ------------------------------------------------------------------ */
-      /* About: portrait mask wipe + frame line draw                         */
-      /* ------------------------------------------------------------------ */
-      const portraitMask = document.querySelector<HTMLElement>("[data-portrait-mask]");
-      if (portraitMask) {
+      // Exit: the copy lifts away faster than the plate behind it and dims —
+      // depth, without moving a pixel of the backdrop.
+      const heroCopy = hero?.querySelector<HTMLElement>("[data-hero-copy]");
+      if (hero && heroCopy) {
         gsap.fromTo(
-          portraitMask,
-          { clipPath: "inset(0% 0% 100% 0%)" },
+          heroCopy,
+          { yPercent: 0, opacity: 1 },
           {
-            clipPath: "inset(0% 0% 0% 0%)",
-            duration: 1.35,
-            ease: "expo.out",
-            scrollTrigger: { trigger: portraitMask, start: "top 86%", once: true },
+            yPercent: -16,
+            opacity: 0,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.6 },
           },
         );
+        queryAll<HTMLElement>("[data-scroll-fade]", hero).forEach((part) => {
+          gsap.fromTo(
+            part,
+            { opacity: 1, y: 0 },
+            {
+              opacity: 0,
+              y: 24,
+              ease: "none",
+              immediateRender: false,
+              scrollTrigger: { trigger: hero, start: "top top", end: "18% top", scrub: 0.4 },
+            },
+          );
+        });
+
+        // The light running down the scroll cue is a CSS animation, and a
+        // running CSS animation is restyled on every frame, seen or not. Once
+        // the cue has faded out it stops, and starts again on the way back up.
+        const pulse = hero.querySelector<HTMLElement>("[data-scroll-pulse]");
+        if (pulse) {
+          ScrollTrigger.create({
+            trigger: hero,
+            start: "18% top",
+            onEnter: () => {
+              pulse.style.animationPlayState = "paused";
+            },
+            onLeaveBack: () => {
+              pulse.style.removeProperty("animation-play-state");
+            },
+          });
+        }
       }
 
       /* ------------------------------------------------------------------ */
-      /* Hairline rules draw in from the centre                              */
+      /* About: the portrait opens like a cut                                */
+      /*                                                                     */
+      /* A blade-thin slit down the middle widens to the full frame — two     */
+      /* dark leaves drawing apart — while the photograph settles back from   */
+      /* close and comes up out of the dark. Transforms and opacity only: the */
+      /* first version wiped a clip-path and filtered the photograph, which   */
+      /* repainted it on every frame of the reveal.                           */
       /* ------------------------------------------------------------------ */
-      queryAll<HTMLElement>("[data-line-draw]").forEach((line) => {
-        gsap.from(line, {
-          scaleX: 0,
-          transformOrigin: "center",
-          duration: 1.2,
-          ease: "expo.out",
-          scrollTrigger: { trigger: line, start: "top 94%", once: true },
+      const portraitMask = document.querySelector<HTMLElement>("[data-portrait-mask]");
+      if (portraitMask) {
+        const photo = portraitMask.querySelector<HTMLElement>("img");
+        const blades = queryAll<HTMLElement>("[data-blade]", portraitMask);
+        const veil = portraitMask.querySelector<HTMLElement>("[data-portrait-veil]");
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: portraitMask, start: "top 82%", once: true },
         });
+        tl.fromTo(
+          blades,
+          { scaleX: 1, willChange: "transform" },
+          { scaleX: 0, duration: 1.7, ease: "expo.inOut", clearProps: "willChange" },
+        );
+        if (photo) {
+          tl.fromTo(
+            photo,
+            { scale: 1.32 },
+            { scale: 1, duration: 2.4, ease: FORGE, onComplete: () => dropTransform([photo]) },
+            0.15,
+          );
+        }
+        if (veil) {
+          tl.fromTo(
+            veil,
+            { opacity: 0.75, willChange: "opacity" },
+            { opacity: 0, duration: 2.2, ease: "power2.out", clearProps: "willChange" },
+            0.2,
+          );
+        }
+      }
+
+      /* ------------------------------------------------------------------ */
+      /* About: the lead is read into the light                              */
+      /*                                                                     */
+      /* Each word brightens as the paragraph passes through the middle of    */
+      /* the screen, scrubbed to the scroll — the reader's pace sets it.      */
+      /* ------------------------------------------------------------------ */
+      queryAll<HTMLElement>("[data-scrub-words]").forEach((paragraph) => {
+        const split = SplitText.create(paragraph, { type: "words", aria: "none" });
+        // The dim starting point is written straight onto each word, and the
+        // scrub is a plain `to` from it: a fromTo re-records its start as each
+        // word's turn comes, a forced style pass per word, mid-scroll.
+        (split.words as HTMLElement[]).forEach((word) => {
+          word.style.opacity = "0.18";
+        });
+        gsap.to(
+          split.words,
+          {
+            opacity: 1,
+            ease: "none",
+            stagger: 0.1,
+            // Fully lit by the time the paragraph's foot is three-quarters of
+            // the way down the screen — where someone stops to read it.
+            scrollTrigger: {
+              trigger: paragraph,
+              start: "top 92%",
+              end: "bottom 74%",
+              scrub: 0.6,
+            },
+          },
+        );
       });
 
       // Late-arriving images (the Instagram feed streams in) change page height.

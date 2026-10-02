@@ -1,5 +1,7 @@
+import { CursorFollower } from "@/components/animation/CursorFollower";
 import { IntroOverlay } from "@/components/animation/IntroOverlay";
 import { ScrollAnimations } from "@/components/animation/ScrollAnimations";
+import { ScrollMeter } from "@/components/animation/ScrollMeter";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ChromeDefs } from "@/components/ornaments/ChromeDefs";
@@ -9,6 +11,7 @@ import { BookingSection } from "@/components/sections/BookingSection";
 import { CollectionSection } from "@/components/sections/CollectionSection";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { HeroSection } from "@/components/sections/HeroSection";
+import { HomeJournalSection } from "@/components/sections/HomeJournalSection";
 import { InstagramSection } from "@/components/sections/InstagramSection";
 import { a11yContent } from "@/content/site-content";
 import { resolveIntro } from "@/lib/intro";
@@ -78,12 +81,18 @@ document.head.appendChild(l);}catch(e){}})();`,
         <AboutSection />
         {/* Closes the page: the questions someone still has after reading it. */}
         <FaqSection />
+        <HomeJournalSection />
       </main>
 
       {/* Closing line, below every section. */}
       <SiteFooter />
 
       <ScrollAnimations waitForIntro={Boolean(intro)} />
+
+      {/* Interface light, drawn over everything and touching nothing: the
+          charge running down the frame, and the follower ring. */}
+      <ScrollMeter />
+      <CursorFollower />
     </>
   );
 }

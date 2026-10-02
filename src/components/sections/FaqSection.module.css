@@ -5,48 +5,6 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* Decoration                                                                 */
-/* -------------------------------------------------------------------------- */
-
-.decorLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.cornerTop,
-.cornerBottom {
-  position: absolute;
-  height: auto;
-}
-
-.cornerTop {
-  top: 2%;
-  right: -12%;
-  width: min(34vw, 300px);
-}
-
-.cornerBottom {
-  bottom: -4%;
-  left: -12%;
-  width: min(38vw, 340px);
-}
-
-@media (max-width: 767px) {
-  .cornerTop {
-    top: 0;
-    right: -30%;
-    width: 58vw;
-  }
-  .cornerBottom {
-    bottom: 1%;
-    left: -34%;
-    width: 62vw;
-  }
-}
-
-/* -------------------------------------------------------------------------- */
 /* Layout                                                                     */
 /* -------------------------------------------------------------------------- */
 
@@ -64,12 +22,12 @@
 }
 
 .supporting {
-  max-width: 56ch;
-  margin: 0;
+  max-width: 52ch;
+  margin: var(--space-3xs) 0 0;
   text-align: center;
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
   line-height: 1.7;
-  color: var(--color-text-muted);
+  color: #b4b4b4;
 }
 
 .headDivider {
@@ -79,11 +37,11 @@
 .panel {
   width: 100%;
   /* The answers are prose: past ~72ch the eye loses the line it is on. */
-  max-width: 900px;
+  max-width: 920px;
 }
 
 .panelInner {
-  padding: clamp(0.35rem, 1.4vw, 0.9rem) clamp(0.5rem, 2vw, 1.5rem);
+  padding: clamp(0.25rem, 1.2vw, 0.75rem) clamp(1rem, 2.6vw, 2rem);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -114,20 +72,24 @@
 .summary {
   display: flex;
   align-items: center;
-  gap: var(--space-2xs);
-  padding-block: clamp(0.85rem, 2.2vw, 1.15rem);
+  gap: clamp(0.85rem, 2vw, 1.5rem);
+  padding-block: clamp(1rem, 2.4vw, 1.35rem);
   cursor: pointer;
   /* Both are needed: the standard property, and Safari's own marker. */
   list-style: none;
-  transition: color var(--dur-mid) var(--ease-out);
 }
 
 .summary::-webkit-details-marker {
   display: none;
 }
 
-.summaryStar {
+/* Chapter-style numerals instead of a star repeated eight times. */
+.number {
   flex: none;
+  /* In rem, not ch: the answer below indents by the same length, and a ch
+     there would be measured in a different font. */
+  width: 2.1rem;
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
   color: var(--color-text-dim);
   transition: color var(--dur-mid) var(--ease-out);
 }
@@ -136,7 +98,7 @@
   flex: 1;
   min-width: 0;
   font-family: var(--font-sans), sans-serif;
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
   font-weight: 400;
   line-height: 1.45;
   color: var(--color-text);
@@ -144,27 +106,53 @@
   letter-spacing: 0.01em;
 }
 
-.chevron {
+/* A notched well for the chevron, in the cut of every other control. */
+.toggle {
   flex: none;
-  color: var(--color-text-dim);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-line-soft);
+  clip-path: polygon(
+    7px 0,
+    calc(100% - 7px) 0,
+    100% 7px,
+    100% calc(100% - 7px),
+    calc(100% - 7px) 100%,
+    7px 100%,
+    0 calc(100% - 7px),
+    0 7px
+  );
   transition:
-    transform var(--dur-mid) var(--ease-out),
-    color var(--dur-mid) var(--ease-out);
+    color var(--dur-mid) var(--ease-out),
+    border-color var(--dur-mid) var(--ease-out),
+    background var(--dur-mid) var(--ease-out);
 }
 
-.summary:hover .question,
-.summary:hover .chevron,
-.summary:hover .summaryStar {
+.toggle svg {
+  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.summary:hover .number,
+.details[open] .number {
   color: var(--color-text);
 }
 
-.details[open] .chevron {
+.summary:hover .toggle {
+  color: var(--color-text);
+  border-color: var(--color-line-strong);
+}
+
+.details[open] .toggle {
+  color: #fff;
+  border-color: var(--color-line-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.details[open] .toggle svg {
   transform: rotate(180deg);
-  color: var(--color-text);
-}
-
-.details[open] .summaryStar {
-  color: var(--color-text);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -172,31 +160,46 @@
 /* -------------------------------------------------------------------------- */
 
 /*
- * The answer is indented to the width of the star plus its gap, so it lines up
- * under the question text rather than under the ornament.
+ * The answer is indented to the numeral's column, so it lines up under the
+ * question text rather than under the number.
  */
 .answerWrap {
-  padding-left: calc(11px + var(--space-2xs));
-  padding-right: calc(18px + var(--space-2xs));
-  padding-bottom: clamp(0.85rem, 2.2vw, 1.15rem);
+  padding-left: calc(2.1rem + clamp(0.85rem, 2vw, 1.5rem));
+  padding-right: calc(34px + clamp(0.85rem, 2vw, 1.5rem));
+  padding-bottom: clamp(1rem, 2.4vw, 1.35rem);
 }
 
 .answer {
-  max-width: 72ch;
+  max-width: 68ch;
   margin: 0;
   font-size: var(--fs-body-sm);
-  line-height: 1.72;
+  line-height: 1.78;
   color: var(--color-text-muted);
 }
 
 /*
- * `details` swaps display outright, so there is no height to transition
- * without scripting it. Fading the answer in on open is the honest version of
- * the same intent, and it runs on open only because that is when the element
- * enters the box tree.
+ * Opening: the answer's height eases open where the browser can interpolate
+ * to `auto` (`interpolate-size` with `::details-content`). Elsewhere these
+ * rules are dropped whole and the fade below is what runs.
  */
+.details {
+  interpolate-size: allow-keywords;
+}
+
+.details::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition:
+    block-size 460ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    content-visibility 460ms allow-discrete;
+}
+
+.details[open]::details-content {
+  block-size: auto;
+}
+
 .details[open] .answerWrap {
-  animation: faq-answer-in var(--dur-mid) var(--ease-out) both;
+  animation: faq-answer-in 520ms var(--ease-out) both;
 }
 
 @keyframes faq-answer-in {
@@ -215,7 +218,11 @@
     animation: none;
   }
 
-  .chevron {
+  .details::details-content {
+    transition: none;
+  }
+
+  .toggle svg {
     transition: none;
   }
 }
@@ -225,5 +232,61 @@
     /* On the narrowest screens the indent costs more than the alignment buys. */
     padding-left: 0;
     padding-right: 0;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Closing                                                                    */
+/* -------------------------------------------------------------------------- */
+
+.closing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-top: var(--space-xl);
+  text-align: center;
+}
+
+.closingStarWrap {
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--space-2xs);
+}
+
+.closingStar {
+  opacity: 0.9;
+}
+
+.closingTitle {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: var(--fs-h3);
+  font-style: italic;
+  color: var(--color-text);
+}
+
+.closingBody {
+  margin: 0;
+  max-width: 44ch;
+  font-size: var(--fs-body-sm);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+.closingCtas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 420px;
+  margin-top: var(--space-sm);
+}
+
+@media (min-width: 640px) {
+  .closingCtas {
+    flex-direction: row;
+    justify-content: center;
+    max-width: none;
   }
 }

@@ -2,58 +2,9 @@
   position: relative;
   z-index: 1;
   overflow: clip;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Decoration                                                                 */
-/* -------------------------------------------------------------------------- */
-
-.decorLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.cornerTop,
-.cornerBottomLeft,
-.cornerBottomRight {
-  position: absolute;
-  height: auto;
-}
-
-.cornerTop {
-  top: 2%;
-  left: -12%;
-  width: min(34vw, 300px);
-}
-
-.cornerBottomLeft {
-  bottom: -4%;
-  left: -14%;
-  width: min(46vw, 420px);
-}
-
-.cornerBottomRight {
-  bottom: -2%;
-  right: -12%;
-  width: min(40vw, 360px);
-}
-
-@media (max-width: 767px) {
-  .cornerTop {
-    display: none;
-  }
-  .cornerBottomLeft {
-    bottom: 1%;
-    left: -32%;
-    width: 70vw;
-  }
-  .cornerBottomRight {
-    bottom: 3%;
-    right: -34%;
-    width: 68vw;
-  }
+  /* Narrower than the page grid: it draws the copy column in from the
+     plates' right-hand ornaments, toward the dark band at the centre. */
+  --container-max: 1180px;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -64,7 +15,7 @@
   position: relative;
   z-index: var(--z-content);
   display: grid;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
     "head"
@@ -79,6 +30,7 @@
   .grid {
     grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
     column-gap: var(--space-lg);
+    align-items: start;
     grid-template-areas:
       "head head"
       "media copy"
@@ -90,10 +42,9 @@
 /* Desktop: ~44 / 56 portrait-to-copy balance, heading beside the portrait. */
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: minmax(0, 0.786fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
     column-gap: clamp(2.5rem, 5vw, 5.5rem);
-    row-gap: var(--space-sm);
-    align-items: start;
+    row-gap: var(--space-md);
     grid-template-areas:
       "media head"
       "media copy"
@@ -110,6 +61,14 @@
   grid-area: media;
 }
 
+/* The portrait holds still while the column of text beside it is read. */
+@media (min-width: 1024px) {
+  .mediaArea {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-md));
+  }
+}
+
 .copyArea {
   grid-area: copy;
 }
@@ -122,9 +81,6 @@
   grid-area: cta;
 }
 
-/* Alignment comes from SectionHeading's `startDesktop` variant: overriding it
-   here lost the specificity contest against `.start .titleRow`. */
-
 /* -------------------------------------------------------------------------- */
 /* Portrait card                                                              */
 /* -------------------------------------------------------------------------- */
@@ -132,7 +88,7 @@
 .portraitFrame {
   position: relative;
   width: 100%;
-  max-width: 340px;
+  max-width: 380px;
   margin-inline: auto;
 }
 
@@ -157,26 +113,56 @@
   overflow: hidden;
 }
 
+/* The reveal's two leaves, each half the photograph, drawn back toward the
+   outer edges. Scaled shut (invisible) unless the animation layer runs. */
+.blade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background: #090909;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+.bladeLeft {
+  left: 0;
+  transform-origin: 0 50%;
+}
+
+.bladeRight {
+  right: 0;
+  transform-origin: 100% 50%;
+}
+
+.portraitVeil {
+  position: absolute;
+  inset: 0;
+  background: #050505;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .signature {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   padding-bottom: var(--space-2xs);
   color: rgba(232, 232, 232, 0.72);
 }
 
 .signatureName {
   font-family: var(--font-display), serif;
-  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.375rem);
+  font-size: clamp(1.15rem, 0.98rem + 0.6vw, 1.5rem);
   font-style: italic;
   letter-spacing: 0.03em;
   line-height: 1.2;
-  color: rgba(240, 240, 240, 0.9);
+  color: rgba(244, 244, 244, 0.94);
 }
 
 .signatureRole {
-  letter-spacing: 0.34em;
+  letter-spacing: 0.36em;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -186,34 +172,31 @@
 .copyArea {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
 }
 
-.columnEyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7em;
+/* The first paragraph is the introduction — set as one, in the serif. */
+.lead {
   margin: 0;
+  max-width: 30ch;
+  font-family: var(--font-display), serif;
+  font-size: var(--fs-lead);
+  line-height: 1.32;
+  letter-spacing: 0.005em;
+  color: #cdcdcd;
 }
 
-/* On desktop the section heading already carries the ABOUT eyebrow. */
-@media (min-width: 1024px) {
-  .columnEyebrow {
-    display: none;
-  }
+.leadStrong {
+  color: #fff;
+  font-style: italic;
 }
 
 .paragraph {
   margin: 0;
-  max-width: 62ch;
+  max-width: 54ch;
   font-size: var(--fs-body-sm);
-  line-height: 1.72;
-  color: var(--color-text-muted);
-}
-
-.paragraph:first-of-type {
-  font-size: var(--fs-body-lg);
-  color: var(--color-text);
+  line-height: 1.78;
+  color: #a8a8a8;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -243,8 +226,8 @@
 .stripItem {
   display: flex;
   align-items: center;
-  gap: var(--space-2xs);
-  padding: var(--space-sm) var(--space-xs);
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-sm);
   border-bottom: 1px solid var(--color-line-soft);
 }
 
@@ -256,7 +239,7 @@
   .stripItem {
     flex-direction: column;
     text-align: center;
-    gap: var(--space-3xs);
+    gap: var(--space-2xs);
     border-bottom: none;
     border-right: 1px solid var(--color-line-soft);
   }
@@ -267,13 +250,14 @@
 }
 
 .stripIcon {
+  flex: none;
   opacity: 0.9;
 }
 
 .stripText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -303,13 +287,4 @@
     width: auto;
     min-width: 340px;
   }
-}
-
-/* ---------------------------------------------------------------------------
-   The supplied backdrop plates carry the corner ornaments at every breakpoint
-   now, so the hand-built SVG versions are retired. They stay in the codebase as
-   a fallback if a plate ever needs to be pulled.
-   --------------------------------------------------------------------------- */
-.decorLayer {
-  display: none;
 }

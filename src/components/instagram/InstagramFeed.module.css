@@ -8,157 +8,274 @@
 }
 
 .frameInner {
-  padding: clamp(0.9rem, 1.6vw, 1.15rem);
+  padding: clamp(0.65rem, 1.4vw, 1.15rem);
   background: rgba(7, 7, 8, 0.96);
 }
 
-/* -------------------------------------------------------------------------- */
-/* Mobile: three-column Instagram grid                                        */
-/* -------------------------------------------------------------------------- */
-
-/*
- * Mobile: a grid. The gap is deliberately generous — at 8px the tiles read as
- * one contiguous block of imagery rather than as separate pieces of work.
- */
 .scroller {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
   margin: 0;
   list-style: none;
 }
 
 .item {
   position: relative;
-  aspect-ratio: 8 / 9;
+  min-width: 0;
 }
 
-/*
- * Highlights are stories: 9:16. Cropping them into the feed's card threw away
- * most of the frame, so they get their own proportions — and two columns on
- * mobile, because a 9:16 tile in a three-column grid is barely a sliver.
- */
+.post .item {
+  aspect-ratio: 4 / 5;
+}
+
 .story .item {
   aspect-ratio: 9 / 16;
 }
 
-.story .scroller {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  /* Two larger tiles carry a wider gutter than three small ones. */
-  gap: 18px;
+/* ========================================================================== */
+/* Grid — the feed                                                            */
+/* ========================================================================== */
+
+/*
+ * Phone: Instagram's own three-by-three. The gap is deliberately generous — at
+ * 4px the tiles read as one contiguous block of imagery rather than as
+ * separate pieces of work.
+ */
+.grid .scroller {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(6px, 1.6vw, 10px);
 }
 
-.story .item[data-beyond-grid] {
-  display: block;
-}
-
-/* Only the nine most recent posts appear in the mobile grid. */
-.item[data-beyond-grid] {
+.grid .item[data-beyond-grid] {
   display: none;
 }
 
-/* Two columns only where three would become unusably small. */
-@media (max-width: 359px) {
-  .scroller {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-  .item:nth-child(n + 9) {
-    display: none;
-  }
-}
-
-.control {
-  display: none;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Desktop: horizontal scroll-snap carousel                                   */
-/* -------------------------------------------------------------------------- */
-
-@media (min-width: 1024px) {
-  .scroller {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: 2px;
-    padding-block: 2px;
-    /* The native scrollbar is redundant next to the controls. */
-    scrollbar-width: none;
-    cursor: grab;
+/* Wider: two full rows, as many columns as the posts fill (see the component). */
+@media (min-width: 720px) {
+  .grid .scroller {
+    grid-template-columns: repeat(var(--cols-wide, 5), minmax(0, 1fr));
+    gap: clamp(8px, 1vw, 14px);
   }
 
-  .scroller::-webkit-scrollbar {
-    display: none;
-  }
-
-  .scroller:active {
-    cursor: grabbing;
-  }
-
-  .item {
-    flex: 0 0 auto;
-    /* ~6–7 portrait cards visible depending on viewport width. */
-    width: clamp(118px, 11.4vw, 162px);
-    aspect-ratio: 2 / 3;
-    scroll-snap-align: start;
-  }
-
-  .story .item {
-    width: clamp(126px, 12.2vw, 176px);
-    aspect-ratio: 9 / 16;
-  }
-
-  .item[data-beyond-grid] {
+  .grid .item[data-beyond-grid] {
     display: block;
   }
 
-  .control {
-    position: absolute;
-    top: 50%;
-    translate: 0 -50%;
-    z-index: 3;
-    display: grid;
-    place-items: center;
-    width: 46px;
-    height: 46px;
-    color: var(--color-text);
-    background: rgba(8, 8, 8, 0.82);
-    border: 1px solid var(--color-line);
-    border-radius: 50%;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transition:
-      border-color var(--dur-mid) var(--ease-out),
-      opacity var(--dur-mid) var(--ease-out),
-      background var(--dur-mid) var(--ease-out);
-  }
-
-  .control:hover:not(:disabled) {
-    border-color: var(--color-line-strong);
-    background: rgba(18, 18, 18, 0.9);
-  }
-
-  .control:disabled {
-    opacity: 0.28;
-    cursor: default;
-  }
-
-  .prev {
-    left: clamp(-56px, -3vw, -22px);
-  }
-
-  .next {
-    right: clamp(-56px, -3vw, -22px);
+  .grid .item[data-beyond-wide] {
+    display: none;
   }
 }
 
-/* Dragging must not select text or trigger the native image drag ghost. */
+/* ========================================================================== */
+/* Rail — the collections                                                     */
+/* ========================================================================== */
+
+.rail .scroller {
+  display: flex;
+  gap: clamp(10px, 1.1vw, 16px);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  /* The native scrollbar is replaced by the scrubber below. */
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rail .scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.rail .item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/*
+ * The card inside each slot carries the rail's live state — the lean with the
+ * speed of the scroll and, on a phone, the focus by distance from the centre —
+ * written as an inline transform by the component. The slot itself is left to
+ * the arrival animation, so the two never write the same transform.
+ *
+ * While the rail is near the screen (`data-live`) its cards hold their own
+ * layers, so that live state is moved by the compositor rather than repainted.
+ */
+.rail .item > a {
+  transform-origin: 50% 60%;
+}
+
+.rail[data-live] .item > a {
+  will-change: transform, opacity;
+}
+
+/*
+ * Phone and tablet: no frame, edge to edge, the current card centred.
+ *
+ * The rail breaks out of the content column to both edges of the screen, and
+ * pads itself by half a screen less half a card, so the first and the last
+ * card can both come to rest in the middle with a neighbour showing on each
+ * side — the cue that this swipes.
+ */
+@media (max-width: 1023px) {
+  .rail {
+    --card-w: min(64vw, 300px);
+  }
+
+  .rail .frame,
+  .rail .frame :global(.chrome-frame__inner) {
+    padding: 0;
+    clip-path: none;
+    background: none;
+  }
+
+  .rail .frame > span {
+    /* Nodes and brackets belong to the frame that is not drawn here. */
+    display: none;
+  }
+
+  .rail .scroller {
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: calc((100vw - var(--card-w)) / 2);
+    /* Room for the cards' arrival and focus scale without clipping them. */
+    padding-block: 10px;
+  }
+
+  .rail .item {
+    width: var(--card-w);
+    scroll-snap-align: center;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .rail {
+    --card-w: min(34vw, 300px);
+  }
+}
+
+/* Wide screens: the rail sits in its chrome frame and can be dragged. */
 @media (min-width: 1024px) {
-  .scroller * {
+  .rail .scroller {
+    scroll-padding-inline: 2px;
+    padding-block: 2px;
+    cursor: grab;
+  }
+
+  .rail .scroller:active {
+    cursor: grabbing;
+  }
+
+  /* Sized so the frame always cuts a card in half at its right edge: a row
+     that ends cleanly on a whole card does not look like it scrolls. */
+  .rail .item {
+    width: clamp(180px, 14vw, 252px);
+  }
+
+  /* Dragging must not select text or trigger the native image drag ghost. */
+  .rail .scroller * {
     user-select: none;
     -webkit-user-drag: none;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Rail controls: scrubber · count · arrows                                   */
+/* -------------------------------------------------------------------------- */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+@media (min-width: 1024px) {
+  .controls {
+    margin-top: var(--space-xs);
+    padding-inline: 4px;
+  }
+}
+
+/* A hairline with a bright segment for what is in view — position and
+   proportion at a glance, like a scrollbar that belongs to the design. */
+.track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--color-line);
+  overflow: visible;
+}
+
+/* Full track width, sized and placed by transform: moving `left` and `width`
+   cost a layout on every scroll frame. */
+.thumb {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  transform-origin: 0 50%;
+  transform: scaleX(0.3);
+  will-change: transform;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.55), #fff, rgba(255, 255, 255, 0.55));
+  box-shadow: 0 0 10px var(--ember-glow);
+}
+
+.count {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.countTotal {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.22em;
+  color: var(--color-text-dim);
+}
+
+.arrows {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .arrows {
+    flex: none;
+    display: inline-flex;
+    gap: 0.5rem;
+  }
+}
+
+/* Notched, like every other control on the page. */
+.control {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-text);
+  background: rgba(10, 10, 11, 0.8);
+  border: 1px solid var(--color-line);
+  clip-path: polygon(
+    9px 0,
+    calc(100% - 9px) 0,
+    100% 9px,
+    100% calc(100% - 9px),
+    calc(100% - 9px) 100%,
+    9px 100%,
+    0 calc(100% - 9px),
+    0 9px
+  );
+  transition:
+    border-color var(--dur-mid) var(--ease-out),
+    background var(--dur-mid) var(--ease-out),
+    opacity var(--dur-mid) var(--ease-out);
+}
+
+.control:hover:not(:disabled) {
+  border-color: var(--color-line-strong);
+  background: rgba(22, 21, 26, 0.9);
+}
+
+.control:disabled {
+  opacity: 0.3;
+  cursor: default;
 }

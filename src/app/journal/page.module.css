@@ -1,0 +1,39 @@
+.journal { position: relative; z-index: 1; padding: 180px var(--gutter) 80px; max-width: 1300px; margin-inline: auto; font-size: 1.0625rem; line-height: 1.8; }
+.heading { max-width: 650px; }
+.heading h1 { font-family: var(--font-display), serif; font-size: clamp(5rem, 10vw, 9rem); letter-spacing: -.04em; line-height: 1.05; margin-block: 25px; --chrome-gradient: linear-gradient(165deg, #b9c0ca 0%, #f0f2f6 35%, #a0a8b3 62%, #e1e5ec 82%, #b6beca 100%); }
+.heading > p:last-child { font-family: var(--font-display), serif; font-size: 1.7rem; line-height: 1.4; text-shadow: var(--halo); }
+.articles { margin-top: 80px; }
+.feature { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(30px, 6vw, 80px); border-top: 1px solid var(--color-line-strong); padding-top: 40px; }
+.imageLink { display: block; }
+.imageLink figure > div { aspect-ratio: 4 / 5; }
+.copy { padding-top: 25px; }
+.copy > p:first-child { display: flex; justify-content: space-between; gap: 20px; }
+.copy h2 { font-family: var(--font-display), serif; font-size: clamp(2.4rem, 4.5vw, 4.3rem); line-height: 1.1; margin-block: 30px 15px; text-shadow: var(--halo); }
+.copy > p:not(:first-child) { color: #d5d1d8; font-size: 1.0625rem; line-height: 1.8; max-width: 58ch; }
+.copy .subtitle { font-size: .8125rem; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 25px; color: #d1c0de; }
+.read { display: flex; justify-content: space-between; align-items: center; max-width: 230px; min-height: 50px; margin-top: 30px; border-bottom: 1px solid var(--color-line-strong); font-size: .8rem; }
+.read:hover { color: var(--ember); }
+
+/* Only this short index uses natural-height plates. They keep flowing beyond
+   the clipped backdrop rather than compressing into the remaining page height.
+   The shared data hook targets the painted strip and its matte together. */
+:global(body):has(.journal) :global([data-backdrop-plate="body"]) {
+  flex: 0 0 auto;
+  aspect-ratio: var(--plate-aspect-desktop);
+}
+@media(max-width: 1023px) {
+  :global(body):has(.journal) :global([data-backdrop-plate="body"]) {
+    aspect-ratio: var(--plate-aspect-mobile);
+  }
+}
+@media(max-width: 699px) {
+  .journal { padding: 130px 24px 40px; }
+  .heading > p:first-child { font-size: .6rem; letter-spacing: .12em; }
+  .heading h1 { font-size: 5.2rem; }
+  .heading > p:last-child { font-size: 1.5rem; }
+  .articles { margin-top: 50px; }
+  .feature { grid-template-columns: 1fr; gap: 25px; padding-top: 25px; }
+  .copy { padding-top: 0; }
+  .copy h2 { font-size: 2.5rem; margin-top: 22px; }
+  .copy > p:first-child { font-size: .6rem; letter-spacing: .1em; }
+}

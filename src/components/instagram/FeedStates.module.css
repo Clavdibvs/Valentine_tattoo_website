@@ -6,16 +6,17 @@
   width: 100%;
 }
 
+/* Wall: three by three on a phone, two rows of six from 720px. */
 .skeletonList {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: clamp(6px, 1.6vw, 10px);
   margin: 0;
 }
 
 .skeletonItem {
   position: relative;
-  aspect-ratio: 8 / 9;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   background: #0a0a0b;
   border: 1px solid var(--color-line-soft);
@@ -25,21 +26,39 @@
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 720px) {
   .skeletonList {
-    display: flex;
-    gap: 14px;
-    overflow: hidden;
-  }
-
-  .skeletonItem {
-    flex: 0 0 auto;
-    width: clamp(118px, 11.4vw, 162px);
-    aspect-ratio: 2 / 3;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(8px, 1vw, 14px);
   }
 
   .skeletonItem:nth-child(n + 10) {
     display: block;
+  }
+}
+
+/* Rail: a row of stories running off the edge. */
+.skeletonRail .skeletonList {
+  display: flex;
+  gap: clamp(10px, 1.1vw, 16px);
+  overflow: hidden;
+}
+
+.skeletonRail .skeletonItem {
+  flex: 0 0 auto;
+  width: min(64vw, 300px);
+  aspect-ratio: 9 / 16;
+}
+
+@media (min-width: 640px) {
+  .skeletonRail .skeletonItem {
+    width: min(34vw, 300px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .skeletonRail .skeletonItem {
+    width: clamp(180px, 14vw, 252px);
   }
 }
 

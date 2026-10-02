@@ -82,7 +82,9 @@ export function ConsultationForm() {
       noValidate
       onChange={() => setElapsed(Date.now() - mountedAt.current)}
     >
-      <p className={styles.formTitle}>
+      {/* The form assembles itself row by row as it comes into view: every
+          `data-reveal-child` below is one step of that (see ScrollAnimations). */}
+      <p className={styles.formTitle} data-reveal-child="">
         <SigilStar size={12} />
         <span>{copy.title}</span>
         <SigilStar size={12} />
@@ -95,7 +97,7 @@ export function ConsultationForm() {
       </div>
       <input type="hidden" name="elapsedMs" value={elapsed} readOnly />
 
-      <div className={styles.row}>
+      <div className={styles.row} data-reveal-child="">
         <Field
           id={ids.name}
           name="name"
@@ -126,20 +128,22 @@ export function ConsultationForm() {
         placeholder={copy.fields.phone.placeholder}
         autoComplete="tel"
         error={errorFor("phone")}
+        reveal
       />
 
       <Field
         id={ids.idea}
         name="idea"
         as="textarea"
-        rows={3}
+        rows={4}
         label={copy.fields.idea.label}
         placeholder={copy.fields.idea.placeholder}
         required
         error={errorFor("idea")}
+        reveal
       />
 
-      <div className={styles.row}>
+      <div className={styles.row} data-reveal-child="">
         <SelectField
           id={ids.placement}
           name="placement"
@@ -160,7 +164,7 @@ export function ConsultationForm() {
         />
       </div>
 
-      <fieldset className={styles.uploadGroup}>
+      <fieldset className={styles.uploadGroup} data-reveal-child="">
         <legend className={styles.legend}>
           {copy.fields.references.label}
           <span className={styles.optional}>({copy.fields.references.optionalHint})</span>
@@ -168,7 +172,7 @@ export function ConsultationForm() {
         <ReferenceUploader name="references" error={errorFor("references")} />
       </fieldset>
 
-      <div className={styles.consent}>
+      <div className={styles.consent} data-reveal-child="">
         <input
           id={ids.privacy}
           type="checkbox"
@@ -225,18 +229,19 @@ export function ConsultationForm() {
         </p>
       ) : null}
 
-      <ChromeButton
-        type="submit"
-        size="lg"
-        variant="solid"
-        block
-        tracked
-        disabled={pending}
-        icon={<SigilBadge size={22} />}
-        className={styles.submit}
-      >
-        {pending ? copy.submitting : copy.submit}
-      </ChromeButton>
+      <div className={styles.submit} data-reveal-child="">
+        <ChromeButton
+          type="submit"
+          size="lg"
+          variant="solid"
+          block
+          tracked
+          disabled={pending}
+          icon={<SigilBadge size={22} />}
+        >
+          {pending ? copy.submitting : copy.submit}
+        </ChromeButton>
+      </div>
 
       {/* Politely announced to assistive tech without stealing focus. */}
       <span className="sr-only" role="status" aria-live="polite">
@@ -264,6 +269,7 @@ function Field({
   description,
   descriptionId,
   error,
+  reveal = false,
 }: {
   id: string;
   name: string;
@@ -278,6 +284,8 @@ function Field({
   description?: string;
   descriptionId?: string;
   error?: string;
+  /** Marks the field as one step of the form's arrival. */
+  reveal?: boolean;
 }) {
   const errorId = `${id}-error`;
   const describedBy = [description ? descriptionId : null, error ? errorId : null]
@@ -297,17 +305,20 @@ function Field({
   };
 
   return (
-    <div className={styles.field}>
+    <div className={styles.field} data-reveal-child={reveal ? "" : undefined}>
       <label htmlFor={id} className={styles.label}>
         {label}
         {optionalHint ? <span className={styles.optional}>({optionalHint})</span> : null}
       </label>
 
-      {as === "textarea" ? (
-        <textarea {...shared} rows={rows} className={`${styles.control} ${styles.textarea}`} />
-      ) : (
-        <input {...shared} type={type} />
-      )}
+      {/* The wrapper carries the light that runs around a focused field. */}
+      <span className={styles.controlWrap}>
+        {as === "textarea" ? (
+          <textarea {...shared} rows={rows} className={`${styles.control} ${styles.textarea}`} />
+        ) : (
+          <input {...shared} type={type} />
+        )}
+      </span>
 
       {description ? (
         <p id={descriptionId} className={styles.description}>

@@ -1,11 +1,12 @@
-import { CornerSigil } from "@/components/ornaments/SigilOrnament";
 import { OrnamentDivider } from "@/components/ornaments/OrnamentDivider";
 import { SideGlyphRail } from "@/components/ornaments/SideGlyphRail";
 import { SigilStar } from "@/components/ornaments/SigilStar";
+import { ChromeButton } from "@/components/ui/ChromeButton";
 import { ChromeFrame } from "@/components/ui/ChromeFrame";
-import { ChevronDownIcon } from "@/components/ui/Icons";
+import { ArrowRightIcon, ChevronDownIcon, InstagramIcon } from "@/components/ui/Icons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { faqContent } from "@/content/site-content";
+import { instagramProfile } from "@/config/site-config";
 
 import styles from "./FaqSection.module.css";
 
@@ -23,6 +24,11 @@ import styles from "./FaqSection.module.css";
  *
  * The first item is open on load: a column of closed rows does not always read
  * as expandable, and one open answer shows what the rest do.
+ *
+ * ## The close of the page
+ *
+ * This is the last section, so it ends on the two ways forward — the form and
+ * a direct message — rather than leaving the visitor at the bottom of a list.
  */
 export function FaqSection() {
   /**
@@ -63,17 +69,13 @@ export function FaqSection() {
         }}
       />
 
-      <div className={styles.decorLayer} aria-hidden="true" data-decor="">
-        <CornerSigil corner="top-right" className={styles.cornerTop} opacity={0.38} />
-        <CornerSigil corner="bottom-left" className={styles.cornerBottom} opacity={0.45} />
-      </div>
-
       <SideGlyphRail side="left" index="08" />
       <SideGlyphRail side="right" words={["PROCESSO", "GHOSTLINES", "PREVENTIVO"]} />
 
       <div className={`container ${styles.inner}`}>
         <SectionHeading
           id="faq-title"
+          index="08"
           eyebrow={faqContent.eyebrow}
           lines={faqContent.titleLines}
           accessibleTitle={faqContent.titleAccessible}
@@ -83,11 +85,11 @@ export function FaqSection() {
           className={styles.heading}
         />
 
-        <p className={styles.supporting} data-reveal="">
+        <p className={`u-halo ${styles.supporting}`} data-reveal="words">
           {faqContent.supporting}
         </p>
 
-        <OrnamentDivider className={styles.headDivider} width="300px" />
+        <OrnamentDivider className={styles.headDivider} width="280px" />
 
         <ChromeFrame
           metal
@@ -102,9 +104,13 @@ export function FaqSection() {
               <li key={item.id} className={styles.item} data-reveal-child="">
                 <details className={styles.details} open={index === 0}>
                   <summary className={styles.summary}>
-                    <SigilStar size={11} className={styles.summaryStar} />
+                    <span className={`u-index ${styles.number}`} aria-hidden="true" data-decode="digits">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                     <span className={styles.question}>{item.question}</span>
-                    <ChevronDownIcon size={18} className={styles.chevron} />
+                    <span className={styles.toggle} aria-hidden="true">
+                      <ChevronDownIcon size={18} />
+                    </span>
                   </summary>
                   <div className={styles.answerWrap}>
                     <p className={styles.answer}>{item.answer}</p>
@@ -114,6 +120,37 @@ export function FaqSection() {
             ))}
           </ul>
         </ChromeFrame>
+
+        <div className={styles.closing} data-reveal="">
+          <span className={styles.closingStarWrap} data-reveal-child="forge">
+            <SigilStar size={14} className={styles.closingStar} />
+          </span>
+          <p className={`u-halo ${styles.closingTitle}`} data-reveal-child="words">
+            {faqContent.closingTitle}
+          </p>
+          <p className={`u-halo ${styles.closingBody}`} data-reveal-child="words">
+            {faqContent.closingBody}
+          </p>
+          <div className={styles.closingCtas} data-reveal-child="">
+            <ChromeButton
+              href="#booking"
+              variant="solid"
+              magnetic
+              icon={<SigilStar size={14} />}
+              trailing={<ArrowRightIcon size={17} />}
+            >
+              {faqContent.closingBooking}
+            </ChromeButton>
+            <ChromeButton
+              href={instagramProfile.directMessageUrl}
+              external
+              magnetic
+              icon={<InstagramIcon size={19} />}
+            >
+              {faqContent.closingInstagram}
+            </ChromeButton>
+          </div>
+        </div>
       </div>
     </section>
   );

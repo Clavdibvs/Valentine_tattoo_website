@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { MoltenBackdrop } from "./MoltenBackdrop";
 
 import styles from "./PageBackdrop.module.css";
@@ -44,6 +45,9 @@ import styles from "./PageBackdrop.module.css";
  */
 const HERO_PLATE = { desktop: "hero", mobile: "hero" } as const;
 
+/** Quieter edge ornaments for reading pages; the home keeps its own sigil. */
+const EDITORIAL_PLATE = { desktop: "booking-tail", mobile: "instagram" } as const;
+
 /** Plates for everything after the hero, in the order they were drawn. */
 const BODY_PLATES = [
   { desktop: "about", mobile: "about" },
@@ -66,10 +70,24 @@ const BODY_PLATES = [
  */
 const BODY_PLATE_COUNT = 13;
 
-export function PageBackdrop({ waitForIntro = false }: { waitForIntro?: boolean }) {
+/** Ratios of the existing cropped WebP exports, reserved before images load.
+ * The short Journal index uses these instead of squeezing thirteen flex items
+ * into its document height. Both painted and matte strips receive the same
+ * geometry; the home and article keep their existing flexible composition.
+ */
+const PLATE_ASPECT_RATIOS: Readonly<Record<string, string>> = {
+  "hero-desktop": "1440 / 708", "hero-mobile": "480 / 576",
+  "about-desktop": "1440 / 644", "about-mobile": "480 / 577",
+  "instagram-desktop": "1440 / 585", "instagram-mobile": "480 / 616",
+  "booking-desktop": "1440 / 593", "booking-mobile": "480 / 616",
+  "booking-tail-desktop": "1440 / 584",
+};
+
+export function PageBackdrop({ waitForIntro = false, variant = "home" }: { waitForIntro?: boolean; variant?: "home" | "editorial" }) {
+  const opening = variant === "editorial" ? EDITORIAL_PLATE : HERO_PLATE;
   return (
-    <div className={styles.backdrop} aria-hidden="true" data-decor="">
-      <PlateStrip />
+    <div className={[styles.backdrop, variant === "editorial" ? styles.editorial : ""].filter(Boolean).join(" ")} aria-hidden="true" data-decor="">
+      <PlateStrip opening={opening} />
 
       {/*
         Molten light through the metal. It renders a second PlateStrip as its
@@ -77,7 +95,7 @@ export function PageBackdrop({ waitForIntro = false }: { waitForIntro?: boolean 
         step with the artwork it is matting.
       */}
       <MoltenBackdrop waitForIntro={waitForIntro}>
-        <PlateStrip matte />
+        <PlateStrip opening={opening} matte />
       </MoltenBackdrop>
 
       {/* Centre band where the copy lives, knocked back so text never competes
@@ -95,13 +113,13 @@ export function PageBackdrop({ waitForIntro = false }: { waitForIntro?: boolean 
  * them together and no second set of positioning numbers exists to fall out of
  * sync.
  */
-function PlateStrip({ matte = false }: { matte?: boolean }) {
+function PlateStrip({ matte = false, opening }: { matte?: boolean; opening: { desktop: string; mobile: string } }) {
   return (
     <div
       className={[styles.strip, matte ? styles.matteStrip : ""].filter(Boolean).join(" ")}
       data-backdrop-strip=""
     >
-      <Plate {...HERO_PLATE} first last={false} priority={!matte} />
+      <Plate {...opening} first last={false} priority={!matte} />
 
       {Array.from({ length: BODY_PLATE_COUNT }, (_, index) => (
         <Plate
@@ -137,6 +155,11 @@ function Plate({
       className={[styles.plate, first ? styles.first : "", last ? styles.last : ""]
         .filter(Boolean)
         .join(" ")}
+      data-backdrop-plate={first ? "opening" : "body"}
+      style={{
+        "--plate-aspect-desktop": PLATE_ASPECT_RATIOS[`${desktop}-desktop`],
+        "--plate-aspect-mobile": PLATE_ASPECT_RATIOS[`${mobile}-mobile`],
+      } as CSSProperties}
     >
       <picture>
         {/* Landscape art on desktop, portrait art below 1024px. */}
