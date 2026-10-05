@@ -17,6 +17,7 @@
  *   --crf=14             quality of the rendered file (the master)
  *   --deliver=<mp4>      also encode a delivery copy of --out, sized for sharing
  *   --encode-only        skip rendering: only make the --deliver copy of --out
+ *   --print-key          print the chunk cache key for these options and exit
  *
  * The page renders each frame as a pure function of its time, reads the pixels
  * back and POSTs them here as raw RGBA; they are piped straight into ffmpeg.
@@ -281,6 +282,10 @@ function run(cmd, a) {
 }
 
 (async () => {
+  if (args["print-key"]) {
+    console.log(cacheKey());
+    return;
+  }
   if (args["encode-only"]) {
     deliver(OUT, path.resolve(ROOT, args.deliver));
     return;
