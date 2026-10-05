@@ -7,9 +7,13 @@
 const pad = (n) => String(n).padStart(2, "0");
 
 export const PICKS = {
-  // Grid order on the site matches public/gallery/feed 01–10.
+  // Grid order on the site matches public/gallery/feed 01–10. The phone's
+  // grid shows 01–09 only, so the vertical cut pulls a different fifth post.
   feedPop: [1, 7, 3, 6, 10],
-  creazioni: [3, 1, 4, 8, 9],
+  feedPopV: [1, 7, 3, 6, 4],
+  // Artwork only: the one photograph of Valentina in the film is the site's
+  // own portrait (public/images/valentina/portrait.webp).
+  creazioni: [1, 4, 6, 8, 9],
   flash: [1, 4, 5, 9],
   merch: [4, 3, 6, 1, 5, 11, 12, 7, 8],
 };
@@ -22,7 +26,10 @@ export async function loadAssets(E) {
 
   put("wordmark", "/public/brand/wordmark-valentine-1400.webp");
   put("logo", "/public/brand/logo-valentine-288.webp");
-  for (const b of ["hero", "about", "instagram", "booking"]) put(`bd_${b}`, `/public/backdrops/${b}-desktop-2688.webp`);
+  for (const b of ["hero", "about", "instagram", "booking"]) {
+    put(`bd_${b}`, `/public/backdrops/${b}-desktop-2688.webp`);
+    put(`bd_${b}_m`, `/public/backdrops/${b}-mobile-1080.webp`);
+  }
   put("portrait", "/public/images/valentina/portrait.webp");
 
   for (const s of ["home", "instagram", "creazioni", "flash", "merch", "booking", "about"]) {

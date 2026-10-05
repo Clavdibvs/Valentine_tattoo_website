@@ -7,7 +7,8 @@
  *   --out=<mp4>          output file (default promo/out/valentine-tattoo-promo.mp4)
  *   --from=0 --to=31     time range in seconds
  *   --fps=60             frame rate
- *   --scale=1            0.5 renders a 960×540 preview of the same framing
+ *   --format=16x9        16x9 (1920×1080) or 9x16 (1080×1920)
+ *   --scale=1            0.5 renders a half-size preview of the same framing
  *   --samples=auto       motion-blur subframes per frame (180° shutter); "auto"
  *                        uses scenes/index.js samplesAt(): 4 on fast moves, 2–3 elsewhere
  *   --stills=5.6,8.3     render only these times to PNG (in --outdir)
@@ -52,8 +53,10 @@ const SAMPLES = args.samples === "auto" ? "auto" : Number(args.samples ?? 1);
 const FROM = Number(args.from ?? 0);
 const TO = Number(args.to ?? 31);
 const WORKERS = Number(args.workers ?? 1);
-const W = Math.round(1920 * SCALE), H = Math.round(1080 * SCALE);
-const OUT = path.resolve(ROOT, args.out ?? "promo/out/valentine-tattoo-promo.mp4");
+const FORMAT = args.format === "9x16" ? "9x16" : "16x9";
+const [FW, FH] = FORMAT === "9x16" ? [1080, 1920] : [1920, 1080];
+const W = Math.round(FW * SCALE), H = Math.round(FH * SCALE);
+const OUT = path.resolve(ROOT, args.out ?? `promo/out/valentine-tattoo-promo-${FORMAT}.mp4`);
 const AUDIO = args.audio ? path.resolve(args.audio) : null;
 /**
  * Audio fade, constant power, 28.9 → 30.9 s. The picture fades 29.15 → 30.9
@@ -69,11 +72,13 @@ const TYPES = {
 
 /* ---- the opening clip, as frames the page can load one by one --------------- */
 function extractIntroFrames() {
-  const dir = path.join(ROOT, "promo", ".cache", "intro");
-  if (fs.existsSync(path.join(dir, "f243.jpg"))) return;
-  fs.mkdirSync(dir, { recursive: true });
-  const r = spawnSync("ffmpeg", ["-y", "-loglevel", "error", "-i", path.join(ROOT, "public/intro/intro-desktop.mp4"), "-q:v", "2", path.join(dir, "f%03d.jpg")]);
-  if (r.status !== 0) throw new Error("intro frame extraction failed: " + r.stderr);
+  for (const [clip, dir, last] of [["intro-desktop.mp4", "intro", "f243.jpg"], ["intro-mobile.mp4", "intro-mobile", "f197.jpg"]]) {
+    const out = path.join(ROOT, "promo", ".cache", dir);
+    if (fs.existsSync(path.join(out, last))) continue;
+    fs.mkdirSync(out, { recursive: true });
+    const r = spawnSync("ffmpeg", ["-y", "-loglevel", "error", "-i", path.join(ROOT, "public/intro", clip), "-q:v", "2", path.join(out, "f%03d.jpg")]);
+    if (r.status !== 0) throw new Error("intro frame extraction failed: " + r.stderr);
+  }
 }
 
 /* ---- static server + frame sink ---------------------------------------------- */
@@ -106,7 +111,7 @@ async function openPage(browser, port) {
   const page = await browser.newPage({ viewport: { width: W, height: H } });
   page.on("pageerror", (e) => console.error("[page]", e.message));
   page.on("console", (m) => { if (m.type() === "error") console.error("[console]", m.text()); });
-  await page.goto(`http://127.0.0.1:${port}/promo/composition/index.html?scale=${SCALE}`);
+  await page.goto(`http://127.0.0.1:${port}/promo/composition/index.html?scale=${SCALE}&format=${FORMAT}`);
   await page.evaluate(() => window.ready);
   return page;
 }
@@ -161,7 +166,7 @@ function cacheKey() {
   };
   walk(path.join(ROOT, "promo", "composition"));
   walk(path.join(ROOT, "promo", "captures"));
-  h.update(JSON.stringify({ W, H, FPS, SAMPLES, crf: args.crf ?? 14 }));
+  h.update(JSON.stringify({ FORMAT, W, H, FPS, SAMPLES, crf: args.crf ?? 14 }));
   return h.digest("hex").slice(0, 12);
 }
 

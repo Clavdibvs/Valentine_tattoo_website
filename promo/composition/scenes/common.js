@@ -4,7 +4,9 @@
  */
 
 import * as D from "../lib/draw2d.js";
-import { clamp, hash, FORGE, prog } from "../lib/timing.js";
+import { F } from "../lib/format.js";
+import { clamp, hash, FORGE, prog, lastIndex } from "../lib/timing.js";
+import { PICKS } from "../assets.js";
 
 export const S = { E: null, A: null };
 
@@ -61,13 +63,13 @@ export function initCommon(E, A) {
     ctx.fillStyle = "rgba(0,0,0,1)";
     ctx.fillRect(90, 90, 332, 140);
   }, true);
-  S.atmos = E.cached("sprite:atmos", 960, 540, 1, (ctx) => {
-    const g = ctx.createRadialGradient(480, 250, 0, 480, 250, 620);
+  S.atmos = E.cached("sprite:atmos", F.W / 2, F.H / 2, 1, (ctx, w, h) => {
+    const g = ctx.createRadialGradient(w / 2, h * 0.463, 0, w / 2, h * 0.463, Math.max(w, h) * 0.646);
     g.addColorStop(0, "rgba(28,26,32,1)");
     g.addColorStop(0.5, "rgba(12,12,14,1)");
     g.addColorStop(1, "rgba(5,5,5,1)");
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 960, 540);
+    ctx.fillRect(0, 0, w, h);
   }, true);
   S.rail = E.cached("sprite:rail", 64, 1040, 1, (ctx) => {
     for (let k = 0; k < 4; k++) D.glyphRail(ctx, 32, k * 260, 1, { alpha: 0.9 });
@@ -234,6 +236,68 @@ export function shift(matrix, x, y, z = 0) {
   return m;
 }
 
+/**
+ * The "Creazioni" highlight as an Instagram story: the work on screen cuts to
+ * the next on each pluck in `P`, under the story's own progress segments,
+ * avatar and name. Returns the 540×960 precomp and the age of the last cut.
+ */
+export function storyFrame(t, P, endT) {
+  const k = Math.max(0, lastIndex(t, P));
+  const imgIdx = PICKS.creazioni[Math.min(k, PICKS.creazioni.length - 1)];
+  const age = t - P[k].t;
+  const tex = S.A.creazioni[imgIdx];
+  const SW = 540, SH = 960;
+  const layers = [];
+  const zoom = 1.14 - 0.14 * FORGE(clamp(age / 0.5)) + 0.02 * (age);
+  layers.push({ tex, x: SW / 2, y: SH / 2, w: SW * zoom, h: SH * zoom, uv: coverUV(tex, SW, SH), rgb: 12 * Math.exp(-age / 0.07), glitch: 0.04 * Math.exp(-age / 0.05), seed: k * 7 });
+  // Story chrome: progress segments, avatar, name.
+  const ui = S.E.canvas("story:ui", SW, SH);
+  const ctx = ui.ctx;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, SW, SH);
+  const g = ctx.createLinearGradient(0, 0, 0, 180);
+  g.addColorStop(0, "rgba(0,0,0,0.55)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, SW, 180);
+  const n = P.length, gap = 6, segW = (SW - 28 - gap * (n - 1)) / n;
+  for (let i = 0; i < n; i++) {
+    const a = P[i].t, b = i + 1 < n ? P[i + 1].t : endT;
+    const f = clamp((t - a) / (b - a));
+    ctx.fillStyle = "rgba(255,255,255,0.28)";
+    ctx.beginPath();
+    ctx.roundRect(14 + i * (segW + gap), 16, segW, 4, 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.beginPath();
+    ctx.roundRect(14 + i * (segW + gap), 16, segW * f, 4, 2);
+    ctx.fill();
+  }
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(40, 56, 20, 0, Math.PI * 2);
+  ctx.fillStyle = "#0b0b0c";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.6)";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.restore();
+  D.font(ctx, { family: D.SANS, size: 17, weight: 500, tracking: 0.02 });
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText("valentine.ttt", 72, 50);
+  D.font(ctx, { family: D.SANS, size: 13, weight: 400, tracking: 0.28 });
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  ctx.fillText("CREAZIONI", 72, 70);
+  S.E.upload(ui);
+  layers.push({ tex: ui, x: SW / 2, y: SH / 2, w: SW, h: SH });
+  layers.push({ tex: S.A.logo, x: 40, y: 56, w: 22, h: 31.5 });
+  layers.push({ color: [1, 1, 1, 1], x: SW / 2, y: SH / 2, w: SW, h: SH, opacity: 0.55 * Math.exp(-age / 0.06) * (k > 0 ? 1 : 0), blend: "add" });
+  const pc = S.E.precomp("story", SW, SH, layers, { clear: [0, 0, 0, 1] });
+  return { pc, age, SW, SH };
+}
+
 /* -------------------------------------------------------------------------- */
 /* Background                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -253,18 +317,23 @@ export function bigWord(word) {
 }
 
 /** Drifting dust: a few hundred specks in depth, drawn into one canvas. */
-export function dust(t, amount = 1, cam = { x: 960, y: 540 }) {
-  const c = S.E.canvas("dust", 960, 540);
+export function dust(t, amount = 1, cam = { x: F.cx, y: F.cy }) {
+  // Half-resolution canvas; the wrap spans a margin past each edge.
+  const cw = F.W / 2, ch = F.H / 2, sx = cw + 140, sy = ch + 100;
+  // Its own scatter per format, checked so that no speck parks beside a
+  // punctuation mark of a headline (the 16:9 one is the original).
+  const seed = F.vertical ? 40 : 0;
+  const c = S.E.canvas("dust", cw, ch);
   const ctx = c.ctx;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, 960, 540);
+  ctx.clearRect(0, 0, cw, ch);
   if (amount > 0) {
     for (let i = 0; i < 170; i++) {
-      const z = hash(i, 3);
+      const z = hash(i, 3 + seed);
       const sp = 6 + z * 26;
-      const x = ((hash(i, 1) * 1100 + t * sp * (hash(i, 9) - 0.3) - (cam.x - 960) * z * 0.25) % 1100 + 1100) % 1100 - 70;
-      const y = ((hash(i, 2) * 640 - t * sp * 0.6 - (cam.y - 540) * z * 0.25) % 640 + 640) % 640 - 50;
-      const tw = 0.5 + 0.5 * Math.sin(t * (1 + hash(i, 5) * 3) + i);
+      const x = ((hash(i, 1 + seed) * sx + t * sp * (hash(i, 9 + seed) - 0.3) - (cam.x - F.cx) * z * 0.25) % sx + sx) % sx - 70;
+      const y = ((hash(i, 2 + seed) * sy - t * sp * 0.6 - (cam.y - F.cy) * z * 0.25) % sy + sy) % sy - 50;
+      const tw = 0.5 + 0.5 * Math.sin(t * (1 + hash(i, 5 + seed) * 3) + i);
       const a = amount * (0.12 + 0.5 * z) * tw;
       const r = 0.5 + z * 1.6;
       ctx.fillStyle = `rgba(235,230,255,${a})`;

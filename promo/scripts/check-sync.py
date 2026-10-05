@@ -1,7 +1,7 @@
 """
 Sync check for a rendered promo: does the picture move when the music hits?
 
-    python3 promo/scripts/check-sync.py promo/out/valentine-tattoo-promo.mp4 [out.png]
+    python3 promo/scripts/check-sync.py promo/out/valentine-tattoo-promo-16x9.mp4 [out.png]
 
 Decodes the video at low resolution and measures, per frame, how much the
 picture changes (mean absolute difference from the previous frame) and how
@@ -25,11 +25,13 @@ video = sys.argv[1]
 out = sys.argv[2] if len(sys.argv) > 2 else video.rsplit(".", 1)[0] + "-sync.png"
 
 probe = json.loads(subprocess.check_output(
-    ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate", "-of", "json", video]))
-num, den = map(int, probe["streams"][0]["r_frame_rate"].split("/"))
+    ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate,width,height", "-of", "json", video]))
+stream = probe["streams"][0]
+num, den = map(int, stream["r_frame_rate"].split("/"))
 fps = num / den
 
-w, h = 192, 108
+# Decoded small, keeping the format's aspect (16:9 or 9:16).
+w, h = (192, 108) if stream["width"] >= stream["height"] else (108, 192)
 raw = subprocess.check_output(["ffmpeg", "-v", "error", "-i", video, "-vf", f"scale={w}:{h},format=gray", "-f", "rawvideo", "-"])
 frames = np.frombuffer(raw, np.uint8).reshape(-1, h, w).astype(np.float32) / 255
 diff = np.concatenate([[0], np.abs(np.diff(frames, axis=0)).mean(axis=(1, 2))])

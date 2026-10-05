@@ -18,7 +18,7 @@
 import * as D from "../lib/draw2d.js";
 import { bar, plucksInBar, impulse, env, prog, clamp, lerp, FORGE, INOUT, expoOut, expoIn, cubicIn, cubicOut, backOut, shake, lastIndex, noise1 } from "../lib/timing.js";
 import { node, M4 } from "../lib/engine.js";
-import { S, SECTIONS, WINDOW, PHONE, browserLayers, phoneLayers, coverUV, coverTop, shift, bigWord, dust, decodeLabel, textTex, life } from "./common.js";
+import { S, SECTIONS, WINDOW, PHONE, browserLayers, phoneLayers, coverUV, coverTop, shift, bigWord, dust, decodeLabel, textTex, life, storyFrame } from "./common.js";
 import { PICKS } from "../assets.js";
 import { PULL0, PULL1, HOME_POSE } from "./drop.js";
 
@@ -144,59 +144,7 @@ function creazioniStory(t, L) {
   const enter = FORGE(prog(t, TB[1] - 0.1, TB[1] + 0.7));
   const exit = expoIn(prog(t, TB[2] - 0.22, TB[2] + 0.12));
   if (enter <= 0 || exit >= 1) return;
-  const k = Math.max(0, lastIndex(t, P));
-  const imgIdx = PICKS.creazioni[Math.min(k, PICKS.creazioni.length - 1)];
-  const age = t - P[k].t;
-  const tex = S.A.creazioni[imgIdx];
-  const SW = 540, SH = 960;
-  const layers = [];
-  const zoom = 1.14 - 0.14 * FORGE(clamp(age / 0.5)) + 0.02 * (age);
-  layers.push({ tex, x: SW / 2, y: SH / 2, w: SW * zoom, h: SH * zoom, uv: coverUV(tex, SW, SH), rgb: 12 * Math.exp(-age / 0.07), glitch: 0.04 * Math.exp(-age / 0.05), seed: k * 7 });
-  // Story chrome: progress segments, avatar, name.
-  const ui = S.E.canvas("story:ui", SW, SH);
-  const ctx = ui.ctx;
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, SW, SH);
-  const g = ctx.createLinearGradient(0, 0, 0, 180);
-  g.addColorStop(0, "rgba(0,0,0,0.55)");
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, SW, 180);
-  const n = P.length, gap = 6, segW = (SW - 28 - gap * (n - 1)) / n;
-  for (let i = 0; i < n; i++) {
-    const a = P[i].t, b = i + 1 < n ? P[i + 1].t : TB[2];
-    const f = clamp((t - a) / (b - a));
-    ctx.fillStyle = "rgba(255,255,255,0.28)";
-    ctx.beginPath();
-    ctx.roundRect(14 + i * (segW + gap), 16, segW, 4, 2);
-    ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,0.95)";
-    ctx.beginPath();
-    ctx.roundRect(14 + i * (segW + gap), 16, segW * f, 4, 2);
-    ctx.fill();
-  }
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(40, 56, 20, 0, Math.PI * 2);
-  ctx.fillStyle = "#0b0b0c";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,0.6)";
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  ctx.restore();
-  D.font(ctx, { family: D.SANS, size: 17, weight: 500, tracking: 0.02 });
-  ctx.fillStyle = "#fff";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
-  ctx.fillText("valentine.ttt", 72, 50);
-  D.font(ctx, { family: D.SANS, size: 13, weight: 400, tracking: 0.28 });
-  ctx.fillStyle = "rgba(255,255,255,0.75)";
-  ctx.fillText("CREAZIONI", 72, 70);
-  S.E.upload(ui);
-  layers.push({ tex: ui, x: SW / 2, y: SH / 2, w: SW, h: SH });
-  layers.push({ tex: S.A.logo, x: 40, y: 56, w: 22, h: 31.5 });
-  layers.push({ color: [1, 1, 1, 1], x: SW / 2, y: SH / 2, w: SW, h: SH, opacity: 0.55 * Math.exp(-age / 0.06) * (k > 0 ? 1 : 0), blend: "add" });
-  const pc = S.E.precomp("story", SW, SH, layers, { clear: [0, 0, 0, 1] });
+  const { pc, age, SW, SH } = storyFrame(t, P, TB[2]);
 
   const x = lerp(2300, 1440, enter) + exit * 900;
   const m = node({ x, y: 540, z: 140, ry: lerp(-0.9, -0.16, enter) - exit * 1.2, rz: lerp(0.12, 0.0, enter), s: 0.88 * (1 + 0.012 * impulse(t, P, 0.1)) });
@@ -458,7 +406,7 @@ function hud(t, L) {
   // Booking and About carry their own headline; the mobile bar has its labels.
   const labelA = a * (1 - life(t, TB[4] - 0.1, END + 1, 0.2, 0.01));
   const idx = textTex("hud:idx", sec.index, { size: 64, chrome: true, w: 200, h: 100, align: "left" });
-  L.push({ tex: idx, x: 108 + 100, y: 108, w: 200, h: 100, opacity: labelA, screen: true, rgb: 6 * Math.exp(-since / 0.08) });
+  L.push({ tex: idx, x: 108 + 100, y: 108, w: 200, h: 100, opacity: labelA, screen: true, rgb: 6 * Math.exp(-Math.max(0, since) / 0.08) });
   const ey = decodeLabel("hud:eyebrow", sec.eyebrow.length > 30 ? "BOOKING / CONSULENZA" : sec.eyebrow, clamp(since / 0.55), t, { size: 15, w: 760, h: 36, align: "left", tracking: 0.42, seed: active });
   L.push({ tex: ey, x: 196 + 380, y: 96, w: 760, h: 36, opacity: labelA, screen: true });
   const ti = textTex("hud:title", sec.title.length > 22 ? sec.word : sec.title, { size: 26, w: 760, h: 44, align: "left", tracking: 0.08, color: "#cfcfd5" });

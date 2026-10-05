@@ -6,15 +6,16 @@
  *   await window.sendFrame(url)                 // POSTs the raw RGBA pixels
  */
 import { Engine } from "./lib/engine.js";
+import { F } from "./lib/format.js";
 import { loadAssets } from "./assets.js";
 import { init, build, prepare, samplesAt } from "./scenes/index.js";
 
 const params = new URLSearchParams(location.search);
 const scale = Number(params.get("scale") || 1);
-const W = Math.round(1920 * scale);
-const H = Math.round(1080 * scale);
+const W = Math.round(F.W * scale);
+const H = Math.round(F.H * scale);
 
-const engine = new Engine(document.getElementById("stage"), W, H);
+const engine = new Engine(document.getElementById("stage"), W, H, F.W, F.H);
 window.engine = engine;
 
 window.ready = (async () => {

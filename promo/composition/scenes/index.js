@@ -4,18 +4,28 @@
  *   0.05  bar 1   ignition          intro.js
  *   2.80  bar 2   build (riser)     intro.js
  *   5.21          two silent 16ths  CRT off, black
- *   5.54  bar 3   drop: wordmark    drop.js
- *   8.29  bar 4–10 the site tour     tour.js
+ *   5.54  bar 3   drop: wordmark    drop.js   (9:16: v/drop.js)
+ *   8.29  bar 4–10 the site tour     tour.js   (9:16: v/tour.js)
  *  27.52  bar 11  kick: lockup      final.js
  *  29.15 → 30.90  fade to black (audio fades 28.9 → 30.9, render.mjs)
+ *
+ * The intro and the lockup lay themselves out for either format; the drop and
+ * the tour are staged differently for a tall frame (a phone instead of a
+ * browser window), so each format has its own module. Both share every time.
  */
 
+import { F } from "../lib/format.js";
 import { GAP, DROP, bar, PLUCKS, INOUT, prog } from "../lib/timing.js";
 import { initCommon } from "./common.js";
 import { intro, prepareIntro } from "./intro.js";
-import { drop, PULL0, PULL1 } from "./drop.js";
-import { tour } from "./tour.js";
+import * as landscape from "./drop.js";
+import * as portrait from "./v/drop.js";
+import { tour as tourH } from "./tour.js";
+import { tour as tourV } from "./v/tour.js";
 import { final, FADE } from "./final.js";
+
+const { drop, PULL0, PULL1 } = F.vertical ? portrait : landscape;
+const tour = F.vertical ? tourV : tourH;
 
 export function init(E, A) {
   initCommon(E, A);
@@ -27,7 +37,7 @@ export async function prepare(t, spread) {
 
 export function build(t) {
   const layers = [];
-  const camera = { x: 960, y: 540, zoom: 1, roll: 0, rx: 0, ry: 0 };
+  const camera = { x: F.cx, y: F.cy, zoom: 1, roll: 0, rx: 0, ry: 0 };
   const post = { bloom: 0.55, bloomWide: 0.32, exposure: 1, flash: 0, ca: 0.0015, distort: 0, zoomBlur: 0 };
   intro(t, layers, camera, post);
   if (t >= GAP[0]) drop(t, layers, camera, post);
