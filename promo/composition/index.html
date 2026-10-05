@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <title>Valentine Tattoo — promo composition</title>
+  <style>
+    /* The site's own self-hosted faces (public/fonts), under private names so
+       a locally installed Bodoni can never stand in for them. */
+    @font-face { font-family: "Bodoni Moda VT"; src: url(/public/fonts/bodoni-moda.woff2) format("woff2"); font-weight: 400 700; font-style: normal; }
+    @font-face { font-family: "Jost VT"; src: url(/public/fonts/jost.woff2) format("woff2"); font-weight: 300 600; font-style: normal; }
+    html, body { margin: 0; background: #000; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+  <script src="audio-map.js"></script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
