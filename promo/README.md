@@ -5,10 +5,12 @@ Video di motion design che presenta il sito, montato sui primi 31 secondi di
 
 | | |
 | --- | --- |
-| File | `promo/out/valentine-tattoo-promo.mp4` |
-| Formato | 1920×1080, 60 fps, H.264 High (BT.709) + AAC 320 kbps |
+| File | `promo/out/valentine-tattoo-promo.mp4` (48 MB, ~12 Mbit/s) |
+| Formato | 1920×1080, 60 fps, H.264 High (BT.709) + AAC 48 kHz 320 kbps |
 | Durata | 31,0 s — dal secondo 0 della traccia |
 | Finale | dissolvenza in nero 29,15 → 30,90 s; audio in dissolvenza 28,9 → 30,9 s |
+| Poster | `promo/out/valentine-tattoo-promo-poster.jpg` (il lockup finale, 29,3 s) |
+| Sync | `promo/out/valentine-tattoo-promo-sync.png` — su 42 pluck il picco di movimento dell'immagine cade a +10 ms mediani dal colpo |
 
 Tutto ciò che si vede viene dal sito: il lettering e il logo reali, gli sfondi
 cromati, la clip d'apertura, le catture delle sezioni in esecuzione, le
